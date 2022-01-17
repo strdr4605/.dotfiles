@@ -100,3 +100,18 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# add me to .zshrc or .bashrc
+ORIGINAL_NPM=$(which npm)
+RED='\033[0;31m'
+GREEN='\033[0;92m'
+NC='\033[0m' # No Color
+npm() {
+  if [[ -d .meteor ]]
+  then
+    echo "${RED}Meteor project${NC}\nRunning:\n\n\t${GREEN}meteor npm $@${NC}\n";
+    meteor npm $@
+  else
+    eval $ORIGINAL_NPM $@
+  fi
+}
