@@ -1,0 +1,6 @@
+[user]
+	name = Dragoș Străinu
+	email = str.dr4605@gmail.com
+
+[includeIf "gitdir:~/Work/"]
+    path = ~/Work/.gitconfig_work
