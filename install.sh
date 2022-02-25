@@ -9,3 +9,4 @@ for file in "${dotfiles[@]}"; do
   ln -sf ${BASEDIR}/${file} ~/${file}
 done
 
+./brew.sh
