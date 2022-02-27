@@ -12,6 +12,12 @@
         "options": {
           "full_name": "font-fira-code"
         }
+      },
+      "font-fira-code-nerd-font": {
+        "version": "2.1.0",
+        "options": {
+          "full_name": "font-fira-code-nerd-font"
+        }
       }
     },
     "brew": {
@@ -96,7 +102,7 @@
     },
     "tap": {
       "homebrew/cask-fonts": {
-        "revision": "2ff17eab70d183f5a3e6121b0b8537bd3ccfd507"
+        "revision": "5819b7f4ff627c8eb722527a4289aee255bd210e"
       }
     }
   },
@@ -105,7 +111,7 @@
       "monterey": {
         "HOMEBREW_VERSION": "3.3.16",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "f80d456d46ba490c39f804cb7d3bad28171b6650",
+        "Homebrew/homebrew-core": "474baff3793ce0d36f60e0de3aea2963e9f3472e",
         "CLT": "13.2.0.0.1.1638488800",
         "Xcode": "13.2.1",
         "macOS": "12.1"
