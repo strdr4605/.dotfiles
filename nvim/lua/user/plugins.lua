@@ -49,6 +49,9 @@ return packer.startup(function(use)
   use "akinsho/bufferline.nvim"
   use "moll/vim-bbye"
 
+  -- Themes
+  use 'Mofiqul/vscode.nvim'
+
   -- Nvim-tree
   use {
     'kyazdani42/nvim-tree.lua',
