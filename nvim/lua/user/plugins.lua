@@ -48,6 +48,7 @@ return packer.startup(function(use)
   use "Pocco81/AutoSave.nvim"
   use "akinsho/bufferline.nvim"
   use "moll/vim-bbye"
+  use "APZelos/blamer.nvim"
 
   -- Themes
   use 'Mofiqul/vscode.nvim'
