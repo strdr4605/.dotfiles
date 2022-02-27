@@ -11,6 +11,7 @@ brew bundle
 
 echo ">>>> Installing Oh My Zsh"
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+./npmi.sh
 
 echo ">>>> Force linking ${BASEDIR}/nvim to ~/.config/nvim\n\n"
 ln -sf ${BASEDIR}/nvim ~/.config/nvim 

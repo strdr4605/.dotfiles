@@ -2,6 +2,8 @@ cask 'iterm2'
 
 brew 'zsh'
 
+brew 'node'
+
 brew 'neovim'
 
 # Mostly for telescope.nvim
