@@ -34,6 +34,9 @@ end
 local tree_cb = nvim_tree_config.nvim_tree_callback
 
 nvim_tree.setup {
+  filters = {
+    exclude = { "node_modules" },
+  },
   disable_netrw = true,
   hijack_netrw = true,
   open_on_setup = false,
@@ -66,7 +69,7 @@ nvim_tree.setup {
   },
   git = {
     enable = true,
-    ignore = true,
+    ignore = false,
     timeout = 500,
   },
   view = {
