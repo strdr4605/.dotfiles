@@ -101,6 +101,8 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+source ~/tt.sh
+
 # add me to .zshrc or .bashrc
 ORIGINAL_NPM=$(which npm)
 RED='\033[0;31m'

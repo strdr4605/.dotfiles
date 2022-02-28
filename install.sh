@@ -16,6 +16,8 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 echo ">>>> Force linking ${BASEDIR}/nvim to ~/.config/nvim\n\n"
 ln -sf ${BASEDIR}/nvim ~/.config/nvim 
 
+curl https://raw.githubusercontent.com/strdr4605/tt/latest/tt.sh > ~/tt.sh
+
 dotfiles=(
     .zshrc
     .gitconfig
