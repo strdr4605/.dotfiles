@@ -23,7 +23,7 @@ vim.cmd [[
   augroup end
 ]]
 
--- Use a protected call so we don't error out on first use
+-- Use a protected call so we don"t error out on first use
 local status_ok, packer = pcall(require, "packer")
 if not status_ok then
   return
@@ -50,14 +50,19 @@ return packer.startup(function(use)
   use "moll/vim-bbye"
   use "APZelos/blamer.nvim"
 
+  use {
+    "nvim-lualine/lualine.nvim",
+    requires = { "kyazdani42/nvim-web-devicons", opt = true }
+  }
+
   -- Themes
-  use 'Mofiqul/vscode.nvim'
+  use "Mofiqul/vscode.nvim"
 
   -- Nvim-tree
   use {
-    'kyazdani42/nvim-tree.lua',
+    "kyazdani42/nvim-tree.lua",
     requires = {
-      'kyazdani42/nvim-web-devicons', -- optional, for file icon
+      "kyazdani42/nvim-web-devicons", -- optional, for file icon
     },
   }
 
