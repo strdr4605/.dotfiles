@@ -57,6 +57,7 @@ return packer.startup(function(use)
 
   -- Themes
   use "Mofiqul/vscode.nvim"
+  use "ellisonleao/gruvbox.nvim"
 
   -- Nvim-tree
   use {
