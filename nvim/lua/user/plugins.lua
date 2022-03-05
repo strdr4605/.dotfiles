@@ -50,6 +50,7 @@ return packer.startup(function(use)
   use "moll/vim-bbye"
   -- use "APZelos/blamer.nvim" -- I am using Gitsigns current_line_blame
   use "mhinz/vim-startify"
+  use "tpope/vim-unimpaired"
 
   use {
     "nvim-lualine/lualine.nvim",
