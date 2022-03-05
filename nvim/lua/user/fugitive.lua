@@ -1,1 +1,1 @@
-vim.cmd[[ autocmd User Fugitive command! -buffer -bar Gmylog exe 'terminal' FugitiveShellCommand(['log', '--oneline', '--decorate', '--graph', '--all']) ]]
+vim.cmd[[ autocmd User Fugitive command! -buffer -bar Graph exe 'terminal' FugitiveShellCommand(['log', '--oneline', '--decorate', '--graph', '--all']) ]]
