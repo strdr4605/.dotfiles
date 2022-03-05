@@ -48,7 +48,7 @@ return packer.startup(function(use)
   use "Pocco81/AutoSave.nvim"
   -- use "akinsho/bufferline.nvim"
   use "moll/vim-bbye"
-  -- use "APZelos/blamer.nvim"
+  -- use "APZelos/blamer.nvim" -- I am using Gitsigns current_line_blame
   use "mhinz/vim-startify"
 
   use {
