@@ -109,4 +109,15 @@ telescope.setup {
     -- }
     -- please take a look at the readme of the extension you want to configure
   },
-} 
+}
+
+local M = {}
+M.search_nvim = function()
+  require("telescope.builtin").find_files({
+    prompt_title = "< Nvim >",
+    cwd = "~/.dotfiles/nvim/"
+  })
+end
+
+return M
+
