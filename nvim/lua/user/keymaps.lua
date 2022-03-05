@@ -25,10 +25,10 @@ keymap("n", "<C-j>", "<C-w>j", opts)
 keymap("n", "<C-k>", "<C-w>k", opts)
 keymap("n", "<C-l>", "<C-w>l", opts)
 
-keymap("n", "<leader>b", ":NvimTreeToggle<cr>", opts)
-keymap("n", "<leader>b", ":NvimTreeToggle<cr>", opts)
+keymap("n", "<leader>e", ":NvimTreeToggle<cr>", opts)
 
 keymap("n", "<leader>f", "<cmd>Telescope git_files<cr>", opts)
+keymap("n", "<leader>b", "<cmd>Telescope buffers<cr>", opts)
 -- keymap("n", "<leader>f", "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<cr>", opts)
 keymap("n", "<leader><S-f>", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>w", "<cmd>Bdelete<cr>", opts)
