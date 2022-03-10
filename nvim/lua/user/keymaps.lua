@@ -34,6 +34,8 @@ keymap("n", "<leader>b", "<cmd>Telescope buffers<cr>", opts)
 keymap("n", "<leader><S-f>", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>w", "<cmd>Bdelete<cr>", opts)
 keymap("n", "<leader>nv", "<cmd>lua require('user.telescope').search_nvim()<cr>", opts)
+keymap("n", "<leader>d", '"_d', opts)
+keymap("n", "<leader>c", '"_c', opts)
 
 -- Resize with arrows
 keymap("n", "<C-Up>", ":resize +2<CR>", opts)
