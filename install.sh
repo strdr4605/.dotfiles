@@ -22,6 +22,7 @@ curl https://raw.githubusercontent.com/strdr4605/tt/latest/tt.sh > ~/tt.sh
 dotfiles=(
     .zshrc
     .gitconfig
+    .tmux.conf
 )
 for file in "${dotfiles[@]}"; do
   echo ">>>> Force linking ${BASEDIR}/${file} to ~/${file}"

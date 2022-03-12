@@ -4,6 +4,7 @@ brew 'zsh'
 
 brew 'node'
 
+brew 'tmux'
 brew 'neovim'
 
 # Mostly for telescope.nvim
