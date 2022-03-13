@@ -12,6 +12,12 @@
         "options": {
           "full_name": "font-fira-code-nerd-font"
         }
+      },
+      "istat-menus": {
+        "version": "6.61",
+        "options": {
+          "full_name": "istat-menus"
+        }
       }
     },
     "brew": {
@@ -271,7 +277,7 @@
       "monterey": {
         "HOMEBREW_VERSION": "3.4.1",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "ffaaa05a956784a51a2a7b7ce34bbcd92028894c",
+        "Homebrew/homebrew-core": "5f4f021c456b71aa915f6df70ef7ab4f2e736e84",
         "CLT": "13.2.0.0.1.1638488800",
         "Xcode": "13.2.1",
         "macOS": "12.1"
