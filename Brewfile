@@ -3,6 +3,9 @@ cask 'iterm2'
 brew 'zsh'
 
 brew 'node'
+# For ReactNative
+brew 'watchman'
+brew 'cocoapods'
 
 brew 'tmux'
 brew 'neovim'
