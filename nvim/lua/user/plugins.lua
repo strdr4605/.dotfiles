@@ -91,6 +91,7 @@ return packer.startup(function(use)
   use "nvim-telescope/telescope.nvim"
   use "nvim-telescope/telescope-media-files.nvim"
   use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
+  use "airblade/vim-rooter"
 
   -- Treesitter
   use {
