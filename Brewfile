@@ -8,6 +8,7 @@ brew 'watchman'
 brew 'cocoapods'
 
 brew 'tmux'
+brew 'tmux-mem-cpu-load'
 brew 'neovim'
 
 # Mostly for telescope.nvim
