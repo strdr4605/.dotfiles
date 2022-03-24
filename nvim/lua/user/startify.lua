@@ -1,3 +1,4 @@
+vim.cmd[[ autocmd User StartifyBufferOpened Rooter ]]
 -- https://textkool.com/en/test-ascii-art-generator?text=strdr4605
 vim.g.startify_custom_header = {
   "        _           _        ___   ____ _____ _____ ",
