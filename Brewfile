@@ -11,6 +11,9 @@ brew 'tmux'
 brew 'tmux-mem-cpu-load'
 brew 'neovim'
 
+# used by null-ls.nvim
+brew 'shfmt'
+
 # Mostly for telescope.nvim
 brew 'ripgrep'
 brew 'fd'

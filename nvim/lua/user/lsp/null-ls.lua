@@ -13,6 +13,9 @@ local code_actions = null_ls.builtins.code_actions
 null_ls.setup({
 	debug = false,
 	sources = {
+    formatting.shfmt.with({
+      extra_args = { "-i", "2", "-ci" }
+    }),
     formatting.prettier.with({
       prefer_local = "node_modules/.bin",
     }),
