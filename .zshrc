@@ -117,3 +117,5 @@ npm() {
     eval $ORIGINAL_NPM $@
   fi
 }
+
+alias vim="nvim"
