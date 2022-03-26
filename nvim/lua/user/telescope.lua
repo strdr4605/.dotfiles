@@ -3,8 +3,6 @@ if not status_ok then
   return
 end
 
-telescope.load_extension('media_files')
-telescope.load_extension("fzf")
 
 local actions = require "telescope.actions"
 
@@ -102,6 +100,10 @@ telescope.setup {
       override_file_sorter = true,     -- override the file sorter
       case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
                                        -- the default case_mode is "smart_case"
+    },
+    fzy_native = {
+      override_generic_sorter = false,
+      override_file_sorter = true,
     }
     -- Your extension configuration goes here:
     -- extension_name = {
@@ -110,6 +112,10 @@ telescope.setup {
     -- please take a look at the readme of the extension you want to configure
   },
 }
+
+telescope.load_extension('media_files')
+-- telescope.load_extension("fzf")
+telescope.load_extension("fzy_native")
 
 local M = {}
 M.search_nvim = function()
