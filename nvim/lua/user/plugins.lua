@@ -51,7 +51,7 @@ return packer.startup(function(use)
   -- use "APZelos/blamer.nvim" -- I am using Gitsigns current_line_blame
   use "mhinz/vim-startify"
   use "tpope/vim-unimpaired"
-
+  use "norcalli/nvim-colorizer.lua"
   use {
     "nvim-lualine/lualine.nvim",
     requires = { "kyazdani42/nvim-web-devicons", opt = true }
