@@ -2,5 +2,8 @@
 	name = Dragoș Străinu
 	email = str.dr4605@gmail.com
 
+[alias]
+  fetch-and-clean-branches = "!git fetch -p && git branch -vv | grep ': gone]'|  grep -v "\\*" | awk '{ print $1; }' | xargs git branch -D"
+
 [includeIf "gitdir:~/Work/"]
     path = ~/Work/.gitconfig_work
