@@ -119,3 +119,7 @@ npm() {
 }
 
 alias vim="nvim"
+
+# JAVA stuff
+export JAVA_HOME=$(/usr/libexec/java_home)
+

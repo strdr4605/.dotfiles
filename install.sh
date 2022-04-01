@@ -9,6 +9,9 @@ echo ">>>> Install Homebrew Packages"
 brew tap homebrew/bundle
 brew bundle
 
+echo ">>>> Linking opensdk-11"
+sudo ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+
 echo ">>>> Installing Oh My Zsh"
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ./npmi.sh

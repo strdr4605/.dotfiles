@@ -11,6 +11,8 @@ brew 'tmux'
 brew 'tmux-mem-cpu-load'
 brew 'neovim'
 
+brew 'openjdk@11'
+
 # used by null-ls.nvim
 brew 'shfmt'
 
