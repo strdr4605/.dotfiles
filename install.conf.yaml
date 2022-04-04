@@ -10,6 +10,7 @@
     ~/.config/nvim: ./nvim
     ~/.zshrc: .zshrc
     ~/.gitconfig: .gitconfig
+    ~/git-clone-bare-for-worktrees.sh: git-clone-bare-for-worktrees.sh
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
