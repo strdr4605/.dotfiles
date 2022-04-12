@@ -18,6 +18,12 @@
         "options": {
           "full_name": "istat-menus"
         }
+      },
+      "brave-browser": {
+        "version": "1.37.111.0,137.111",
+        "options": {
+          "full_name": "brave-browser"
+        }
       }
     },
     "brew": {
@@ -536,16 +542,16 @@
     },
     "tap": {
       "homebrew/cask-fonts": {
-        "revision": "0a030cc9a07d74d0e6867ffd3ee5c60e3cf32784"
+        "revision": "7c15e94c7e2bdbfc9e16c06867492bef8c1519cc"
       }
     }
   },
   "system": {
     "macos": {
       "monterey": {
-        "HOMEBREW_VERSION": "3.4.5",
+        "HOMEBREW_VERSION": "3.4.6",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "68be2e8a7c501474d8a360239feda567513530ba",
+        "Homebrew/homebrew-core": "c199393579c6b73dcfb3b783c6b7ae1fde1e49e5",
         "CLT": "13.2.0.0.1.1638488800",
         "Xcode": "13.3",
         "macOS": "12.1"

@@ -3,15 +3,12 @@ cask 'iterm2'
 brew 'zsh'
 
 brew 'node'
-# For ReactNative
-brew 'watchman'
-brew 'cocoapods'
+
+cask 'brave-browser'
 
 brew 'tmux'
 brew 'tmux-mem-cpu-load'
 brew 'neovim'
-
-brew 'openjdk@11'
 
 # used by null-ls.nvim
 brew 'shfmt'
@@ -23,3 +20,9 @@ brew 'fd'
 # FiraCode - https://github.com/tonsky/FiraCode/wiki/Installing#macos
 tap 'homebrew/cask-fonts'
 cask 'font-fira-code-nerd-font'
+
+# For ReactNative
+brew 'watchman'
+brew 'cocoapods'
+
+brew 'openjdk@11'
