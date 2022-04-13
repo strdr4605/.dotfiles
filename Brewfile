@@ -13,9 +13,10 @@ brew 'neovim'
 # used by null-ls.nvim
 brew 'shfmt'
 
-# Mostly for telescope.nvim
+brew 'fzf'
 brew 'ripgrep'
 brew 'fd'
+brew 'bat'
 
 # FiraCode - https://github.com/tonsky/FiraCode/wiki/Installing#macos
 tap 'homebrew/cask-fonts'
