@@ -43,6 +43,8 @@ keymap("n", "<leader>b", ":lua require('fzf-lua').buffers()<CR>", opts)
 keymap("n", "<leader>a", "<cmd>%y+<cr>", opts)
 keymap("n", "<leader>d", '"_d', opts)
 keymap("n", "<leader>c", '"_c', opts)
+keymap("v", "<leader>d", '"_d', opts)
+keymap("v", "<leader>c", '"_c', opts)
 
 -- Resize with arrows
 keymap("n", "<C-Up>", ":resize +2<CR>", opts)
