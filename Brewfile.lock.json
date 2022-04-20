@@ -24,6 +24,12 @@
         "options": {
           "full_name": "brave-browser"
         }
+      },
+      "alacritty": {
+        "version": "0.10.1",
+        "options": {
+          "full_name": "alacritty"
+        }
       }
     },
     "brew": {
@@ -629,7 +635,7 @@
       "monterey": {
         "HOMEBREW_VERSION": "3.4.7",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "77255105bc0a442af97d0872a1b01ec00bb587fe",
+        "Homebrew/homebrew-core": "288dd701bd7efee7c3f03f3f070113e9b64840c3",
         "CLT": "13.2.0.0.1.1638488800",
         "Xcode": "13.3",
         "macOS": "12.1"
