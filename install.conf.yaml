@@ -28,9 +28,9 @@
     command: ./npmi.sh
     description: Installing NPM global packages
     stdout: true
-  - 
-    command: sudo ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
-    description: Linking openjdk-11
+  # - 
+  #   command: sudo ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+  #   description: Linking openjdk-11
   - 
     command: curl https://raw.githubusercontent.com/strdr4605/tt/latest/tt.sh > ~/tt.sh
     description: Installing tt
