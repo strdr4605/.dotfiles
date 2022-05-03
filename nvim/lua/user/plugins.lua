@@ -60,6 +60,7 @@ return packer.startup(function(use)
     "nvim-lualine/lualine.nvim",
     requires = { "kyazdani42/nvim-web-devicons", opt = true }
   }
+  use "rescript-lang/vim-rescript"
 
   -- Themes
   use "Mofiqul/vscode.nvim"
