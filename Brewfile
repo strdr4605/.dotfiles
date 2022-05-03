@@ -6,6 +6,7 @@ brew 'zsh'
 brew 'node'
 
 cask 'brave-browser'
+cask 'raycast'
 
 brew 'tmux'
 brew 'tmux-mem-cpu-load'
