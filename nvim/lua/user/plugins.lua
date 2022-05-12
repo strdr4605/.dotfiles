@@ -93,11 +93,6 @@ return packer.startup(function(use)
   use "williamboman/nvim-lsp-installer" -- simple to use language server installer
   use "jose-elias-alvarez/null-ls.nvim" -- for formatters and linters
 
-  -- Telescope
-  use "nvim-telescope/telescope.nvim"
-  use "nvim-telescope/telescope-media-files.nvim"
-  use {"nvim-telescope/telescope-fzf-native.nvim", run = "make" }
-  use "nvim-telescope/telescope-fzy-native.nvim"
   use { "junegunn/fzf", run = "./install --bin" }
   use "ibhagwan/fzf-lua"
   use "airblade/vim-rooter"

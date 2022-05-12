@@ -27,11 +27,6 @@ keymap("n", "<C-l>", "<C-w>l", opts)
 
 keymap("n", "<leader>e", ":NvimTreeToggle<cr>", opts)
 
--- Telescope
--- keymap("n", "<leader>f", "<cmd>Telescope find_files hidden=true<cr>", opts)
--- keymap("n", "<leader>b", "<cmd>Telescope buffers<cr>", opts)
--- keymap("n", "<leader>f", "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<cr>", opts)
--- keymap("n", "<leader><S-f>", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>w", "<cmd>Bdelete<cr>", opts)
 keymap("n", "<leader>nv", "<cmd>lua require('fzf-lua').files({fzf_opts = {['--ansi']=false}, file_icons=false, git_icons=false, cwd='~/.dotfiles/nvim'})<CR>", opts)
 
