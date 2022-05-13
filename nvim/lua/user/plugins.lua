@@ -46,7 +46,6 @@ return packer.startup(function(use)
   use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
   use "numToStr/Comment.nvim" -- Easily comment stuff
   use "Pocco81/AutoSave.nvim"
-  -- use "akinsho/bufferline.nvim"
   use "moll/vim-bbye"
   use "tpope/vim-unimpaired"
   use {
