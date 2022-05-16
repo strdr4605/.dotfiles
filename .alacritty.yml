@@ -43,7 +43,7 @@ font:
   normal:
     family: FiraCode Nerd Font
     style: Regular
-  size: 20.0
+  size: 16.0
   
 key_bindings:
    - { key: Return,          mods: Command,                    action: ToggleSimpleFullscreen }
