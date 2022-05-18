@@ -44,20 +44,18 @@ return packer.startup(function(use)
   use "wbthomason/packer.nvim" -- Have packer manage itself
   use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
   use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
-  use "numToStr/Comment.nvim" -- Easily comment stuff
-  use "Pocco81/AutoSave.nvim"
+  use { "numToStr/Comment.nvim", config = require("user.comment") }
+  use { "Pocco81/AutoSave.nvim", config = require("user.autosave") }
   use "moll/vim-bbye"
   use "tpope/vim-unimpaired"
-  use {
-    'goolord/alpha-nvim',
-    requires = { 'kyazdani42/nvim-web-devicons' },
-  }
-  use "norcalli/nvim-colorizer.lua"
-  use {
-    "nvim-lualine/lualine.nvim",
-    requires = { "kyazdani42/nvim-web-devicons", opt = true }
-  }
+  use { "goolord/alpha-nvim", config = require("user.alpha-nvim") }
+  use { "norcalli/nvim-colorizer.lua", config = require("user.colorized") }
+  use { "nvim-lualine/lualine.nvim", config = require("user.lualine") }
   use "rescript-lang/vim-rescript"
+  use { "github/copilot.vim", config = require("user.copilot") }
+  use { "lukas-reineke/indent-blankline.nvim", config = require("user.indent-blankline") }
+  use { "ibhagwan/fzf-lua", config = require("user.fzf-lua") }
+  use "airblade/vim-rooter"
 
   -- Themes
   use "Mofiqul/vscode.nvim"
@@ -67,45 +65,53 @@ return packer.startup(function(use)
   use {
     "kyazdani42/nvim-tree.lua",
     requires = {
-      "kyazdani42/nvim-web-devicons", -- optional, for file icon
+      "kyazdani42/nvim-web-devicons",
     },
+    config = require("user.nvim-tree")
   }
 
   -- cmp plugins
-  use "hrsh7th/nvim-cmp" -- The completion plugin
-  use "hrsh7th/cmp-buffer" -- buffer completions
-  use "hrsh7th/cmp-path" -- path completions
-  use "hrsh7th/cmp-cmdline" -- cmdline completions
-  use "hrsh7th/cmp-emoji"
-  use "saadparwaiz1/cmp_luasnip" -- snippet completions
-  use "hrsh7th/cmp-nvim-lsp"
-  use "hrsh7th/cmp-nvim-lua"
+  use { "hrsh7th/nvim-cmp",
+    requires = {
+      "hrsh7th/cmp-buffer", -- buffer completions
+      "hrsh7th/cmp-path", -- path completions
+      "hrsh7th/cmp-cmdline", -- cmdline completions
+      "hrsh7th/cmp-emoji",
+      "saadparwaiz1/cmp_luasnip", -- snippet completions
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-nvim-lua",
 
-  -- snippets
-  use "L3MON4D3/LuaSnip" -- snippet engine
-  use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
+      -- snippets
+      "L3MON4D3/LuaSnip", -- snippet engine
+      "rafamadriz/friendly-snippets", -- a bunch of snippets to use
+    },
+    config = require("user.cmp")
+  } -- The completion plugin
 
   -- LSP
-  use "neovim/nvim-lspconfig" -- enable LSP
-  use "williamboman/nvim-lsp-installer" -- simple to use language server installer
-  use "jose-elias-alvarez/null-ls.nvim" -- for formatters and linters
-
-  use { "junegunn/fzf", run = "./install --bin" }
-  use "ibhagwan/fzf-lua"
-  use "airblade/vim-rooter"
+  use { "neovim/nvim-lspconfig", -- enable LSP
+    requires = {
+      "williamboman/nvim-lsp-installer", -- simple to use language server installer
+      "jose-elias-alvarez/null-ls.nvim", -- for formatters and linters
+    },
+    config = require("user.lsp")
+  }
 
   -- Treesitter
   use {
     "nvim-treesitter/nvim-treesitter",
     run = ":TSUpdate",
+    requires = {
+      "p00f/nvim-ts-rainbow",
+      "JoosepAlviste/nvim-ts-context-commentstring",
+    },
+    config = require("user.treesitter")
   }
-  use "p00f/nvim-ts-rainbow"
-  use "JoosepAlviste/nvim-ts-context-commentstring"
 
   -- Git
-  use "lewis6991/gitsigns.nvim"
+  use { "lewis6991/gitsigns.nvim", config = require("user.gitsigns") }
   use "tpope/vim-fugitive"
-  use "rbong/vim-flog"
+  use { "rbong/vim-flog", config = require("user.flog") }
   use {
     "ldelossa/gh.nvim",
     requires = {
@@ -113,10 +119,6 @@ return packer.startup(function(use)
     },
     config = require("user.gh")
   }
-  use { "github/copilot.vim", config = require("user.copilot") }
-
-  use "lukas-reineke/indent-blankline.nvim"
-
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if PACKER_BOOTSTRAP then
