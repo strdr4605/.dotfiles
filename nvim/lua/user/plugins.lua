@@ -106,6 +106,13 @@ return packer.startup(function(use)
   use "lewis6991/gitsigns.nvim"
   use "tpope/vim-fugitive"
   use "rbong/vim-flog"
+  use {
+    "ldelossa/gh.nvim",
+    requires = {
+      "ldelossa/litee.nvim"
+    },
+    config = require("user.gh")
+  }
   use { "github/copilot.vim", config = require("user.copilot") }
 
   use "lukas-reineke/indent-blankline.nvim"
