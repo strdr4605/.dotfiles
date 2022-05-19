@@ -56,6 +56,7 @@ return packer.startup(function(use)
   use { "lukas-reineke/indent-blankline.nvim", config = require("user.indent-blankline") }
   use { "ibhagwan/fzf-lua", config = require("user.fzf-lua") }
   use "airblade/vim-rooter"
+  use { "folke/which-key.nvim", config = require("user.which-key") }
 
   -- Themes
   use "Mofiqul/vscode.nvim"
