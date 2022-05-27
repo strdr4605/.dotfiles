@@ -18,7 +18,7 @@ fzf_lua.setup {
     split = "belowright new",
     preview = {
       default = "bat_native",
-      horizontal = "right:50%"
+      horizontal = "right:40%"
     },
   },
 }

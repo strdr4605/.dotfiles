@@ -28,10 +28,10 @@ keymap("n", "<C-l>", "<C-w>l", opts)
 keymap("n", "<leader>e", ":NvimTreeToggle<cr>", opts)
 
 keymap("n", "<leader>w", "<cmd>Bdelete<cr>", opts)
-keymap("n", "<leader>nv", "<cmd>lua require('fzf-lua').files({fzf_opts = {['--ansi']=false}, file_icons=false, git_icons=false, cwd='~/.dotfiles/nvim'})<CR>", opts)
+keymap("n", "<leader>nv", "<cmd>lua require('fzf-lua').files({cwd='~/.dotfiles/nvim'})<CR>", opts)
 
 -- fzf-lua
-keymap("n", "<leader>f", ":lua require('fzf-lua').files({fzf_opts = {['--ansi']=false}, file_icons=false, git_icons=false})<CR>", opts)
+keymap("n", "<leader>f", ":lua require('fzf-lua').files()<CR>", opts)
 keymap("n", "<leader><S-f>", ":lua require('fzf-lua').live_grep_native()<CR>", opts)
 keymap("n", "<leader>b", ":lua require('fzf-lua').buffers()<CR>", opts)
 
