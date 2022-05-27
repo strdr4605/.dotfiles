@@ -57,19 +57,14 @@ return packer.startup(function(use)
   use { "ibhagwan/fzf-lua", config = require("user.fzf-lua") }
   use "airblade/vim-rooter"
   use { "folke/which-key.nvim", config = require("user.which-key") }
-
+  use { "tamago324/lir.nvim", config = require("user.lir") }
+  use { "kyazdani42/nvim-web-devicons" }
   -- Themes
   use "Mofiqul/vscode.nvim"
   use "ellisonleao/gruvbox.nvim"
 
   -- Nvim-tree
-  use {
-    "kyazdani42/nvim-tree.lua",
-    requires = {
-      "kyazdani42/nvim-web-devicons",
-    },
-    config = require("user.nvim-tree")
-  }
+  use { "kyazdani42/nvim-tree.lua", config = require("user.nvim-tree") }
 
   -- cmp plugins
   use { "hrsh7th/nvim-cmp",
