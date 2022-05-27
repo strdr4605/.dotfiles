@@ -10,6 +10,7 @@ vim.g.vscode_italic_comment = 1
 vim.g.vscode_disable_nvimtree_bg = true
 
 -- gruvbox
+vim.g.gruvbox_bold = 0
 vim.opt.termguicolors = true
 vim.o.background = "dark" -- or "light" for light mode
 vim.cmd [[
