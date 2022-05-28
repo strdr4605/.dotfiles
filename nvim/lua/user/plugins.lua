@@ -59,6 +59,8 @@ return packer.startup(function(use)
   use { "folke/which-key.nvim", config = require("user.which-key") }
   use { "tamago324/lir.nvim", config = require("user.lir") }
   use { "kyazdani42/nvim-web-devicons" }
+  use { "kevinhwang91/nvim-bqf" }
+
   -- Themes
   use "Mofiqul/vscode.nvim"
   use "ellisonleao/gruvbox.nvim"
