@@ -20,6 +20,7 @@ brew 'ripgrep'
 brew 'fd'
 brew 'bat'
 brew 'gh'
+brew 'z'
 
 # FiraCode - https://github.com/tonsky/FiraCode/wiki/Installing#macos
 tap 'homebrew/cask-fonts'

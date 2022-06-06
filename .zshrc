@@ -124,4 +124,7 @@ alias G="git"
 # JAVA stuff
 # export JAVA_HOME=$(/usr/libexec/java_home)
 
+# brew 'z'
+. /opt/homebrew/etc/profile.d/z.sh
+
 export PATH=/opt/homebrew/bin:$PATH
