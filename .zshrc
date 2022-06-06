@@ -128,3 +128,7 @@ alias G="git"
 . /opt/homebrew/etc/profile.d/z.sh
 
 export PATH=/opt/homebrew/bin:$PATH
+
+# NVM
+export NVM_DIR=~/.nvm 
+source $(brew --prefix nvm)/nvm.sh

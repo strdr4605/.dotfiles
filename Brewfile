@@ -3,7 +3,7 @@ cask 'alacritty'
 
 brew 'zsh'
 
-brew 'node'
+brew 'nvm'
 
 cask 'brave-browser'
 cask 'raycast'
