@@ -118,6 +118,8 @@ npm() {
   fi
 }
 
+export PATH=~/.dotfiles/bin:$PATH
+
 alias vim="nvim"
 alias G="git"
 
