@@ -3,4 +3,7 @@
 tmux split-window -v -p 20
 tmux split-window -h
 tmux select-pane -U
+if [[ -n "$1" ]]; then
+  tmux rename-window "$1"
+fi
 nvim
