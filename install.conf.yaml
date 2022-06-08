@@ -34,7 +34,7 @@
   - 
     command: curl https://raw.githubusercontent.com/strdr4605/tt/latest/tt.sh > ~/tt.sh
     description: Installing tt
-  - 
-    command: echo "\n>>>> Please run ./iterm2.sh after opening iTerm2"
-    description: iTerm2
-    stdout: true
+  # - 
+  #   command: echo "\n>>>> Please run ./iterm2.sh after opening iTerm2"
+  #   description: iTerm2
+  #   stdout: true
