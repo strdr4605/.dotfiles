@@ -6,7 +6,7 @@ window:
   # fall back to the window manager's recommended size.
   dimensions:
     columns: 500
-    lines: 30
+    lines: 50
 
   # Window position (changes require restart)
   #
@@ -39,11 +39,28 @@ window:
   decorations: buttonless
   opacity: 0.9
 
+cursor:
+  style:
+    blinking: Always
+
 font:
   normal:
     family: FiraCode Nerd Font
     style: Regular
   size: 16.0
-  
+
+hints:
+  enabled:
+    - regex:
+        "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)\
+        [^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+      command: open
+      post_processing: true
+      mouse:
+        enabled: true
+      binding:
+        key: U
+        mods: Command
+
 key_bindings:
-   - { key: Return,          mods: Command,                    action: ToggleSimpleFullscreen }
+  - { key: Return, mods: Command, action: ToggleSimpleFullscreen }
