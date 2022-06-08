@@ -24,6 +24,7 @@ set scrolloff 10
 map <enter> shell
 
 map <esc> quit
+map D delete
 
 set hidden on
 
