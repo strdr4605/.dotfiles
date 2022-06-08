@@ -58,6 +58,13 @@ return packer.startup(function(use)
   use "airblade/vim-rooter"
   use { "folke/which-key.nvim", config = require("user.which-key") }
   use { "tamago324/lir.nvim", config = require("user.lir") }
+  use {
+    "ptzz/lf.vim",
+    requires = {
+      "voldikss/vim-floaterm"
+    },
+    config = require("user.lf")
+  }
   use { "kyazdani42/nvim-web-devicons" }
   use { "kevinhwang91/nvim-bqf" }
 

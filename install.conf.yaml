@@ -10,6 +10,7 @@
     ~/.tmux.conf: .tmux.conf
     ~/.alacritty.yml: .alacritty.yml
     ~/.config/nvim: ./nvim
+    ~/.config/lf/lfrc: lfrc
     ~/.zshrc: .zshrc
     ~/.gitconfig: .gitconfig
     ~/git-clone-bare-for-worktrees.sh: git-clone-bare-for-worktrees.sh

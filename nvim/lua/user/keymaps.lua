@@ -25,7 +25,7 @@ keymap("n", "<C-j>", "<C-w>j", opts)
 keymap("n", "<C-k>", "<C-w>k", opts)
 keymap("n", "<C-l>", "<C-w>l", opts)
 
-keymap("n", "<leader>e", ":NvimTreeToggle<cr>", opts)
+keymap("n", "<leader>e", ":Lf<cr>", opts)
 
 keymap("n", "<leader>w", "<cmd>Bdelete<cr>", opts)
 keymap("n", "<leader>nv", "<cmd>lua require('fzf-lua').files({cwd='~/.dotfiles/nvim'})<CR>", opts)
