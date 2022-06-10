@@ -69,7 +69,6 @@ return packer.startup(function(use)
   use { "kevinhwang91/nvim-bqf" }
 
   -- Themes
-  use "Mofiqul/vscode.nvim"
   use "ellisonleao/gruvbox.nvim"
 
   -- cmp plugins
