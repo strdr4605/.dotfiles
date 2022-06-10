@@ -72,9 +72,6 @@ return packer.startup(function(use)
   use "Mofiqul/vscode.nvim"
   use "ellisonleao/gruvbox.nvim"
 
-  -- Nvim-tree
-  use { "kyazdani42/nvim-tree.lua", config = require("user.nvim-tree") }
-
   -- cmp plugins
   use { "hrsh7th/nvim-cmp",
     requires = {
