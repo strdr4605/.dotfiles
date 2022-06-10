@@ -23,11 +23,6 @@ set scrolloff 10
 # use enter for shell commands
 map <enter> shell
 
-map <esc> quit
-map D delete
-
-set hidden on
-
 # execute current file (must be executable)
 map x $$f
 map X !$f
@@ -103,3 +98,10 @@ cmd zip ${{
     zip -r $1.zip $1
     rm -rf $1
 }}
+
+# My settings
+map <esc> quit
+map D delete
+set hidden on
+set previewer ~/.dotfiles/lf/pv.sh
+map i $~/.dotfiles/lf/pv.sh $f | less -RX
