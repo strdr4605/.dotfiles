@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# This script is used to parse a package.json file and return names of packages that matches with the query
+#
+# all-pkg remirror 
+#
+cat package.json | grep $1 | awk '{printf "%s ",$1}' | awk 'gsub(/[\":]/,"")'
