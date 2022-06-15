@@ -136,3 +136,5 @@ export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
 
 export BAT_THEME="gruvbox-dark"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

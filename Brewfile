@@ -15,7 +15,6 @@ brew 'neovim'
 # used by null-ls.nvim
 brew 'shfmt'
 
-brew 'fzf'
 brew 'ripgrep'
 brew 'fd'
 brew 'bat'

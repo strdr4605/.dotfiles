@@ -55,6 +55,7 @@ return packer.startup(function(use)
   use { "github/copilot.vim", config = require("user.copilot") }
   use { "lukas-reineke/indent-blankline.nvim", config = require("user.indent-blankline") }
   use { "ibhagwan/fzf-lua", config = require("user.fzf-lua") }
+  use { "junegunn/fzf", run = './install --all --no-bash --no-fish', }
   use "airblade/vim-rooter"
   use { "folke/which-key.nvim", config = require("user.which-key") }
   use { "tamago324/lir.nvim", config = require("user.lir") }
