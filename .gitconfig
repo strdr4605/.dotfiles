@@ -6,6 +6,7 @@
   fetch-and-clean-branches = "!git fetch -p && git branch -vv | grep ': gone]'|  grep -v "\\*" | awk '{ print $1; }' | xargs git branch -D"
   clone-for-worktrees = "!sh git-clone-bare-for-worktrees"
   graph = "!git log --oneline --graph --exclude=refs/remotes/origin/gh-pages --all"
+  p = "!git push -u origin HEAD"
 
 [includeIf "gitdir:~/Work/"]
     path = ~/Work/.gitconfig_work
