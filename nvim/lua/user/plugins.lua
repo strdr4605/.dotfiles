@@ -98,6 +98,7 @@ return packer.startup(function(use)
     },
     config = require("user.lsp")
   }
+  use { "j-hui/fidget.nvim", config = require("user.fidget") }
 
   -- Treesitter
   use {
