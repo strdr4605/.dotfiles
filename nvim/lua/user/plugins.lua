@@ -52,7 +52,6 @@ return packer.startup(function(use)
   use { "norcalli/nvim-colorizer.lua", config = require("user.colorized") }
   use { "nvim-lualine/lualine.nvim", config = require("user.lualine") }
   use "rescript-lang/vim-rescript"
-  use { "github/copilot.vim", config = require("user.copilot") }
   use { "lukas-reineke/indent-blankline.nvim", config = require("user.indent-blankline") }
   use { "ibhagwan/fzf-lua", config = require("user.fzf-lua") }
   use { "junegunn/fzf", run = './install --all --no-bash --no-fish', }
