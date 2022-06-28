@@ -2,6 +2,7 @@ cask 'iterm2'
 cask 'alacritty'
 
 brew 'zsh'
+brew 'zsh-syntax-highlighting'
 
 brew 'nvm'
 

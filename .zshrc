@@ -138,3 +138,5 @@ source $(brew --prefix nvm)/nvm.sh
 export BAT_THEME="gruvbox-dark"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+source $(brew --prefix zsh-syntax-highlighting)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
