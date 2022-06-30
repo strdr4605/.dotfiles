@@ -106,7 +106,6 @@ cmp.setup {
         luasnip = "[Snippet]",
         buffer = "[Buffer]",
         path = "[Path]",
-        emoji = "[Emoji]",
       })[entry.source.name]
       return vim_item
     end,
@@ -148,12 +147,4 @@ cmp.setup.cmdline(':', {
   }, {
     { name = 'cmdline' }
   })
-})
-cmp.setup.filetype("gitcommit", {
-  sources = cmp.config.sources({
-    { name = "emoji" },
-    { name = "spell" },
-  }, {
-    { name = "buffer" },
-  }),
 })
