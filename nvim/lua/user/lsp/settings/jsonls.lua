@@ -84,14 +84,14 @@ local schemas = {
   --     "compile_commands.json",
   --   },
   --   url = "https://json.schemastore.org/compile-commands.json",
- --  },
---   {
---     description = "Config file for Command Task Runner",
---     fileMatch = {
---       "commands.json",
---     },
---     url = "https://json.schemastore.org/commands.json",
---   },
+  --  },
+  --   {
+  --     description = "Config file for Command Task Runner",
+  --     fileMatch = {
+  --       "commands.json",
+  --     },
+  --     url = "https://json.schemastore.org/commands.json",
+  --   },
   -- {
   --   description = "AWS CloudFormation provides a common language for you to describe and provision all the infrastructure resources in your cloud environment.",
   --   fileMatch = {
@@ -99,16 +99,16 @@ local schemas = {
   --     "cloudformation.json",
   --   },
   --   url = "https://raw.githubusercontent.com/awslabs/goformation/v5.2.9/schema/cloudformation.schema.json",
- --  },
---   {
---     description = "The AWS Serverless Application Model (AWS SAM, previously known as Project Flourish) extends AWS CloudFormation to provide a simplified way of defining the Amazon API Gateway APIs, AWS Lambda functions, and Amazon DynamoDB tables needed by your serverless application.",
---     fileMatch = {
---       "serverless.template",
---       "*.sam.json",
---       "sam.json",
---     },
---     url = "https://raw.githubusercontent.com/awslabs/goformation/v5.2.9/schema/sam.schema.json",
---   },
+  --  },
+  --   {
+  --     description = "The AWS Serverless Application Model (AWS SAM, previously known as Project Flourish) extends AWS CloudFormation to provide a simplified way of defining the Amazon API Gateway APIs, AWS Lambda functions, and Amazon DynamoDB tables needed by your serverless application.",
+  --     fileMatch = {
+  --       "serverless.template",
+  --       "*.sam.json",
+  --       "sam.json",
+  --     },
+  --     url = "https://raw.githubusercontent.com/awslabs/goformation/v5.2.9/schema/sam.schema.json",
+  --   },
   {
     description = "Json schema for properties json file for a GitHub Workflow template",
     fileMatch = {
@@ -116,14 +116,14 @@ local schemas = {
     },
     url = "https://json.schemastore.org/github-workflow-template-properties.json",
   },
---   {
---     description = "golangci-lint configuration file",
---     fileMatch = {
---       ".golangci.toml",
---       ".golangci.json",
---     },
---     url = "https://json.schemastore.org/golangci-lint.json",
---   },
+  --   {
+  --     description = "golangci-lint configuration file",
+  --     fileMatch = {
+  --       ".golangci.toml",
+  --       ".golangci.json",
+  --     },
+  --     url = "https://json.schemastore.org/golangci-lint.json",
+  --   },
   {
     description = "JSON schema for the JSON Feed format",
     fileMatch = {
@@ -141,7 +141,7 @@ local schemas = {
   --     "packer.json",
   --   },
   --   url = "https://json.schemastore.org/packer.json",
- --  },
+  --  },
   {
     description = "NPM configuration file",
     fileMatch = {
@@ -156,11 +156,11 @@ local schemas = {
     },
     url = "https://json.schemastore.org/vsconfig.json",
   },
---   {
---     description = "Resume json",
---     fileMatch = { "resume.json" },
---     url = "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
---   },
+  --   {
+  --     description = "Resume json",
+  --     fileMatch = { "resume.json" },
+  --     url = "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  --   },
 }
 
 local opts = {
@@ -173,7 +173,7 @@ local opts = {
     commands = {
       Format = {
         function()
-          vim.lsp.buf.range_formatting({}, { 0, 0 }, { vim.fn.line "$", 0 })
+          vim.lsp.buf.range_formatting({}, { 0, 0 }, { vim.fn.line("$"), 0 })
         end,
       },
     },

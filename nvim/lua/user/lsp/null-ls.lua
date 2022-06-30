@@ -1,6 +1,6 @@
 local null_ls_status_ok, null_ls = pcall(require, "null-ls")
 if not null_ls_status_ok then
-	return
+  return
 end
 
 -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
@@ -11,10 +11,10 @@ local diagnostics = null_ls.builtins.diagnostics
 local code_actions = null_ls.builtins.code_actions
 
 null_ls.setup({
-	debug = false,
-	sources = {
+  debug = false,
+  sources = {
     formatting.shfmt.with({
-      extra_args = { "-i", "2", "-ci" }
+      extra_args = { "-i", "2", "-ci" },
     }),
     formatting.prettier.with({
       prefer_local = "node_modules/.bin",

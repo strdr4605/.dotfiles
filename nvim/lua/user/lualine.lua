@@ -3,7 +3,7 @@ if not status_ok then
   return
 end
 
-lualine.setup {
+lualine.setup({
   options = {
     icons_enabled = true,
     theme = "auto",
@@ -29,12 +29,12 @@ lualine.setup {
           modified = "[+]", -- Text to show when the file is modified.
           readonly = "[-]", -- Text to show when the file is non-modifiable or readonly.
           unnamed = "[No Name]", -- Text to show for unnamed buffers.
-        }
-      }
+        },
+      },
     },
     lualine_x = { "encoding", "fileformat", "filetype" },
     lualine_y = { "progress" },
-    lualine_z = { "location" }
+    lualine_z = { "location" },
   },
   inactive_sections = {
     lualine_a = {},
@@ -42,20 +42,20 @@ lualine.setup {
     lualine_c = { "filename" },
     lualine_x = { "location" },
     lualine_y = {},
-    lualine_z = {}
+    lualine_z = {},
   },
   tabline = {
     lualine_c = {
       {
         "filename",
-        path = 1
-      }
+        path = 1,
+      },
     },
     lualine_b = {},
     lualine_a = {},
     lualine_x = {},
     lualine_y = {},
-    lualine_z = {}
+    lualine_z = {},
   },
-  extensions = {}
-}
+  extensions = {},
+})

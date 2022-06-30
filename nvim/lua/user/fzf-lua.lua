@@ -3,7 +3,7 @@ if not status_ok then
   return
 end
 
-fzf_lua.setup {
+fzf_lua.setup({
   -- fzf_bin = "/Users/strdr4605/.local/share/nvim/site/pack/packer/start/fzf/bin/fzf",
   fzf_opts = {
     ["--layout"] = "default",
@@ -18,9 +18,9 @@ fzf_lua.setup {
     split = "belowright new",
     preview = {
       default = "bat_native",
-      horizontal = "right:40%"
+      horizontal = "right:40%",
     },
   },
-}
+})
 
 vim.cmd("FzfLua register_ui_select")
