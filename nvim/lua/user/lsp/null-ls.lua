@@ -23,3 +23,6 @@ null_ls.setup({
     code_actions.eslint_d,
   },
 })
+
+-- https://github.com/jose-elias-alvarez/typescript.nvim
+require("typescript").setup()

@@ -96,6 +96,7 @@ return packer.startup(function(use)
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "jose-elias-alvarez/null-ls.nvim", -- for formatters and linters
+      "jose-elias-alvarez/typescript.nvim",
     },
     config = require("user.lsp"),
   })
