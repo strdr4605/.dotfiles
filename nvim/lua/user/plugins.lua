@@ -91,9 +91,10 @@ return packer.startup(function(use)
 
   -- LSP
   use({
-    "neovim/nvim-lspconfig", -- enable LSP
+    "neovim/nvim-lspconfig",
     requires = {
-      "williamboman/nvim-lsp-installer", -- simple to use language server installer
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
       "jose-elias-alvarez/null-ls.nvim", -- for formatters and linters
     },
     config = require("user.lsp"),
