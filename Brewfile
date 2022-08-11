@@ -4,6 +4,7 @@ cask 'alacritty'
 brew 'git'
 brew 'zsh'
 brew 'zsh-syntax-highlighting'
+brew 'fig'
 
 brew 'nvm'
 
