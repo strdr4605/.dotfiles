@@ -9,6 +9,11 @@ fzf_lua.setup({
     ["--layout"] = "default",
     -- ["--ansi"] = false,
   },
+  keymap = {
+    fzf = {
+      ["ctrl-w"] = "select-all+accept",
+    }
+  },
   grep = {
     -- rg_opts = "--column --line-number --no-heading --color=never --smart-case --max-columns=512",
     file_icons = false,
@@ -17,6 +22,7 @@ fzf_lua.setup({
   winopts = {
     split = "belowright new",
     preview = {
+      hidden = "hidden",
       default = "bat_native",
       horizontal = "right:40%",
     },
