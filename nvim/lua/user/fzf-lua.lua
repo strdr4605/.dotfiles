@@ -12,7 +12,7 @@ fzf_lua.setup({
   keymap = {
     fzf = {
       ["ctrl-w"] = "select-all+accept",
-    }
+    },
   },
   grep = {
     -- rg_opts = "--column --line-number --no-heading --color=never --smart-case --max-columns=512",

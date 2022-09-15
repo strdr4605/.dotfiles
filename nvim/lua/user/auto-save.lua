@@ -20,14 +20,13 @@ autosave.setup({
     local fn = vim.fn
     local utils = require("auto-save.utils.data")
 
-    if fn.getbufvar(buf, "&modifiable") == 1
-        and
-        utils.not_in(fn.getbufvar(buf, "&filetype"), {})
-        and
-        utils.not_in(fn.expand("%:t"), {
-          "plugins.lua",
-          "auto-save.lua",
-        })
+    if
+      fn.getbufvar(buf, "&modifiable") == 1
+      and utils.not_in(fn.getbufvar(buf, "&filetype"), {})
+      and utils.not_in(fn.expand("%:t"), {
+        "plugins.lua",
+        "auto-save.lua",
+      })
     then
       return true -- met condition(s), can save
     end
@@ -40,6 +39,6 @@ autosave.setup({
     disabling = nil, -- ran when disabling auto-save
     before_asserting_save = nil, -- ran before checking `condition`
     before_saving = nil, -- ran before doing the actual save
-    after_saving = nil -- ran after doing the actual save
-  }
+    after_saving = nil, -- ran after doing the actual save
+  },
 })
