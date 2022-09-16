@@ -50,7 +50,11 @@ return packer.startup(function(use)
   use("tpope/vim-unimpaired")
   use({ "goolord/alpha-nvim", config = require("user.alpha-nvim") })
   use({ "norcalli/nvim-colorizer.lua", config = require("user.colorizer") })
-  use({ "nvim-lualine/lualine.nvim", config = require("user.lualine") })
+  use({
+    "nvim-lualine/lualine.nvim",
+    requires = { "WhoIsSethDaniel/lualine-lsp-progress.nvim" },
+    config = require("user.lualine"),
+  })
   use("rescript-lang/vim-rescript")
   use({ "lukas-reineke/indent-blankline.nvim", config = require("user.indent-blankline") })
   use({ "ibhagwan/fzf-lua", config = require("user.fzf-lua") })
@@ -100,7 +104,6 @@ return packer.startup(function(use)
     },
     config = require("user.lsp"),
   })
-  use({ "j-hui/fidget.nvim", config = require("user.fidget") })
 
   -- Treesitter
   use({

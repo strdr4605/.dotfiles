@@ -31,6 +31,19 @@ lualine.setup({
           unnamed = "[No Name]", -- Text to show for unnamed buffers.
         },
       },
+      {
+        "lsp_progress",
+        spinner_symbols = {
+          "🌑 ",
+          "🌒 ",
+          "🌓 ",
+          "🌔 ",
+          "🌕 ",
+          "🌖 ",
+          "🌗 ",
+          "🌘 ",
+        },
+      },
     },
     lualine_x = { "encoding", "fileformat", "filetype" },
     lualine_y = { "progress" },
