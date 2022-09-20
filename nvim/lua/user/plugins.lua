@@ -115,6 +115,7 @@ return packer.startup(function(use)
     },
     config = require("user.treesitter"),
   })
+  use({ "nvim-treesitter/nvim-treesitter-context" })
 
   -- Git
   use({ "lewis6991/gitsigns.nvim", config = require("user.gitsigns") })
