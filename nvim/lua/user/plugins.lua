@@ -71,6 +71,7 @@ return packer.startup(function(use)
   })
   use({ "kyazdani42/nvim-web-devicons" })
   use({ "kevinhwang91/nvim-bqf" })
+  use({ "https://github.com/github/copilot.vim", config = require("user.copilot") })
 
   -- Themes
   use("ellisonleao/gruvbox.nvim")
