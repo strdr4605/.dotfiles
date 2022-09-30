@@ -122,13 +122,6 @@ return packer.startup(function(use)
   use("tpope/vim-fugitive")
   use({ "rbong/vim-flog", config = require("user.flog") })
   use({ "junegunn/gv.vim", config = require("user.gv") })
-  use({
-    "ldelossa/gh.nvim",
-    requires = {
-      "ldelossa/litee.nvim",
-    },
-    config = require("user.gh"),
-  })
 
   use({ "wesleimp/stylua.nvim" })
   -- Automatically set up your configuration after cloning packer.nvim
