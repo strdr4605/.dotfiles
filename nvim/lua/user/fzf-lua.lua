@@ -6,7 +6,7 @@ end
 fzf_lua.setup({
   -- fzf_bin = "/Users/strdr4605/.local/share/nvim/site/pack/packer/start/fzf/bin/fzf",
   fzf_opts = {
-    ["--layout"] = "default",
+    ["--layout"] = "reverse",
     -- ["--ansi"] = false,
   },
   keymap = {
@@ -20,7 +20,7 @@ fzf_lua.setup({
     git_icons = false,
   },
   winopts = {
-    split = "belowright new",
+    --[[ split = "belowright new", ]]
     preview = {
       hidden = "hidden",
       default = "bat_native",

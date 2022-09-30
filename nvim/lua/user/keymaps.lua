@@ -34,7 +34,7 @@ keymap("n", "<leader>w", "<cmd>Bdelete<cr>", opts)
 keymap("n", "<leader>nv", "<cmd>lua require('fzf-lua').files({cwd='~/.dotfiles/nvim'})<CR>", opts)
 
 -- fzf-lua
-keymap("n", "<leader>f", ":lua require('fzf-lua').files()<CR>", opts)
+keymap("n", "<leader>f", ":lua require('fzf-lua').git_files()<CR>", opts)
 keymap("n", "<leader><S-f>", ":lua require('fzf-lua').live_grep_native()<CR>", opts)
 keymap("n", "<leader>b", ":lua require('fzf-lua').buffers()<CR>", opts)
 
