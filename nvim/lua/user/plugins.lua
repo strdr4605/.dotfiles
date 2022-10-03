@@ -72,6 +72,7 @@ return packer.startup(function(use)
   use({ "kyazdani42/nvim-web-devicons" })
   use({ "kevinhwang91/nvim-bqf" })
   use({ "https://github.com/github/copilot.vim", config = require("user.copilot") })
+  use({ "ja-ford/delaytrain.nvim", config = require("user.delaytrain") })
 
   -- Themes
   use("ellisonleao/gruvbox.nvim")
