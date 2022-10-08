@@ -4,5 +4,5 @@ if not status_ok then
 end
 
 delaytrain.setup({
-  grace_period = 1, -- How many repeated keypresses are allowed
+  grace_period = 3, -- How many repeated keypresses are allowed
 })
