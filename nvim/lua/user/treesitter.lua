@@ -4,6 +4,9 @@ if not status_ok then
 end
 
 configs.setup({
+  autotag = {
+    enable = true,
+  },
   ensure_installed = "all",
   sync_install = false,
   ignore_install = { "phpdoc", "tree-sitter-phpdoc" }, -- List of parsers to ignore installing
