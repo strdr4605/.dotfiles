@@ -73,7 +73,18 @@ return packer.startup(function(use)
   use({ "https://github.com/github/copilot.vim", config = require("user.copilot") })
   use({ "ja-ford/delaytrain.nvim", config = require("user.delaytrain") })
   use({ "folke/lua-dev.nvim" })
-
+  use({
+    "folke/noice.nvim",
+    config = require("user.noice"),
+    requires = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    }
+  })
   -- Themes
   use("ellisonleao/gruvbox.nvim")
 
