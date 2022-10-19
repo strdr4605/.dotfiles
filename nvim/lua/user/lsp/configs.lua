@@ -3,7 +3,7 @@ if not status_ok then
   return
 end
 
-require("lua-dev").setup({
+require("neodev").setup({
   -- add any options here, or leave empty to use the default settings
 })
 
