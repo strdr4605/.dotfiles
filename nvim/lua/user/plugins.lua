@@ -47,7 +47,9 @@ return packer.startup(function(use)
   use({
     "numToStr/Comment.nvim",
     config = function()
-      require("user.comment")
+      require("Comment").setup({
+        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+      })
     end,
   })
   use({
@@ -81,7 +83,10 @@ return packer.startup(function(use)
   use({
     "lukas-reineke/indent-blankline.nvim",
     config = function()
-      require("user.indent-blankline")
+      require("indent_blankline").setup({
+        show_current_context = true,
+        show_current_context_start = false,
+      })
     end,
   })
   use({
@@ -103,7 +108,9 @@ return packer.startup(function(use)
       "voldikss/vim-floaterm",
     },
     config = function()
-      require("user.lf")
+      vim.g.lf_map_keys = 0
+      vim.g.lf_width = 0.9
+      vim.g.lf_height = 0.9
     end,
   })
   use({ "kyazdani42/nvim-web-devicons" })
@@ -111,13 +118,17 @@ return packer.startup(function(use)
   use({
     "https://github.com/github/copilot.vim",
     config = function()
-      require("user.copilot")
+      vim.g.copilot_no_tab_map = true
+      --[[ vim.keymap.set("i", "<C-c>", "copilot#Accept(\"\\<CR>\")<CR>", { silent = true }) ]]
+      vim.cmd([[ imap <silent><script><expr> <C-J> copilot#Accept("\<CR>") ]])
     end,
   })
   use({
     "ja-ford/delaytrain.nvim",
     config = function()
-      require("user.delaytrain")
+      require("delaytrain").setup({
+        grace_period = 3, -- How many repeated keypresses are allowed
+      })
     end,
   })
   use({ "folke/lua-dev.nvim" })
@@ -185,13 +196,15 @@ return packer.startup(function(use)
   use({
     "rbong/vim-flog",
     config = function()
-      require("user.flog")
+      vim.cmd(
+        [[ command! Graph2 execute 'Flog -format=[%h]\ %d\ {%an}\ %s -- --exclude=refs/remotes/origin/gh-pages --all' ]]
+      )
     end,
   })
   use({
     "junegunn/gv.vim",
     config = function()
-      require("user.gv")
+      vim.cmd([[ command! Graph execute 'GV --exclude=refs/remotes/origin/gh-pages --all' ]])
     end,
   })
   use({ "sindrets/diffview.nvim" })
