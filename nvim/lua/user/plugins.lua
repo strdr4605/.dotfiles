@@ -59,7 +59,6 @@ return packer.startup(function(use)
   use({ "lukas-reineke/indent-blankline.nvim", config = function() require("user.indent-blankline") end })
   use({ "ibhagwan/fzf-lua", config = function() require("user.fzf-lua") end })
   use({ "junegunn/fzf", run = "./install --all --no-bash --no-fish" })
-  use("airblade/vim-rooter")
   use({ "tamago324/lir.nvim", config = function() require("user.lir") end })
   use({
     "ptzz/lf.vim",
