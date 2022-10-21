@@ -44,47 +44,47 @@ return packer.startup(function(use)
   use("wbthomason/packer.nvim") -- Have packer manage itself
   use("nvim-lua/popup.nvim") -- An implementation of the Popup API from vim in Neovim
   use("nvim-lua/plenary.nvim") -- Useful lua functions used ny lots of plugins
-  use({ "numToStr/Comment.nvim", config = require("user.comment") })
-  use({ "Pocco81/auto-save.nvim", config = require("user.auto-save") })
+  use({ "numToStr/Comment.nvim", config = function() require("user.comment") end })
+  use({ "Pocco81/auto-save.nvim", config = function() require("user.auto-save") end })
   use("moll/vim-bbye")
   use("tpope/vim-unimpaired")
-  use({ "goolord/alpha-nvim", config = require("user.alpha-nvim") })
-  use({ "norcalli/nvim-colorizer.lua", config = require("user.colorizer") })
+  use({ "goolord/alpha-nvim", config = function() require("user.alpha-nvim") end })
+  use({ "norcalli/nvim-colorizer.lua", config = function() require("user.colorizer") end })
   use({
     "nvim-lualine/lualine.nvim",
     requires = { "WhoIsSethDaniel/lualine-lsp-progress.nvim" },
-    config = require("user.lualine"),
+    config = function() require("user.lualine") end,
   })
   use("rescript-lang/vim-rescript")
-  use({ "lukas-reineke/indent-blankline.nvim", config = require("user.indent-blankline") })
-  use({ "ibhagwan/fzf-lua", config = require("user.fzf-lua") })
+  use({ "lukas-reineke/indent-blankline.nvim", config = function() require("user.indent-blankline") end })
+  use({ "ibhagwan/fzf-lua", config = function() require("user.fzf-lua") end })
   use({ "junegunn/fzf", run = "./install --all --no-bash --no-fish" })
   use("airblade/vim-rooter")
-  use({ "tamago324/lir.nvim", config = require("user.lir") })
+  use({ "tamago324/lir.nvim", config = function() require("user.lir") end })
   use({
     "ptzz/lf.vim",
     requires = {
       "voldikss/vim-floaterm",
     },
-    config = require("user.lf"),
+    config = function() require("user.lf") end,
   })
   use({ "kyazdani42/nvim-web-devicons" })
   use({ "kevinhwang91/nvim-bqf" })
-  use({ "https://github.com/github/copilot.vim", config = require("user.copilot") })
-  use({ "ja-ford/delaytrain.nvim", config = require("user.delaytrain") })
+  use({ "https://github.com/github/copilot.vim", config = function() require("user.copilot") end })
+  use({ "ja-ford/delaytrain.nvim", config = function() require("user.delaytrain") end })
   use({ "folke/lua-dev.nvim" })
-  use({
-    "folke/noice.nvim",
-    config = require("user.noice"),
-    requires = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
-      "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
-      "rcarriga/nvim-notify",
-    }
-  })
+  -- use({
+  --   "folke/noice.nvim",
+  --   config = function() require("user.noice") end,
+  --   requires = {
+  --     -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+  --     "MunifTanjim/nui.nvim",
+  --     -- OPTIONAL:
+  --     --   `nvim-notify` is only needed, if you want to use the notification view.
+  --     --   If not available, we use `mini` as the fallback
+  --     "rcarriga/nvim-notify",
+  --   }
+  -- })
   -- Themes
   use("ellisonleao/gruvbox.nvim")
 
@@ -103,7 +103,7 @@ return packer.startup(function(use)
       "L3MON4D3/LuaSnip", -- snippet engine
       "rafamadriz/friendly-snippets", -- a bunch of snippets to use
     },
-    config = require("user.cmp"),
+    config = function() require("user.cmp") end,
   }) -- The completion plugin
 
   -- LSP
@@ -115,7 +115,7 @@ return packer.startup(function(use)
       "jose-elias-alvarez/null-ls.nvim", -- for formatters and linters
       "jose-elias-alvarez/typescript.nvim",
     },
-    config = require("user.lsp"),
+    config = function() require("user.lsp") end,
   })
 
   -- Treesitter
@@ -127,15 +127,15 @@ return packer.startup(function(use)
       "windwp/nvim-ts-autotag",
       "JoosepAlviste/nvim-ts-context-commentstring",
     },
-    config = require("user.treesitter"),
+    config = function() require("user.treesitter") end,
   })
   use({ "nvim-treesitter/nvim-treesitter-context" })
 
   -- Git
-  use({ "lewis6991/gitsigns.nvim", config = require("user.gitsigns") })
+  use({ "lewis6991/gitsigns.nvim", config = function() require("user.gitsigns") end })
   use("tpope/vim-fugitive")
-  use({ "rbong/vim-flog", config = require("user.flog") })
-  use({ "junegunn/gv.vim", config = require("user.gv") })
+  use({ "rbong/vim-flog", config = function() require("user.flog") end })
+  use({ "junegunn/gv.vim", config = function() require("user.gv") end })
   use({ "sindrets/diffview.nvim" })
 
   use({ "wesleimp/stylua.nvim" })
