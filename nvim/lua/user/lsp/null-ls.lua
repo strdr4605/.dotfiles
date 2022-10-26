@@ -19,6 +19,7 @@ null_ls.setup({
     formatting.prettier.with({
       prefer_local = "node_modules/.bin",
     }),
+    formatting.stylua,
     diagnostics.eslint_d,
     code_actions.eslint_d,
   },
