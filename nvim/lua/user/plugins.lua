@@ -67,6 +67,12 @@ return packer.startup(function(use)
     end,
   })
   use({
+    "ThePrimeagen/harpoon",
+    config = function()
+      require("user.harpoon")
+    end,
+  })
+  use({
     "norcalli/nvim-colorizer.lua",
     config = function()
       require("user.colorizer")
