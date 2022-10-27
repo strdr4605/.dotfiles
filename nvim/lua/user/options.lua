@@ -46,5 +46,6 @@ vim.cmd [[
     autocmd!
     autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
     autocmd WinLeave                      * setlocal nocursorline
+    autocmd InsertLeave                   * LuaSnipUnlinkCurrent
   augroup END
 ]]
