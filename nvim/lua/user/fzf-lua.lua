@@ -22,7 +22,7 @@ fzf_lua.setup({
   winopts = {
     --[[ split = "belowright new", ]]
     preview = {
-      hidden = "hidden",
+      hidden = "nohidden",
       default = "bat_native",
       horizontal = "right:40%",
     },
