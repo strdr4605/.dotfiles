@@ -11,13 +11,14 @@ require("tokyonight").setup({
 })
 
 local colors = require('ayu.colors')
-colors.generate(true) -- Pass `true` to enable mirage
+colors.generate(false) -- Pass `true` to enable mirage
 require("ayu").setup({
   mirage = false, -- Set to `true` to use `mirage` variant instead of `dark` for dark background.
   overrides = {
-    Normal = { fg = nil, bg = nil },
-    LineNr = { fg = colors.accent },
-  }, -- A dictionary of group names, each associated with a dictionary of parameters (`bg`, `fg`, `sp` and `style`) and colors in hex.
+    Wildmenu = { bg = colors.bg, fg = colors.markup },
+    Comment = { fg = "gray", italic = true },
+    LineNr = { fg = "gray" },
+  },
 })
 vim.cmd([[
 try
@@ -29,3 +30,18 @@ catch /^Vim\%((\a\+)\)\=:E185/
   set background=dark
 endtry
 ]])
+
+-- transparent mode
+local highlights = {
+  "Normal",
+  "LineNr",
+  "Folded",
+  "NonText",
+  "SpecialKey",
+  "VertSplit",
+  "SignColumn",
+  "EndOfBuffer",
+}
+for _, highlight in pairs(highlights) do
+  vim.cmd.highlight(highlight .. " guibg=none ctermbg=none")
+end
