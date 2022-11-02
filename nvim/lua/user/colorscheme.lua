@@ -10,7 +10,7 @@ require("tokyonight").setup({
   transparent = true,
 })
 
-local colors = require('ayu.colors')
+local colors = require("ayu.colors")
 colors.generate(false) -- Pass `true` to enable mirage
 require("ayu").setup({
   mirage = false, -- Set to `true` to use `mirage` variant instead of `dark` for dark background.
@@ -18,6 +18,7 @@ require("ayu").setup({
     Wildmenu = { bg = colors.bg, fg = colors.markup },
     Comment = { fg = "gray", italic = true },
     LineNr = { fg = "gray" },
+    Visual = { bg = colors.comment },
   },
 })
 vim.cmd([[
