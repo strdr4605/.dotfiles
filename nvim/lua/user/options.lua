@@ -47,5 +47,7 @@ vim.cmd [[
     autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
     autocmd WinLeave                      * setlocal nocursorline
     autocmd InsertLeave                   * LuaSnipUnlinkCurrent
+    " autocmd FileType typescript,typescriptreact set makeprg=./node_modules/.bin/tsc\ \\\|\ sed\ 's/(\\(.*\\),\\(.*\\)):/:\\1:\\2:/'
+    autocmd FileType typescript,typescriptreact set makeprg=qftsc
   augroup END
 ]]

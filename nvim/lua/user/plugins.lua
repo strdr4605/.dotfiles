@@ -60,6 +60,7 @@ return packer.startup(function(use)
   })
   use("moll/vim-bbye")
   use("tpope/vim-unimpaired")
+  use("tpope/vim-dispatch")
   use({
     "goolord/alpha-nvim",
     config = function()
