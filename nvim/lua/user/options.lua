@@ -47,7 +47,6 @@ vim.cmd [[
     autocmd VimEnter,WinEnter,BufWinEnter * setlocal cursorline
     autocmd WinLeave                      * setlocal nocursorline
     autocmd InsertLeave                   * LuaSnipUnlinkCurrent
-    autocmd FileType typescript,typescriptreact compiler tsc
-    autocmd FileType typescript,typescriptreact set makeprg=npx\ tsc
+    autocmd FileType typescript,typescriptreact compiler tsc | setlocal makeprg=npx\ tsc
   augroup END
 ]]
