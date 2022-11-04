@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-# Used in neovim to set makeprg=qftsc
-./node_modules/.bin/tsc | sed 's/(\(.*\),\(.*\)):/:\1:\2:/' 
