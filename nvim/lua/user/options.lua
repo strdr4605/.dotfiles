@@ -48,5 +48,6 @@ vim.cmd [[
     autocmd WinLeave                      * setlocal nocursorline
     autocmd InsertLeave                   * LuaSnipUnlinkCurrent
     autocmd FileType typescript,typescriptreact compiler tsc | setlocal makeprg=npx\ tsc
+    autocmd TextYankPost * silent! lua vim.highlight.on_yank { higroup='IncSearch', timeout=300 }
   augroup END
 ]]
