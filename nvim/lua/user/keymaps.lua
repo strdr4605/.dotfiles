@@ -41,6 +41,7 @@ keymap("n", "<leader>b", ":lua require('fzf-lua').buffers()<CR>", opts)
 keymap("n", "<leader>a", "<cmd>%y+<cr>", opts)
 keymap("n", "<leader>d", '"_d', opts)
 keymap("n", "<leader>c", '"_c', opts)
+keymap("n", "x", '"_x', opts)
 keymap("v", "<leader>d", '"_d', opts)
 keymap("v", "<leader>c", '"_c', opts)
 
