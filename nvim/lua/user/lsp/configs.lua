@@ -10,7 +10,7 @@ require("neodev").setup({
 local mason = require("mason")
 local lspconfig = require("lspconfig")
 
-local servers = { "jsonls", "sumneko_lua", "tsserver", "eslint", "cssls" }
+local servers = { "jsonls", "sumneko_lua", "tsserver", "cssls" }
 
 mason.setup()
 mason_lspconfig.setup({
