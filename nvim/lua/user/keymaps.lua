@@ -36,6 +36,7 @@ keymap("n", "<leader>nv", "<cmd>lua require('fzf-lua').files({cwd='~/.dotfiles/n
 -- fzf-lua
 keymap("n", "<leader>f", ":lua require('fzf-lua').git_files()<CR>", opts)
 keymap("n", "<leader><S-f>", ":lua require('fzf-lua').live_grep_native()<CR>", opts)
+keymap("n", "<leader>r", ":lua require('fzf-lua').resume()<CR>", opts)
 keymap("n", "<leader>b", ":lua require('fzf-lua').buffers()<CR>", opts)
 
 keymap("n", "<leader>a", "<cmd>%y+<cr>", opts)
