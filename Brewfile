@@ -4,12 +4,12 @@ cask 'alacritty'
 brew 'git'
 brew 'zsh'
 brew 'zsh-syntax-highlighting'
-brew 'fig'
 
 brew 'nvm'
 
 cask 'brave-browser'
 cask 'raycast'
+cask 'fig'
 
 brew 'tmux'
 brew 'tmux-mem-cpu-load'
