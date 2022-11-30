@@ -140,13 +140,6 @@ return packer.startup(function(use)
     end,
   })
   use({ "folke/lua-dev.nvim" })
-  use({
-    "folke/drop.nvim",
-    event = "VimEnter",
-    config = function()
-      require("drop").setup()
-    end,
-  })
   use("eandrju/cellular-automaton.nvim")
 
   -- Themes
