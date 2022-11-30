@@ -147,6 +147,7 @@ return packer.startup(function(use)
       require("drop").setup()
     end,
   })
+  use("eandrju/cellular-automaton.nvim")
 
   -- Themes
   use("ellisonleao/gruvbox.nvim")
