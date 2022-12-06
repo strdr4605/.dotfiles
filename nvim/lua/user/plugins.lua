@@ -141,6 +141,13 @@ return packer.startup(function(use)
   })
   use({ "folke/lua-dev.nvim" })
   use("eandrju/cellular-automaton.nvim")
+  use({
+    -- Highlight cursor-word like an IDE.
+    "nyngwang/murmur.lua",
+    config = function()
+      require("user.murmur")
+    end,
+  })
 
   -- Themes
   use("ellisonleao/gruvbox.nvim")
