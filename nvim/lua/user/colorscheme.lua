@@ -1,7 +1,7 @@
 -- gruvbox
 vim.g.gruvbox_bold = 0
 vim.opt.termguicolors = true
-vim.o.background = "dark" -- or "light" for light mode
+vim.o.background = "light" -- or "light" for light mode
 require("gruvbox").setup({
   contrast = "hard", -- can be "hard", "soft" or empty string
   transparent_mode = true,
@@ -23,9 +23,9 @@ require("ayu").setup({
 })
 vim.cmd([[
 try
-  " colorscheme gruvbox
-  " colorscheme tikyonight
-  colorscheme ayu
+  colorscheme gruvbox
+  " colorscheme tokyonight
+  " colorscheme ayu
 catch /^Vim\%((\a\+)\)\=:E185/
   colorscheme default
   set background=dark
@@ -37,7 +37,7 @@ local highlights = {
   "Normal",
   "LineNr",
   "Folded",
-  "NonText",
+  -- "NonText",
   "SpecialKey",
   "VertSplit",
   "SignColumn",
