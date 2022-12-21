@@ -24,7 +24,7 @@ fzf_lua.setup({
     preview = {
       hidden = "nohidden",
       default = "bat_native",
-      horizontal = "right:40%",
+      horizontal = "bottom:40%",
     },
   },
 })
