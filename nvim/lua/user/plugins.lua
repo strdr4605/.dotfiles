@@ -148,6 +148,7 @@ return packer.startup(function(use)
       require("user.murmur")
     end,
   })
+  use({ "shortcuts/no-neck-pain.nvim", tag = "0.1.2" })
 
   -- Themes
   use("ellisonleao/gruvbox.nvim")
