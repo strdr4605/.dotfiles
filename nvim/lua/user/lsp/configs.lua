@@ -10,7 +10,7 @@ require("neodev").setup({
 local mason = require("mason")
 local lspconfig = require("lspconfig")
 
-local servers = { "jsonls", "sumneko_lua", "tsserver", "cssls" }
+local servers = { "jsonls", "sumneko_lua", "tsserver", "cssls", "rescriptls" }
 
 mason.setup()
 mason_lspconfig.setup({
@@ -26,11 +26,11 @@ for _, server in pairs(servers) do
   if has_custom_opts then
     opts = vim.tbl_deep_extend("force", opts, server_custom_opts)
   end
-  -- add a special case for tsserver, since we want to go through typescript.nvim here
-  if server == "tsserver" then
-    -- https://github.com/jose-elias-alvarez/typescript.nvim
-    require("typescript").setup({ server = opts })
-  else
-    lspconfig[server].setup(opts)
-  end
+  -- -- add a special case for tsserver, since we want to go through typescript.nvim here
+  -- if server == "tsserver" then
+  --   -- https://github.com/jose-elias-alvarez/typescript.nvim
+  --   require("typescript").setup({ server = opts })
+  -- else
+  lspconfig[server].setup(opts)
+  -- end
 end
