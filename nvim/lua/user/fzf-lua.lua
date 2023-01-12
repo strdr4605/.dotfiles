@@ -23,8 +23,16 @@ fzf_lua.setup({
     --[[ split = "belowright new", ]]
     preview = {
       hidden = "nohidden",
-      default = "bat_native",
+      default = "bat",
       horizontal = "bottom:40%",
+    },
+  },
+  previewers = {
+    bat = {
+      cmd = "bat",
+      args = "--style=numbers,changes --color always",
+      theme = "gruvbox-light", -- bat preview theme (bat --list-themes)
+      config = nil, -- nil uses $BAT_CONFIG_PATH
     },
   },
 })
