@@ -14,6 +14,7 @@ return require("packer").startup(function(use)
 	})
 	use({ "junegunn/fzf", { run = "./install --all --no-bash --no-fish" }})
 	use({ "nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" }})
+	use("tpope/vim-fugitive")
 
 	-- Colorscheme
 	use({
