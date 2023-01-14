@@ -12,7 +12,8 @@ return require("packer").startup(function(use)
 	-- optional for icon support
 		requires = { "nvim-tree/nvim-web-devicons" }
 	})
-	use({ "junegunn/fzf", run = "./install --all --no-bash --no-fish" })
+	use({ "junegunn/fzf", { run = "./install --all --no-bash --no-fish" }})
+	use({ "nvim-treesitter/nvim-treesitter", { run = ":TSUpdate" }})
 
 	-- Colorscheme
 	use({
