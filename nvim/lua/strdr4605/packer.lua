@@ -11,6 +11,7 @@ return require("packer").startup(function(use)
   use("Pocco81/auto-save.nvim")
   use("ibhagwan/fzf-lua")
   use({ "junegunn/fzf", { run = "./install --all --no-bash --no-fish" } })
+  use("ThePrimeagen/harpoon")
   use({
     "nvim-treesitter/nvim-treesitter",
     { run = ":TSUpdate" },
