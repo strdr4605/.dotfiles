@@ -20,6 +20,8 @@ return require("packer").startup(function(use)
     },
   })
   use("tpope/vim-fugitive")
+  use("tpope/vim-unimpaired")
+  use("tpope/vim-surround")
   -- lsp
   use({
     "neovim/nvim-lspconfig",
@@ -43,6 +45,7 @@ return require("packer").startup(function(use)
       "L3MON4D3/LuaSnip", -- snippet engine
     },
   })
+  use("goolord/alpha-nvim")
 
   -- Colorscheme
   use({
