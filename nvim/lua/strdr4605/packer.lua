@@ -22,6 +22,7 @@ return require("packer").startup(function(use)
   use("tpope/vim-fugitive")
   use("tpope/vim-unimpaired")
   use("tpope/vim-surround")
+  use("lewis6991/gitsigns.nvim")
   use({
     "junegunn/gv.vim",
     config = function()
