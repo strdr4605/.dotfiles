@@ -72,6 +72,7 @@ return require("packer").startup(function(use)
   use("kevinhwang91/nvim-bqf")
   -- Highlight cursor-word like an IDE.
   use("nyngwang/murmur.lua")
+  use("norcalli/nvim-colorizer.lua")
 
   -- Colorscheme
   use({
