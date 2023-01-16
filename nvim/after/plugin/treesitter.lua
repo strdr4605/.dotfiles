@@ -1,4 +1,8 @@
-require("nvim-treesitter.configs").setup {
+require("nvim-treesitter.configs").setup({
+  -- windwp/nvim-ts-autotag
+  autotag = {
+    enable = true,
+  },
   -- A list of parser names, or "all" (the four listed parsers should always be installed)
   ensure_installed = { "javascript", "typescript", "lua", "vim", "help" },
 
@@ -19,4 +23,4 @@ require("nvim-treesitter.configs").setup {
     -- Instead of true it can also be a list of languages
     additional_vim_regex_highlighting = false,
   },
-}
+})
