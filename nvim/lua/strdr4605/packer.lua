@@ -18,9 +18,9 @@ return require("packer").startup(function(use)
     requires = {
       "windwp/nvim-ts-autotag",
       "JoosepAlviste/nvim-ts-context-commentstring",
-      "nvim-treesitter/nvim-treesitter-context",
     },
   })
+  use("nvim-treesitter/nvim-treesitter-context")
   use("tpope/vim-fugitive")
   use("tpope/vim-unimpaired")
   use("tpope/vim-surround")
