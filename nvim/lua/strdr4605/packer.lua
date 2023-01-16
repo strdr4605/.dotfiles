@@ -73,6 +73,8 @@ return require("packer").startup(function(use)
     requires = {
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason.nvim",
+      "jose-elias-alvarez/null-ls.nvim",
+      "jay-babu/mason-null-ls.nvim"
     }
   })
   -- cmp
