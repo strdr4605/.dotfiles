@@ -48,7 +48,7 @@ cmp.setup({
     end, {
       "i",
       "s",
-    })
+    }),
   },
   sources = {
     { name = "luasnip" },
@@ -56,7 +56,7 @@ cmp.setup({
     { name = "nvim_lua" },
     { name = "buffer" },
     { name = "path" },
-  }
+  },
 })
 
 -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).

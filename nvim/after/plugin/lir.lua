@@ -2,7 +2,12 @@ local lir = require("lir")
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.keymap.set("n", "-", [[<Cmd>execute 'e ' .. expand('%:p:h')<CR>]], { noremap = true })
+vim.keymap.set(
+  "n",
+  "-",
+  [[<Cmd>execute 'e ' .. expand('%:p:h')<CR>]],
+  { noremap = true }
+)
 
 local actions = require("lir.actions")
 local mark_actions = require("lir.mark.actions")

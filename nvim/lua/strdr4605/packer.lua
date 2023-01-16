@@ -53,7 +53,9 @@ return require("packer").startup(function(use)
     config = function()
       require("Comment").setup({
         -- nvim-treesitter/nvim-treesitter-context
-        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+        pre_hook = require(
+          "ts_context_commentstring.integrations.comment_nvim"
+        ).create_pre_hook(),
       })
     end,
   })
@@ -64,7 +66,9 @@ return require("packer").startup(function(use)
   use({
     "junegunn/gv.vim",
     config = function()
-      vim.cmd([[ command! Graph execute 'GV --exclude=refs/remotes/origin/gh-pages --all' ]])
+      vim.cmd(
+        [[ command! Graph execute 'GV --exclude=refs/remotes/origin/gh-pages --all' ]]
+      )
     end,
   })
   -- lsp
@@ -74,8 +78,8 @@ return require("packer").startup(function(use)
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason.nvim",
       "jose-elias-alvarez/null-ls.nvim",
-      "jay-babu/mason-null-ls.nvim"
-    }
+      "jay-babu/mason-null-ls.nvim",
+    },
   })
   -- cmp
   use({
@@ -122,7 +126,7 @@ return require("packer").startup(function(use)
         contrast = "hard", -- can be "hard", "soft" or empty string
         transparent_mode = true,
       })
-    end
+    end,
   })
 
   -- Automatically set up your configuration after cloning packer.nvim

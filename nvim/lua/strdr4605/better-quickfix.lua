@@ -9,7 +9,8 @@ function _G.qftf(info)
     items = fn.getloclist(info.winid, { id = info.id, items = 0 }).items
   end
   local limit = 51
-  local fnameFmt1, fnameFmt2 = "%-" .. limit .. "s", "...%." .. (limit - 1) .. "s"
+  local fnameFmt1, fnameFmt2 =
+    "%-" .. limit .. "s", "...%." .. (limit - 1) .. "s"
   local validFmt = "%s |%5d:%-3d|%s %s"
   for i = info.start_idx, info.end_idx do
     local e = items[i]

@@ -1,9 +1,18 @@
 local fzf_lua = require("fzf-lua")
 
-vim.keymap.set("n", "<leader>f", ":lua require('fzf-lua').git_files()<CR>", opts)
-vim.keymap.set("n", "<leader><S-f>", ":lua require('fzf-lua').live_grep_native()<CR>", opts)
-vim.keymap.set("n", "<leader>r", ":lua require('fzf-lua').resume()<CR>", opts)
-vim.keymap.set("n", "<leader>b", ":lua require('fzf-lua').buffers()<CR>", opts)
+local opts = { noremap = true, silent = true }
+vim.keymap.set("n", "<leader>f", function()
+  require("fzf-lua").git_files()
+end, opts)
+vim.keymap.set("n", "<leader><S-f>", function()
+  require("fzf-lua").live_grep_native()
+end, opts)
+vim.keymap.set("n", "<leader>r", function()
+  require("fzf-lua").resume()
+end, opts)
+vim.keymap.set("n", "<leader>b", function()
+  require("fzf-lua").buffers()
+end, opts)
 
 fzf_lua.setup({
   -- fzf_bin = "/Users/strdr4605/.local/share/nvim/site/pack/packer/start/fzf/bin/fzf",

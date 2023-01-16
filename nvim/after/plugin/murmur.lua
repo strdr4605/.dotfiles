@@ -3,7 +3,7 @@ local murmur = require("murmur")
 murmur.setup({
   -- cursor_rgb = 'purple', -- default to '#393939'
   cursor_rgb = {
-    guibg = "#f2e5bc"
+    guibg = "#f2e5bc",
   },
   max_len = 80, -- maximum word-length to highlight
   -- min_len = 3,
