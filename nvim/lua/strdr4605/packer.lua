@@ -60,6 +60,9 @@ return require("packer").startup(function(use)
     end,
   })
   use("tamago324/lir.nvim")
+  use("kevinhwang91/nvim-bqf")
+  -- Highlight cursor-word like an IDE.
+  use("nyngwang/murmur.lua")
 
   -- Colorscheme
   use({
