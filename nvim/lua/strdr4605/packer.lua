@@ -46,6 +46,10 @@ return require("packer").startup(function(use)
     },
   })
   use("goolord/alpha-nvim")
+  use({
+    "nvim-lualine/lualine.nvim",
+    requires = { "WhoIsSethDaniel/lualine-lsp-progress.nvim" },
+  })
 
   -- Colorscheme
   use({
