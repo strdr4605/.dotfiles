@@ -59,6 +59,7 @@ return require("packer").startup(function(use)
       })
     end,
   })
+  use("tamago324/lir.nvim")
 
   -- Colorscheme
   use({
