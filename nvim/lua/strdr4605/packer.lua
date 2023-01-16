@@ -14,13 +14,22 @@ return require("packer").startup(function(use)
   use("ThePrimeagen/harpoon")
   use({
     "nvim-treesitter/nvim-treesitter",
-    { run = ":TSUpdate" },
+    run = ":TSUpdate",
     requires = {
       "windwp/nvim-ts-autotag",
       "JoosepAlviste/nvim-ts-context-commentstring",
+      "nvim-treesitter/nvim-treesitter-context",
     },
   })
-  use("nvim-treesitter/nvim-treesitter-context")
+  use({
+    "numToStr/Comment.nvim",
+    config = function()
+      require("Comment").setup({
+        -- nvim-treesitter/nvim-treesitter-context
+        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+      })
+    end,
+  })
   use("tpope/vim-fugitive")
   use("tpope/vim-unimpaired")
   use("tpope/vim-surround")
