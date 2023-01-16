@@ -22,6 +22,12 @@ return require("packer").startup(function(use)
   use("tpope/vim-fugitive")
   use("tpope/vim-unimpaired")
   use("tpope/vim-surround")
+  use({
+    "junegunn/gv.vim",
+    config = function()
+      vim.cmd([[ command! Graph execute 'GV --exclude=refs/remotes/origin/gh-pages --all' ]])
+    end,
+  })
   -- lsp
   use({
     "neovim/nvim-lspconfig",
