@@ -56,6 +56,8 @@ null_ls.setup({
     formatting.stylua,
     diagnostics.eslint_d,
     code_actions.eslint_d,
+    -- https://github.com/jose-elias-alvarez/typescript.nvim
+    require("typescript.extensions.null-ls.code-actions"),
   },
 })
 require("mason-null-ls").setup({
@@ -117,6 +119,12 @@ require("mason-lspconfig").setup_handlers({
       opts = vim.tbl_deep_extend("force", opts, server_custom_opts)
     end
 
-    lspconfig[server_name].setup(opts)
+    -- add a special case for tsserver, since we want to go through typescript.nvim here
+    if server_name == "tsserver" then
+      -- https://github.com/jose-elias-alvarez/typescript.nvim
+      require("typescript").setup({ server = opts })
+    else
+      lspconfig[server_name].setup(opts)
+    end
   end,
 })

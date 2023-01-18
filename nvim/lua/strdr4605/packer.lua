@@ -79,6 +79,7 @@ return require("packer").startup(function(use)
       "williamboman/mason.nvim",
       "jose-elias-alvarez/null-ls.nvim",
       "jay-babu/mason-null-ls.nvim",
+      "jose-elias-alvarez/typescript.nvim",
     },
   })
   -- cmp
