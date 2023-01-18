@@ -26,7 +26,7 @@ fzf_lua.setup({
     },
   },
   grep = {
-    -- rg_opts = "--column --line-number --no-heading --color=never --smart-case --max-columns=512",
+    rg_opts = "--hidden --column --line-number --no-heading --color=always --smart-case --max-columns=512",
     file_icons = false,
     git_icons = false,
   },
