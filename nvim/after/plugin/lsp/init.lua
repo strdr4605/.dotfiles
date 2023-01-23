@@ -34,7 +34,7 @@ setup()
 require("mason").setup()
 
 require("mason-lspconfig").setup({
-  ensure_installed = { "jsonls", "sumneko_lua", "tsserver", "cssls" },
+  ensure_installed = { "jsonls", "sumneko_lua", "tsserver", "cssls", "emmet_ls" },
 })
 
 local null_ls = require("null-ls")
