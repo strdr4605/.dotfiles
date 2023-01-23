@@ -22,7 +22,7 @@ fzf_lua.setup({
   },
   keymap = {
     fzf = {
-      ["ctrl-w"] = "select-all+accept",
+      ["ctrl-q"] = "select-all+accept",
     },
   },
   grep = {
