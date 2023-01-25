@@ -34,7 +34,13 @@ setup()
 require("mason").setup()
 
 require("mason-lspconfig").setup({
-  ensure_installed = { "jsonls", "sumneko_lua", "tsserver", "cssls", "emmet_ls" },
+  ensure_installed = {
+    "jsonls",
+    "sumneko_lua",
+    "tsserver",
+    "cssls",
+    "emmet_ls",
+  },
 })
 
 local null_ls = require("null-ls")
@@ -114,7 +120,7 @@ require("mason-lspconfig").setup_handlers({
     }
 
     local has_custom_opts, server_custom_opts =
-    pcall(require, "after.plugin.lsp.server_settings." .. server_name)
+    pcall(require, "strdr4605.lsp_server_settings." .. server_name)
     if has_custom_opts then
       opts = vim.tbl_deep_extend("force", opts, server_custom_opts)
     end
