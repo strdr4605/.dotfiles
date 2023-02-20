@@ -28,6 +28,9 @@ vim.keymap.set("v", "p", '"_dP', opts)
 vim.keymap.set("v", "<leader>d", '"_d', opts)
 vim.keymap.set("v", "<leader>c", '"_c', opts)
 
+-- prevent accidental case changes when wanting to yank
+vim.keymap.set("v", "u", "<Nop>", opts)
+
 -- Undo break points
 vim.keymap.set("i", ",", ",<C-g>u", opts)
 vim.keymap.set("i", ".", ".<C-g>u", opts)
