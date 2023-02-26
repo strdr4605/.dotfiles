@@ -1,8 +1,6 @@
 local setup = function()
   local config = {
-    virtual_text = {
-      source = "if_many",
-    },
+    virtual_text = false,
     update_in_insert = false,
     underline = true,
     severity_sort = true,
@@ -36,7 +34,7 @@ require("mason").setup()
 require("mason-lspconfig").setup({
   ensure_installed = {
     "jsonls",
-    "sumneko_lua",
+    "lua_ls",
     "tsserver",
     "cssls",
     "emmet_ls",
