@@ -8,6 +8,9 @@ brew 'zsh-syntax-highlighting'
 
 brew 'nvm'
 
+tap 'oven-sh/bun'
+brew 'bun'
+
 cask 'brave-browser'
 cask 'raycast'
 
