@@ -153,5 +153,11 @@ export BAT_THEME="gruvbox-dark"
 
 source $(brew --prefix zsh-syntax-highlighting)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
+include () {
+    [[ -f "$1" ]] && source "$1"
+}
+
+include ~/.zshrc_work
+
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
