@@ -22,7 +22,7 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", opts)
 
 vim.keymap.set("n", "<leader>a", "<cmd>%y+<cr>", opts)
 vim.keymap.set("n", "<leader>d", '"_d', opts)
-vim.keymap.set("n", "<leader>c", '"_c', opts)
+vim.keymap.set("n", "<leader>cc", '"_c', opts)
 vim.keymap.set("n", "x", '"_x', opts)
 vim.keymap.set("v", "p", '"_dP', opts)
 vim.keymap.set("v", "<leader>d", '"_d', opts)
