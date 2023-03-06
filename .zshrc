@@ -149,8 +149,6 @@ source $(brew --prefix nvm)/nvm.sh
 
 export BAT_THEME="gruvbox-dark"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 source $(brew --prefix zsh-syntax-highlighting)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 include () {
@@ -158,6 +156,7 @@ include () {
 }
 
 include ~/.zshrc_work
+include ~/.fzf.zsh
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
