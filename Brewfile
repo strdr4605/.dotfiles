@@ -12,7 +12,6 @@ cask 'raycast'
 cask 'fig'
 
 brew 'tmux'
-brew 'tmux-mem-cpu-load'
 brew 'neovim'
 
 # used by null-ls.nvim
