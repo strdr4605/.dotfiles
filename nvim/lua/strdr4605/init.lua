@@ -1,4 +1,4 @@
-require("strdr4605.lazy")
 require("strdr4605.remap")
 require("strdr4605.set")
 require("strdr4605.better-quickfix")
+require("strdr4605.lazy")
