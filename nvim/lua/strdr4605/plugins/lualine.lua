@@ -1,5 +1,8 @@
 local lualine = require("lualine")
 
+vim.g.gitblame_display_virtual_text = 0 -- Disable virtual text
+local git_blame = require("gitblame")
+
 lualine.setup({
   options = {
     icons_enabled = true,
@@ -27,6 +30,10 @@ lualine.setup({
           readonly = "[-]", -- Text to show when the file is non-modifiable or readonly.
           unnamed = "[No Name]", -- Text to show for unnamed buffers.
         },
+      },
+      {
+        git_blame.get_current_blame_text,
+        cond = git_blame.is_blame_text_available,
       },
       {
         "lsp_progress",

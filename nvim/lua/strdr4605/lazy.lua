@@ -122,7 +122,10 @@ return require("lazy").setup({
     config = function()
       require("strdr4605.plugins.lualine")
     end,
-    dependencies = { "WhoIsSethDaniel/lualine-lsp-progress.nvim" },
+    dependencies = {
+      "WhoIsSethDaniel/lualine-lsp-progress.nvim",
+      "f-person/git-blame.nvim",
+    },
   },
   {
     "lukas-reineke/indent-blankline.nvim",
