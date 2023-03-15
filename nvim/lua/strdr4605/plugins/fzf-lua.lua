@@ -15,7 +15,15 @@ vim.keymap.set("n", "<leader>b", function()
 end, opts)
 
 fzf_lua.setup({
-  -- fzf_bin = "/Users/strdr4605/.local/share/nvim/site/pack/packer/start/fzf/bin/fzf",
+  actions = {
+    buffers = {
+      ["default"] = fzf_lua.actions.buf_edit,
+      ["ctrl-d"] = function(selected, opts) 
+        fzf_lua.actions.buf_del(selected, opts)
+        fzf_lua.buffers()
+      end,
+    },
+  },
   fzf_opts = {
     ["--layout"] = "reverse",
     -- ["--ansi"] = false,
