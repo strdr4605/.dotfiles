@@ -73,6 +73,11 @@ vim.api.nvim_create_autocmd("FileType", {
   group = augroup,
   command = "compiler tsc | setlocal makeprg=npx\\ tsc",
 })
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "*eslint*",
+  group = augroup,
+  command = "compiler eslint | setlocal makeprg=npm\\ run\\ eslint:run\\ --\\ --format\\ compact",
+})
 vim.api.nvim_create_autocmd("TextYankPost ", {
   pattern = "*",
   group = augroup,
