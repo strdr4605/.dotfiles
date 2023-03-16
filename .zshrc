@@ -146,7 +146,7 @@ export PATH=/opt/homebrew/bin:$PATH
 export NVM_DIR=~/.nvm 
 source $(brew --prefix nvm)/nvm.sh
 
-export BAT_THEME="gruvbox-dark"
+export BAT_THEME="gruvbox-light"
 
 source $(brew --prefix zsh-syntax-highlighting)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
