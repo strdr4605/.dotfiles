@@ -54,6 +54,7 @@ return require("lazy").setup({
       })
     end,
   },
+  "tpope/vim-dispatch",
   "tpope/vim-fugitive",
   "tpope/vim-unimpaired",
   "tpope/vim-surround",
