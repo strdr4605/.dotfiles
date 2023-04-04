@@ -144,13 +144,6 @@ return require("lazy").setup({
     end,
   },
   "kevinhwang91/nvim-bqf",
-  -- Highlight cursor-word like an IDE.
-  {
-    "nyngwang/murmur.lua",
-    config = function()
-      require("strdr4605.plugins.murmur")
-    end,
-  },
   {
     "norcalli/nvim-colorizer.lua",
     config = function()
