@@ -168,12 +168,19 @@ return require("lazy").setup({
   {
     "ellisonleao/gruvbox.nvim",
     config = function()
-      vim.cmd("colorscheme gruvbox")
+      -- vim.cmd("colorscheme gruvbox")
       vim.opt.background = "light"
       require("gruvbox").setup({
         contrast = "hard", -- can be "hard", "soft" or empty string
         transparent_mode = true,
       })
+    end,
+  },
+  {
+    "rebelot/kanagawa.nvim",
+    config = function()
+      vim.cmd("colorscheme kanagawa")
+      vim.opt.background = "light"
     end,
   },
 })
