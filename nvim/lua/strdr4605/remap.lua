@@ -14,11 +14,12 @@ vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("n", "<ESC><ESC>", ":nohlsearch<CR><ESC>", opts)
 vim.keymap.set("n", "<S-c>", ":windo lcl|ccl<CR>", opts)
 
+-- Using christoomey/vim-tmux-navigator to navigate between tmux panes and vim splits
 -- Better window navigation
-vim.keymap.set("n", "<C-h>", "<C-w>h", opts)
-vim.keymap.set("n", "<C-j>", "<C-w>j", opts)
-vim.keymap.set("n", "<C-k>", "<C-w>k", opts)
-vim.keymap.set("n", "<C-l>", "<C-w>l", opts)
+-- vim.keymap.set("n", "<C-h>", "<C-w>h", opts)
+-- vim.keymap.set("n", "<C-j>", "<C-w>j", opts)
+-- vim.keymap.set("n", "<C-k>", "<C-w>k", opts)
+-- vim.keymap.set("n", "<C-l>", "<C-w>l", opts)
 
 vim.keymap.set("n", "<leader>a", "<cmd>%y+<cr>", opts)
 vim.keymap.set("n", "<leader>d", '"_d', opts)

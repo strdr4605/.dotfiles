@@ -18,6 +18,7 @@ return require("lazy").setup({
   "nvim-lua/plenary.nvim", -- Useful lua functions used ny lots of plugins
   "nvim-tree/nvim-web-devicons",
   "Pocco81/auto-save.nvim",
+  "christoomey/vim-tmux-navigator",
   {
     "ibhagwan/fzf-lua",
     config = function()
