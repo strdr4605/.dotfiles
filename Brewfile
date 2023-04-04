@@ -1,5 +1,5 @@
 cask 'iterm2'
-cask 'alacritty'
+# cask 'alacritty'
 
 brew 'git'
 brew 'zsh'
@@ -9,7 +9,6 @@ brew 'nvm'
 
 cask 'brave-browser'
 cask 'raycast'
-cask 'fig'
 
 brew 'tmux'
 brew 'neovim'
