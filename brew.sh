@@ -6,5 +6,3 @@ brew update
 echo ">>>> Install Homebrew Packages"
 brew tap homebrew/bundle
 brew bundle
-brew install -s alacritty.rb
-

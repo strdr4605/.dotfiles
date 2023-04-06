@@ -1,5 +1,5 @@
 cask 'iterm2'
-# cask 'alacritty'
+cask 'alacritty'
 
 brew 'git'
 brew 'zsh'
