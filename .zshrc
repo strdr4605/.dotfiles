@@ -71,7 +71,9 @@ ZSH_THEME="bira"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+#
+# https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vi-mode
+plugins=(vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -154,11 +156,3 @@ include () {
 
 include ~/.zshrc_work
 include ~/.fzf.zsh
-
-# pnpm
-export PNPM_HOME="/Users/strdr4605//Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
