@@ -74,6 +74,8 @@ ZSH_THEME="bira"
 #
 # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/vi-mode
 plugins=(vi-mode)
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+VI_MODE_SET_CURSOR=true
 
 source $ZSH/oh-my-zsh.sh
 
