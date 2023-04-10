@@ -138,8 +138,6 @@ alias G="git"
 # JAVA stuff
 # export JAVA_HOME=$(/usr/libexec/java_home)
 
-eval "$(zoxide init zsh)"
-
 export PATH=/opt/homebrew/bin:$PATH
 
 # NVM
@@ -156,3 +154,5 @@ include () {
 
 include ~/.zshrc_work
 include ~/.fzf.zsh
+
+eval "$(zoxide init zsh)"
