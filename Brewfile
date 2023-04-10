@@ -2,6 +2,7 @@ cask 'iterm2'
 cask 'alacritty'
 
 brew 'git'
+brew 'git-delta'
 brew 'zsh'
 brew 'zsh-syntax-highlighting'
 
