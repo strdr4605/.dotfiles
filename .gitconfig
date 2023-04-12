@@ -3,8 +3,13 @@
 	email = str.dr4605@gmail.com
 
 [alias]
-  fetch-and-clean-branches = "!git fetch -p && git branch -vv | grep ': gone]'|  grep -v "\\*" | awk '{ if ($1==\"+\") { print $2; } else { print $1;} }' | xargs git branch -D"
-  start = "!git fetch-and-clean-branches && git checkout -b \"$1\" --no-track origin/master #"
+  fetch-and-clean-branches = "!git fetch -p \
+    && git branch -vv \
+    | grep ': gone]' \
+    | grep -v "\\*" \
+    | awk '{ if ($1==\"+\") { print $2; } else { print $1;} }' \
+    | xargs git branch -D"
+  start = "!(git fetch-and-clean-branches || true) && git checkout -b \"$1\" --no-track origin/master #"
   clone-for-worktrees = "!sh git-clone-bare-for-worktrees"
   graph = "!git log --oneline --graph --exclude=refs/remotes/origin/gh-pages --all"
 
