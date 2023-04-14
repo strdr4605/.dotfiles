@@ -49,13 +49,10 @@ cursor:
 font:
   normal:
     family: FiraCode Nerd Font
-    style: Regular
   normal:
     family: ComicMono NF
-    style: Regular
-  bold:
-    family: ComicMono NF
-    style: Bold
+  normal:
+    family: ComicCode Nerd Font
   size: 16.0
 
 hints:
