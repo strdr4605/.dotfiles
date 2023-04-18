@@ -21,7 +21,19 @@ lualine.setup({
         end,
       },
     },
-    lualine_b = { "branch", "diff", "diagnostics" },
+    lualine_b = {
+      "branch",
+      "diff",
+      {
+        "diagnostics",
+        symbols = {
+          error = "E ",
+          warn = "W ",
+          info = "H ",
+          hint = "H ",
+        },
+      },
+    },
     lualine_c = {
       {
         git_blame.get_current_blame_text,
