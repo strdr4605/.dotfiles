@@ -53,6 +53,9 @@ font:
     family: ComicMono NF
   normal:
     family: ComicCode Nerd Font
+  bold:
+    family: ComicCode Nerd Font
+    style: medium
   size: 16.0
 
 hints:
