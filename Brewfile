@@ -10,6 +10,7 @@ brew 'nvm'
 
 cask 'brave-browser'
 cask 'raycast'
+cask 'bitwarden'
 
 brew 'tmux'
 brew 'neovim'
