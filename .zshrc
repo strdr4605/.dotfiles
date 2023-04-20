@@ -157,4 +157,15 @@ include () {
 include ~/.zshrc_work
 include ~/.fzf.zsh
 
+,notify () {
+  local last_exit_status="$?"
+
+  if [[ "$last_exit_status" == '0' ]]; then
+    osascript -e "display notification \"Done\" with title \"Good\" sound name \"Fonk\""
+  else
+    osascript -e "display notification \"Exit code: $last_exit_status\" with title \"Bad\" sound name \"Ping\""
+  fi
+  $(exit "$last_exit_status")
+}
+
 eval "$(zoxide init zsh)"
