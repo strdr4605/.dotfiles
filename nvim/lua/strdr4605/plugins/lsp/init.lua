@@ -16,15 +16,19 @@ local setup = function()
 
   vim.diagnostic.config(config)
 
-  vim.lsp.handlers["textDocument/hover"] =
-  vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "rounded",
-  })
+  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(
+    vim.lsp.handlers.hover,
+    {
+      border = "rounded",
+    }
+  )
 
-  vim.lsp.handlers["textDocument/signatureHelp"] =
-  vim.lsp.with(vim.lsp.handlers.signature_help, {
-    border = "rounded",
-  })
+  vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+    vim.lsp.handlers.signature_help,
+    {
+      border = "rounded",
+    }
+  )
 end
 
 setup()
@@ -54,7 +58,12 @@ null_ls.setup({
     formatting.prettier.with({
       prefer_local = "node_modules/.bin",
     }),
-    formatting.stylua,
+    formatting.stylua.with({
+      extra_args = {
+        "--config-path",
+        "~/.config/nvim/stylua.toml",
+      },
+    }),
     -- https://github.com/jose-elias-alvarez/typescript.nvim
     require("typescript.extensions.null-ls.code-actions"),
   },
@@ -112,14 +121,30 @@ require("mason-lspconfig").setup_handlers({
       capabilities = lsp_capabilities,
     }
 
-    local has_custom_opts, server_custom_opts =
-    pcall(require, "strdr4605.lsp_server_settings." .. server_name)
+    local has_custom_opts, server_custom_opts = pcall(
+      require,
+      "strdr4605.lsp_server_settings." .. server_name
+    )
     if has_custom_opts then
-      opts = vim.tbl_deep_extend("force", opts, server_custom_opts)
+      opts = vim.tbl_deep_extend(
+        "force",
+        opts,
+        server_custom_opts
+      )
     end
 
-    -- add a special case for tsserver, since we want to go through typescript.nvim here
-    if server_name == "tsserver" then
+    if server_name == "_tailwindcss" then
+      opts.cmd = {
+        "bunx",
+        "run",
+        "--bun",
+        "tailwindcss-language-server",
+        "--stdio",
+      }
+      -- { "npx", "@tailwindcss/language-server ", "--stdio" }
+      lspconfig[server_name].setup(opts)
+      -- add a special case for tsserver, since we want to go through typescript.nvim here
+    elseif server_name == "tsserver" then
       -- https://github.com/jose-elias-alvarez/typescript.nvim
       require("typescript").setup({ server = opts })
     else
