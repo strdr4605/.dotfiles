@@ -11,6 +11,7 @@ brew 'nvm'
 cask 'brave-browser'
 cask 'raycast'
 cask 'bitwarden'
+cask 'beeper'
 
 brew 'tmux'
 brew 'neovim'
