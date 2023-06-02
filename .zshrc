@@ -171,4 +171,3 @@ include ~/.fzf.zsh
 }
 
 eval "$(zoxide init zsh)"
-export PATH=/Users/strdr4605/.meteor:$PATH
