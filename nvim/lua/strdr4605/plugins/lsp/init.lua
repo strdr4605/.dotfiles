@@ -17,14 +17,14 @@ local setup = function()
   vim.diagnostic.config(config)
 
   vim.lsp.handlers["textDocument/hover"] =
-  vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "rounded",
-  })
+      vim.lsp.with(vim.lsp.handlers.hover, {
+        border = "rounded",
+      })
 
   vim.lsp.handlers["textDocument/signatureHelp"] =
-  vim.lsp.with(vim.lsp.handlers.signature_help, {
-    border = "rounded",
-  })
+      vim.lsp.with(vim.lsp.handlers.signature_help, {
+        border = "rounded",
+      })
 end
 
 setup()
@@ -113,7 +113,7 @@ require("mason-lspconfig").setup_handlers({
     }
 
     local has_custom_opts, server_custom_opts =
-    pcall(require, "strdr4605.lsp_server_settings." .. server_name)
+        pcall(require, "strdr4605.lsp_server_settings." .. server_name)
     if has_custom_opts then
       opts = vim.tbl_deep_extend("force", opts, server_custom_opts)
     end
@@ -121,7 +121,20 @@ require("mason-lspconfig").setup_handlers({
     -- add a special case for tsserver, since we want to go through typescript.nvim here
     if server_name == "tsserver" then
       -- https://github.com/jose-elias-alvarez/typescript.nvim
-      require("typescript").setup({ server = opts })
+      -- Disable tsserver formatting, since we're using null-ls for that
+      -- https://github.com/alisnic/.dotfiles/blob/d14829c492eabba907234e2dda21de9f57367c18/nvim/lua/plugins.lua#L124-L135
+      require("typescript").setup({
+        server = {
+          init_options = {
+            disableAutomaticTypingAcquisition = true,
+          },
+          flags = { debounce_text_changes = 400 },
+          on_attach = function(client, bufnr)
+            client.server_capabilities.documentFormattingProvider = false
+            lsp_attach(client, bufnr)
+          end,
+        },
+      })
     else
       lspconfig[server_name].setup(opts)
     end
