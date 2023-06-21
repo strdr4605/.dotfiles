@@ -505,31 +505,11 @@ require("lazy").setup({
         },
       })
 
-      local null_ls = require("null-ls")
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-      local formatting = null_ls.builtins.formatting
-      null_ls.setup({
-        debug = false,
-        sources = {
-          formatting.shfmt.with({
-            extra_args = { "-i", "2", "-ci" },
-          }),
-          formatting.prettier.with({
-            prefer_local = "node_modules/.bin",
-          }),
-          formatting.stylua,
-          -- https://github.com/jose-elias-alvarez/typescript.nvim
-          require("typescript.extensions.null-ls.code-actions"),
-        },
-      })
-      require("mason-null-ls").setup({
-        ensure_installed = nil,
-        automatic_installation = true,
-        automatic_setup = false,
-      })
-
       local lsp_attach = function(client, bufnr)
-        require("lsp-format").on_attach(client)
+        if client.name ~= "tsserver" then
+          require("lsp-format").on_attach(client)
+          client.server_capabilities.documentFormattingProvider = true
+        end
 
         local opts = { buffer = bufnr, remap = false, silent = true }
         vim.keymap.set("n", "gd", function()
@@ -567,6 +547,34 @@ require("lazy").setup({
           vim.lsp.buf.format({ async = true })
         end, {})
       end
+
+      local null_ls = require("null-ls")
+      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
+      local formatting = null_ls.builtins.formatting
+      null_ls.setup({
+        debug = false,
+        on_attach = function(client, bufnr)
+          client.server_capabilities.documentFormattingProvider = true
+          lsp_attach(client, bufnr)
+        end,
+        sources = {
+          formatting.shfmt.with({
+            extra_args = { "-i", "2", "-ci" },
+          }),
+          formatting.prettier.with({
+            prefer_local = "node_modules/.bin",
+          }),
+          formatting.stylua,
+          -- https://github.com/jose-elias-alvarez/typescript.nvim
+          require("typescript.extensions.null-ls.code-actions"),
+        },
+      })
+      require("mason-null-ls").setup({
+        ensure_installed = nil,
+        automatic_installation = true,
+        automatic_setup = false,
+      })
+
       local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       local lspconfig = require("lspconfig")
@@ -661,8 +669,8 @@ require("lazy").setup({
                 },
                 flags = { debounce_text_changes = 400 },
                 on_attach = function(client, bufnr)
-                  lsp_attach(client, bufnr)
                   client.server_capabilities.documentFormattingProvider = false
+                  lsp_attach(client, bufnr)
                 end,
               },
             })
