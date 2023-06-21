@@ -93,10 +93,10 @@ vim.opt.scrolloff = 8                           -- minimal number of screen line
 vim.opt.guifont = "monospace:h17"               -- the font used in graphical neovim applications
 -- vim.opt.fillchars.eob = " " -- show empty lines at the end of a buffer as ` ` {default `~`}
 -- vim.opt.shortmess:append("c") -- hide all the completion messages, e.g. "-- XXX completion (YYY)", "match 1 of 2", "The only match", "Pattern not found"
-vim.opt.whichwrap:append("<,>,[,],h,l")                                                                                                           -- keys allowed to move to the previous/next line when the beginning/end of line is reached
-vim.opt.iskeyword:append("-")                                                                                                                     -- treats words with `-` as single words
+vim.opt.whichwrap:append("<,>,[,],h,l")                                                                                                          -- keys allowed to move to the previous/next line when the beginning/end of line is reached
+vim.opt.iskeyword:append("-")                                                                                                                    -- treats words with `-` as single words
 vim.opt.guicursor =
-"n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175"  -- setting for guicursor taken from :h 'guicursor'
+"n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175" -- setting for guicursor taken from :h 'guicursor'
 
 local augroup = vim.api.nvim_create_augroup("strdr4605", { clear = true })
 vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter", "BufWinEnter" }, {
@@ -256,7 +256,7 @@ require("lazy").setup({
             cmd = "bat",
             args = "--style=numbers,changes --color always",
             theme = "gruvbox-light", -- bat preview theme (bat --list-themes)
-            config = nil,      -- nil uses $BAT_CONFIG_PATH
+            config = nil,            -- nil uses $BAT_CONFIG_PATH
           },
         },
       })
@@ -383,8 +383,8 @@ require("lazy").setup({
           },
         },
         signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-        numhl = false, -- Toggle with `Gitsigns toggle_numhl`
-        linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+        numhl = false,     -- Toggle with `Gitsigns toggle_numhl`
+        linehl = false,    -- Toggle with `:Gitsigns toggle_linehl`
         word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
         watch_gitdir = {
           interval = 1000,
@@ -699,8 +699,7 @@ require("lazy").setup({
         end
         local line, col = unpack(vim.api.nvim_win_get_cursor(0))
         return col ~= 0
-            and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$")
-            == nil
+            and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
       end
 
       cmp.setup({
@@ -767,9 +766,9 @@ require("lazy").setup({
       })
     end,
     dependencies = {
-      "hrsh7th/cmp-buffer",    -- buffer completions
-      "hrsh7th/cmp-path",      -- path completions
-      "hrsh7th/cmp-cmdline",   -- cmdline completions
+      "hrsh7th/cmp-buffer",       -- buffer completions
+      "hrsh7th/cmp-path",         -- path completions
+      "hrsh7th/cmp-cmdline",      -- cmdline completions
       "saadparwaiz1/cmp_luasnip", -- snippet completions
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-nvim-lua",
@@ -1027,14 +1026,14 @@ require("lazy").setup({
       local colorizer = require("colorizer")
 
       colorizer.setup({ "css", "scss", "javascript", "javascriptreact", "html" }, {
-        RGB = true,      -- #RGB hex codes
-        RRGGBB = true,   -- #RRGGBB hex codes
-        names = true,    -- "Name" codes like Blue
-        RRGGBBAA = true, -- #RRGGBBAA hex codes
-        rgb_fn = true,   -- CSS rgb() and rgba() functions
-        hsl_fn = true,   -- CSS hsl() and hsla() functions
-        css = true,      -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = true,   -- Enable all CSS *functions*: rgb_fn, hsl_fn
+        RGB = true,          -- #RGB hex codes
+        RRGGBB = true,       -- #RRGGBB hex codes
+        names = true,        -- "Name" codes like Blue
+        RRGGBBAA = true,     -- #RRGGBBAA hex codes
+        rgb_fn = true,       -- CSS rgb() and rgba() functions
+        hsl_fn = true,       -- CSS hsl() and hsla() functions
+        css = true,          -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+        css_fn = true,       -- Enable all CSS *functions*: rgb_fn, hsl_fn
         -- Available modes: foreground, background
         mode = "background", -- Set the display mode.
       })
@@ -1067,4 +1066,3 @@ require("lazy").setup({
     end,
   },
 })
-
