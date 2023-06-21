@@ -212,21 +212,126 @@ require("lazy").setup({
   {
     "ibhagwan/fzf-lua",
     config = function()
-      require("strdr4605.plugins.fzf-lua")
+      local fzf_lua = require("fzf-lua")
+
+      vim.keymap.set("n", "<leader>f", function()
+        require("fzf-lua").git_files()
+      end, opts)
+      vim.keymap.set("n", "<leader><S-f>", function()
+        require("fzf-lua").live_grep_glob()
+      end, opts)
+      vim.keymap.set("n", "<leader>r", function()
+        require("fzf-lua").resume()
+      end, opts)
+      vim.keymap.set("n", "<leader>b", function()
+        require("fzf-lua").buffers()
+      end, opts)
+
+      fzf_lua.setup({
+        actions = {
+          buffers = {
+            ["default"] = fzf_lua.actions.buf_edit,
+            ["ctrl-d"] = function(selected, opts)
+              fzf_lua.actions.buf_del(selected, opts)
+              fzf_lua.buffers()
+            end,
+          },
+        },
+        fzf_opts = {
+          ["--layout"] = "reverse",
+          -- ["--ansi"] = false,
+        },
+        keymap = {
+          fzf = {
+            ["ctrl-q"] = "select-all+accept",
+          },
+        },
+        grep = {
+          rg_opts = "--hidden --column --line-number --no-heading --color=always --smart-case --max-columns=512",
+          file_icons = false,
+          git_icons = false,
+        },
+        winopts = {
+          --[[ split = "belowright new", ]]
+          preview = {
+            hidden = "nohidden",
+            default = "bat",
+            horizontal = "bottom:40%",
+          },
+        },
+        previewers = {
+          bat = {
+            cmd = "bat",
+            args = "--style=numbers,changes --color always",
+            theme = "gruvbox-light", -- bat preview theme (bat --list-themes)
+            config = nil,            -- nil uses $BAT_CONFIG_PATH
+          },
+        },
+      })
+
+      vim.cmd("FzfLua register_ui_select")
     end,
   },
   { "junegunn/fzf", build = "./install --all --no-bash --no-fish" },
   {
     "ThePrimeagen/harpoon",
     config = function()
-      require("strdr4605.plugins.harpoon")
+      vim.keymap.set("n", "<leader>H", function()
+        require("harpoon.ui").toggle_quick_menu()
+      end, opts)
+      vim.keymap.set("n", "<leader>h", function()
+        require("harpoon.mark").add_file()
+      end, opts)
+      vim.keymap.set("n", "<leader>j", function()
+        require("harpoon.ui").nav_file(1)
+      end, opts)
+      vim.keymap.set("n", "<leader>k", function()
+        require("harpoon.ui").nav_file(2)
+      end, opts)
+      vim.keymap.set("n", "<leader>l", function()
+        require("harpoon.ui").nav_file(3)
+      end, opts)
+      vim.keymap.set("n", "<leader>;", function()
+        require("harpoon.ui").nav_file(4)
+      end, opts)
     end,
   },
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
-      require("strdr4605.plugins.treesitter")
+      require("nvim-treesitter.configs").setup({
+        -- windwp/nvim-ts-autotag
+        autotag = {
+          enable = true,
+        },
+        -- A list of parser names, or "all" (the four listed parsers should always be installed)
+        ensure_installed = {
+          "javascript",
+          "typescript",
+          "lua",
+          "vim",
+          "vimdoc",
+        },
+
+        -- Install parsers synchronously (only applied to `ensure_installed`)
+        sync_install = false,
+
+        -- Automatically install missing parsers when entering buffer
+        -- Recommendation: set to false if you don"t have `tree-sitter` CLI installed locally
+        auto_install = true,
+
+        highlight = {
+          -- `false` will disable the whole extension
+          enable = true,
+
+          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+          -- Set this to `true` if you depend on "syntax" being enabled (like for indentation).
+          -- Using this option may slow down your editor, and you may see some duplicate highlights.
+          -- Instead of true it can also be a list of languages
+          additional_vim_regex_highlighting = false,
+        },
+      })
     end,
     dependencies = {
       "windwp/nvim-ts-autotag",
@@ -252,7 +357,123 @@ require("lazy").setup({
   {
     "lewis6991/gitsigns.nvim",
     config = function()
-      require("strdr4605.plugins.gitsigns")
+      local gitsigns = require("gitsigns")
+
+      gitsigns.setup({
+        signs = {
+          add = {
+            hl = "GitSignsAdd",
+            text = "▎",
+            numhl = "GitSignsAddNr",
+            linehl = "GitSignsAddLn",
+          },
+          change = {
+            hl = "GitSignsChange",
+            text = "▎",
+            numhl = "GitSignsChangeNr",
+            linehl = "GitSignsChangeLn",
+          },
+          delete = {
+            hl = "GitSignsDelete",
+            text = "_",
+            numhl = "GitSignsDeleteNr",
+            linehl = "GitSignsDeleteLn",
+          },
+          topdelete = {
+            hl = "GitSignsDelete",
+            text = "‾",
+            numhl = "GitSignsDeleteNr",
+            linehl = "GitSignsDeleteLn",
+          },
+          changedelete = {
+            hl = "GitSignsChange",
+            text = "~",
+            numhl = "GitSignsChangeNr",
+            linehl = "GitSignsChangeLn",
+          },
+        },
+        signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+        numhl = false,     -- Toggle with `Gitsigns toggle_numhl`
+        linehl = false,    -- Toggle with `:Gitsigns toggle_linehl`
+        word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
+        watch_gitdir = {
+          interval = 1000,
+          follow_files = true,
+        },
+        attach_to_untracked = true,
+        current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+        current_line_blame_opts = {
+          virt_text = true,
+          virt_text_pos = "right_align", -- 'eol' | 'overlay' | 'right_align'
+          delay = 1000,
+          ignore_whitespace = false,
+        },
+        current_line_blame_formatter_opts = {
+          relative_time = true,
+        },
+        sign_priority = 6,
+        update_debounce = 100,
+        status_formatter = nil, -- Use default
+        max_file_length = 40000,
+        preview_config = {
+          -- Options passed to nvim_open_win
+          border = "single",
+          style = "minimal",
+          relative = "cursor",
+          row = 0,
+          col = 1,
+        },
+        yadm = {
+          enable = false,
+        },
+        on_attach = function(bufnr)
+          local function map(mode, lhs, rhs, opts)
+            opts = vim.tbl_extend(
+              "force",
+              { noremap = true, silent = true },
+              opts or {}
+            )
+            vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+          end
+
+          -- Navigation
+          map(
+            "n",
+            "]c",
+            "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'",
+            { expr = true }
+          )
+          map(
+            "n",
+            "[c",
+            "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'",
+            { expr = true }
+          )
+
+          -- Actions
+          map("n", "<leader>hs", ":Gitsigns stage_hunk<CR>")
+          map("v", "<leader>hs", ":Gitsigns stage_hunk<CR>")
+          map("n", "<leader>hr", ":Gitsigns reset_hunk<CR>")
+          map("v", "<leader>hr", ":Gitsigns reset_hunk<CR>")
+          map("n", "<leader>hS", "<cmd>Gitsigns stage_buffer<CR>")
+          map("n", "<leader>hu", "<cmd>Gitsigns undo_stage_hunk<CR>")
+          map("n", "<leader>hR", "<cmd>Gitsigns reset_buffer<CR>")
+          map("n", "<leader>hp", "<cmd>Gitsigns preview_hunk<CR>")
+          map(
+            "n",
+            "<leader>hb",
+            '<cmd>lua require"gitsigns".blame_line{full=true}<CR>'
+          )
+          map("n", "<leader>tb", "<cmd>Gitsigns toggle_current_line_blame<CR>")
+          map("n", "<leader>hd", "<cmd>Gitsigns diffthis<CR>")
+          map("n", "<leader>hD", '<cmd>lua require"gitsigns".diffthis("~")<CR>')
+          map("n", "<leader>td", "<cmd>Gitsigns toggle_deleted<CR>")
+
+          -- Text object
+          map("o", "ih", ":<C-U>Gitsigns select_hunk<CR>")
+          map("x", "ih", ":<C-U>Gitsigns select_hunk<CR>")
+        end,
+      })
     end,
   },
   {
@@ -267,7 +488,219 @@ require("lazy").setup({
   {
     "neovim/nvim-lspconfig",
     config = function()
-      require("strdr4605.plugins.lsp")
+      local setup = function()
+        local config = {
+          virtual_text = false,
+          update_in_insert = false,
+          underline = true,
+          severity_sort = true,
+          float = {
+            focusable = false,
+            style = "minimal",
+            border = "rounded",
+            source = "always",
+            header = "",
+            prefix = "",
+          },
+        }
+
+        vim.diagnostic.config(config)
+
+        vim.lsp.handlers["textDocument/hover"] =
+            vim.lsp.with(vim.lsp.handlers.hover, {
+              border = "rounded",
+            })
+
+        vim.lsp.handlers["textDocument/signatureHelp"] =
+            vim.lsp.with(vim.lsp.handlers.signature_help, {
+              border = "rounded",
+            })
+      end
+
+      setup()
+
+      require("mason").setup()
+
+      require("mason-lspconfig").setup({
+        ensure_installed = {
+          "jsonls",
+          "lua_ls",
+          "tsserver",
+          "cssls",
+          "emmet_ls",
+          "eslint",
+        },
+      })
+
+      local null_ls = require("null-ls")
+      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
+      local formatting = null_ls.builtins.formatting
+      null_ls.setup({
+        debug = false,
+        sources = {
+          formatting.shfmt.with({
+            extra_args = { "-i", "2", "-ci" },
+          }),
+          formatting.prettier.with({
+            prefer_local = "node_modules/.bin",
+          }),
+          formatting.stylua,
+          -- https://github.com/jose-elias-alvarez/typescript.nvim
+          require("typescript.extensions.null-ls.code-actions"),
+        },
+      })
+      require("mason-null-ls").setup({
+        ensure_installed = nil,
+        automatic_installation = true,
+        automatic_setup = false,
+      })
+
+      local lsp_attach = function(_, bufnr)
+        local opts = { buffer = bufnr, remap = false, silent = true }
+        vim.keymap.set("n", "gd", function()
+          vim.lsp.buf.definition()
+        end, opts)
+        vim.keymap.set("n", "gr", function()
+          vim.lsp.buf.references()
+        end, opts)
+        vim.keymap.set("n", "gl", function()
+          vim.diagnostic.open_float()
+        end, opts)
+        vim.keymap.set("n", "K", function()
+          vim.lsp.buf.hover()
+        end, opts)
+        vim.keymap.set("n", "<C-k>", function()
+          vim.lsp.buf.signature_help()
+        end, opts)
+        vim.keymap.set("n", "<leader>rn", function()
+          vim.lsp.buf.rename()
+        end, opts)
+        vim.keymap.set("n", "<leader>ca", function()
+          vim.lsp.buf.code_action()
+        end, opts)
+        vim.keymap.set("n", "[d", function()
+          vim.diagnostic.goto_prev({ border = "rounded" })
+        end, opts)
+        vim.keymap.set("n", "]d", function()
+          vim.diagnostic.goto_next({ border = "rounded" })
+        end, opts)
+        vim.keymap.set("n", "<leader>q", function()
+          vim.diagnostic.setloclist()
+        end, opts)
+
+        vim.api.nvim_create_user_command("F", function()
+          vim.lsp.buf.format({ async = true })
+        end, {})
+      end
+      local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+      local lspconfig = require("lspconfig")
+      require("mason-lspconfig").setup_handlers({
+        function(server_name)
+          local opts = {
+            on_attach = lsp_attach,
+            capabilities = lsp_capabilities,
+          }
+
+          local has_custom_opts, server_custom_opts =
+              pcall(require, "strdr4605.lsp_server_settings." .. server_name)
+          if has_custom_opts then
+            opts = vim.tbl_deep_extend("force", opts, server_custom_opts)
+          end
+
+          if server_name == "lua_ls" then
+            opts.settings = {
+              Lua = {
+                diagnostics = {
+                  globals = { "vim" },
+                },
+                workspace = {
+                  library = {
+                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                    [vim.fn.stdpath("config") .. "/lua"] = true,
+                  },
+                },
+              },
+            }
+          end
+
+          if server_name == "emmet_ls" then
+            opts.filetypes =
+            { "html", "css", "scss", "javascript", "typescript" }
+          end
+
+          if server_name == "jsonls" then
+            -- Find more schemas here: https://www.schemastore.org/json/
+            local schemas = {
+              {
+                description = "TypeScript compiler configuration file",
+                fileMatch = {
+                  "tsconfig.json",
+                  "tsconfig.*.json",
+                },
+                url = "https://json.schemastore.org/tsconfig.json",
+              },
+              {
+                description = "Prettier config",
+                fileMatch = {
+                  ".prettierrc",
+                  ".prettierrc.json",
+                  "prettier.config.json",
+                },
+                url = "https://json.schemastore.org/prettierrc",
+              },
+              {
+                description = "NPM configuration file",
+                fileMatch = {
+                  "package.json",
+                },
+                url = "https://json.schemastore.org/package.json",
+              },
+            }
+
+            opts.settings = {
+              json = {
+                schemas = schemas,
+              },
+            }
+
+            opts.setup = {
+              commands = {
+                Format = {
+                  function()
+                    vim.lsp.buf.range_formatting(
+                      {},
+                      { 0, 0 },
+                      { vim.fn.line("$"), 0 }
+                    )
+                  end,
+                },
+              },
+            }
+          end
+
+          -- add a special case for tsserver, since we want to go through typescript.nvim here
+          if server_name == "tsserver" then
+            -- https://github.com/jose-elias-alvarez/typescript.nvim
+            -- Disable tsserver formatting, since we're using null-ls for that
+            -- https://github.com/alisnic/.dotfiles/blob/d14829c492eabba907234e2dda21de9f57367c18/nvim/lua/plugins.lua#L124-L135
+            require("typescript").setup({
+              server = {
+                init_options = {
+                  disableAutomaticTypingAcquisition = true,
+                },
+                flags = { debounce_text_changes = 400 },
+                on_attach = function(client, bufnr)
+                  client.server_capabilities.documentFormattingProvider = false
+                  lsp_attach(client, bufnr)
+                end,
+              },
+            })
+          else
+            lspconfig[server_name].setup(opts)
+          end
+        end,
+      })
     end,
     dependencies = {
       "williamboman/mason-lspconfig.nvim",
