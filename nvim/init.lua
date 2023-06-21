@@ -131,13 +131,6 @@ vim.api.nvim_create_autocmd("TextYankPost ", {
     vim.highlight.on_yank({ higroup = "IncSearch", timeout = 300 })
   end,
 })
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*",
-  group = augroup,
-  callback = function()
-    vim.lsp.buf.format()
-  end,
-})
 
 -- Better quickfix
 local fn = vim.fn
@@ -496,6 +489,11 @@ require("lazy").setup({
 
       require("mason").setup()
 
+      require("lsp-format").setup({
+        typescript = { "eslint", "null-ls" },
+        typescriptreact = { "eslint", "null-ls" },
+      })
+
       require("mason-lspconfig").setup({
         ensure_installed = {
           "jsonls",
@@ -530,7 +528,9 @@ require("lazy").setup({
         automatic_setup = false,
       })
 
-      local lsp_attach = function(_, bufnr)
+      local lsp_attach = function(client, bufnr)
+        require("lsp-format").on_attach(client)
+
         local opts = { buffer = bufnr, remap = false, silent = true }
         vim.keymap.set("n", "gd", function()
           vim.lsp.buf.definition()
@@ -661,8 +661,8 @@ require("lazy").setup({
                 },
                 flags = { debounce_text_changes = 400 },
                 on_attach = function(client, bufnr)
-                  client.server_capabilities.documentFormattingProvider = false
                   lsp_attach(client, bufnr)
+                  client.server_capabilities.documentFormattingProvider = false
                 end,
               },
             })
@@ -678,6 +678,7 @@ require("lazy").setup({
       "jose-elias-alvarez/null-ls.nvim",
       "jay-babu/mason-null-ls.nvim",
       "jose-elias-alvarez/typescript.nvim",
+      "lukas-reineke/lsp-format.nvim",
     },
   },
   -- cmp
