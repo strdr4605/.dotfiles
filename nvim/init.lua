@@ -56,7 +56,7 @@ vim.opt.incsearch = true
 vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 8
-vim.opt.signcolumn = "yes"
+vim.opt.signcolumn = "number"
 vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
@@ -82,7 +82,7 @@ vim.opt.expandtab = true                        -- convert tabs to spaces
 vim.opt.shiftwidth = 2                          -- the number of spaces inserted for each indentation
 vim.opt.tabstop = 2                             -- insert 2 spaces for a tab
 vim.opt.cursorline = true                       -- highlight the current line
-vim.opt.number = true                           -- set numbered lines
+vim.opt.number = false                          -- set numbered lines
 vim.opt.relativenumber = true                   -- set relative numbered line
 vim.opt.laststatus = 3                          -- only the last window will always have a status line
 vim.opt.showcmd = false                         -- hide (partial) command in the last line of the screen (for performance)
@@ -567,12 +567,6 @@ require("lazy").setup({
           formatting.stylua,
         },
       })
-      require("mason-null-ls").setup({
-        ensure_installed = nil,
-        automatic_installation = true,
-        automatic_setup = false,
-      })
-
       local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       local lspconfig = require("lspconfig")
@@ -673,7 +667,6 @@ require("lazy").setup({
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason.nvim",
       "jose-elias-alvarez/null-ls.nvim",
-      "jay-babu/mason-null-ls.nvim",
       "pmizio/typescript-tools.nvim",
       "lukas-reineke/lsp-format.nvim",
     },
