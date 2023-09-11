@@ -454,6 +454,14 @@ require("lazy").setup({
       vim.cmd([[ command! Graph execute 'GV --exclude=refs/remotes/origin/gh-pages --all' ]])
     end,
   },
+  {
+    "rbong/vim-flog",
+    config = function()
+      vim.cmd(
+        [[ command! GGraph execute 'Flog -format=[%h]\ %d\ %s -- --exclude=refs/remotes/origin/gh-pages --all' ]]
+      )
+    end,
+  },
   -- lsp
   {
     "neovim/nvim-lspconfig",
@@ -500,6 +508,7 @@ require("lazy").setup({
           "lua_ls",
           "tsserver",
           "cssls",
+          "stylelint_lsp",
           "emmet_ls",
           "eslint",
         },
