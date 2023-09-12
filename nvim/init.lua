@@ -220,15 +220,6 @@ require("lazy").setup({
       end, opts)
 
       fzf_lua.setup({
-        actions = {
-          buffers = {
-            ["default"] = fzf_lua.actions.buf_edit,
-            ["ctrl-d"] = function(selected, opts)
-              fzf_lua.actions.buf_del(selected, opts)
-              fzf_lua.buffers()
-            end,
-          },
-        },
         fzf_opts = {
           ["--layout"] = "reverse",
           -- ["--ansi"] = false,
