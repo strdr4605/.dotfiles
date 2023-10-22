@@ -124,7 +124,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
   group = augroup,
   command = "compiler eslint | setlocal makeprg=npm\\ run\\ eslint:run\\ --\\ --format\\ compact",
 })
-vim.api.nvim_create_autocmd("TextYankPost ", {
+vim.api.nvim_create_autocmd("TextYankPost", {
   pattern = "*",
   group = augroup,
   callback = function()
