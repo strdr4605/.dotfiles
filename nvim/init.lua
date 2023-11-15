@@ -954,15 +954,15 @@ require("lazy").setup({
       "f-person/git-blame.nvim",
     },
   },
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    config = function()
-      require("indent_blankline").setup({
-        show_current_context = true,
-        show_current_context_start = false,
-      })
-    end,
-  },
+  -- {
+  --   "lukas-reineke/indent-blankline.nvim",
+  --   config = function()
+  --     require("indent_blankline").setup({
+  --       show_current_context = true,
+  --       show_current_context_start = false,
+  --     })
+  --   end,
+  -- },
   {
     "tamago324/lir.nvim",
     config = function()
@@ -970,7 +970,7 @@ require("lazy").setup({
 
       vim.g.loaded_netrw = 1
       vim.g.loaded_netrwPlugin = 1
-      vim.keymap.set("n", "-", [[<Cmd>execute 'e ' .. expand('%:p:h')<CR>]], { noremap = true })
+      -- vim.keymap.set("n", "-", [[<Cmd>execute 'e ' .. expand('%:p:h')<CR>]], { noremap = true })
 
       local actions = require("lir.actions")
       local mark_actions = require("lir.mark.actions")
@@ -1016,6 +1016,39 @@ require("lazy").setup({
           name = "LirFolderNode",
         },
       })
+    end,
+  },
+  {
+    "stevearc/oil.nvim",
+    opts = {},
+    -- Optional dependencies
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("oil").setup({
+        use_default_keymaps = false,
+        keymaps = {
+          ["g?"] = "actions.show_help",
+          ["<CR>"] = "actions.select",
+          ["<C-s>"] = "actions.select_vsplit",
+          -- ["<C-h>"] = "actions.select_split",
+          ["<C-t>"] = "actions.select_tab",
+          ["<C-p>"] = "actions.preview",
+          ["<C-c>"] = "actions.close",
+          ["<C-r>"] = "actions.refresh",
+          ["-"] = "actions.parent",
+          ["_"] = "actions.open_cwd",
+          ["`"] = "actions.cd",
+          ["~"] = "actions.tcd",
+          ["gs"] = "actions.change_sort",
+          ["gx"] = "actions.open_external",
+          ["g."] = "actions.toggle_hidden",
+          ["g\\"] = "actions.toggle_trash",
+        },
+        view_options = {
+          show_hidden = true,
+        },
+      })
+      vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Open parent directory" })
     end,
   },
   "kevinhwang91/nvim-bqf",
