@@ -1,4 +1,3 @@
-cask 'iterm2'
 cask 'alacritty'
 
 brew 'git'
