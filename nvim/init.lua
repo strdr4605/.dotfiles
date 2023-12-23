@@ -203,7 +203,6 @@ vim.g.maplocalleader = " "
 require("lazy").setup({
   "nvim-lua/plenary.nvim", -- Useful lua functions used ny lots of plugins
   "nvim-tree/nvim-web-devicons",
-  -- "Pocco81/auto-save.nvim",
   "christoomey/vim-tmux-navigator",
   {
     "ibhagwan/fzf-lua",
@@ -670,7 +669,7 @@ require("lazy").setup({
     dependencies = {
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason.nvim",
-      "jose-elias-alvarez/null-ls.nvim",
+      "nvimtools/none-ls.nvim",
       "pmizio/typescript-tools.nvim",
       "lukas-reineke/lsp-format.nvim",
     },
