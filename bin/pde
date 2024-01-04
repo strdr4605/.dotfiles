@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
-tmux split-window -v -p 20
-tmux split-window -h
-tmux select-pane -U
+# tmux split-window -v -p 20
+# tmux split-window -h
+# tmux select-pane -U
+
+tmux split-window -h -p 70
+tmux select-pane -t 1
+tmux split-window -v
+tmux select-pane -t 3
+
 if [[ -n "$1" ]]; then
   tmux rename-window "$1"
 fi
-e
+# e
