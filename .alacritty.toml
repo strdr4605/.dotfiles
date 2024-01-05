@@ -1,0 +1,68 @@
+[colors.bright]
+black = "0x928374"
+blue = "0x076678"
+cyan = "0x427b58"
+green = "0x79740e"
+magenta = "0x8f3f71"
+red = "0x9d0006"
+white = "0x3c3836"
+yellow = "0xb57614"
+
+[colors.normal]
+black = "0xfbf1c7"
+blue = "0x458588"
+cyan = "0x689d6a"
+green = "0x98971a"
+magenta = "0xb16286"
+red = "0xcc241d"
+white = "0x7c6f64"
+yellow = "0xd79921"
+
+[colors.primary]
+background = "0xf9f5d7"
+foreground = "0x3c3836"
+
+[cursor.style]
+blinking = "Always"
+
+[env]
+TERM = "alacritty"
+
+[font]
+size = 16.0
+
+[font.bold]
+family = "ComicCode Nerd Font"
+style = "medium"
+
+[font.normal]
+family = "ComicCode Nerd Font"
+
+[[hints.enabled]]
+command = "open"
+post_processing = true
+regex = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-<>\"\\s{-}\\^⟨⟩`]+"
+
+[hints.enabled.binding]
+key = "U"
+mods = "Command"
+
+[hints.enabled.mouse]
+enabled = true
+
+[[keyboard.bindings]]
+action = "ToggleSimpleFullscreen"
+key = "Return"
+mods = "Command"
+
+[window]
+decorations = "buttonless"
+opacity = 1
+
+[window.dimensions]
+columns = 500
+lines = 50
+
+[window.position]
+x = 0
+y = 0

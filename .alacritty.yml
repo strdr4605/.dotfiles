@@ -47,10 +47,10 @@ cursor:
     blinking: Always
 
 font:
-  normal:
-    family: FiraCode Nerd Font
-  normal:
-    family: ComicMono NF
+  # normal:
+  #   family: FiraCode Nerd Font
+  # normal:
+  #   family: ComicMono NF
   normal:
     family: ComicCode Nerd Font
   bold:

@@ -8,7 +8,7 @@
 
 - link:
     ~/.tmux.conf: .tmux.conf
-    ~/.alacritty.yml: .alacritty.yml
+    ~/.alacritty.toml: .alacritty.toml
     ~/.config/nvim: ./nvim
     ~/.config/lf/lfrc: lfrc
     ~/.zshrc: .zshrc
