@@ -261,24 +261,32 @@ require("lazy").setup({
   { "junegunn/fzf", build = "./install --all --no-bash --no-fish" },
   {
     "ThePrimeagen/harpoon",
+    branch = "harpoon2",
     config = function()
-      vim.keymap.set("n", "<leader>H", function()
-        require("harpoon.ui").toggle_quick_menu()
-      end, opts)
+      local harpoon = require("harpoon")
+
+      -- REQUIRED
+      harpoon:setup()
+      -- REQUIRED
+
       vim.keymap.set("n", "<leader>h", function()
-        require("harpoon.mark").add_file()
+        harpoon:list():append()
       end, opts)
+      vim.keymap.set("n", "<leader>H", function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end, opts)
+
       vim.keymap.set("n", "<leader>j", function()
-        require("harpoon.ui").nav_file(1)
+        harpoon:list():select(1)
       end, opts)
       vim.keymap.set("n", "<leader>k", function()
-        require("harpoon.ui").nav_file(2)
+        harpoon:list():select(2)
       end, opts)
       vim.keymap.set("n", "<leader>l", function()
-        require("harpoon.ui").nav_file(3)
+        harpoon:list():select(3)
       end, opts)
       vim.keymap.set("n", "<leader>;", function()
-        require("harpoon.ui").nav_file(4)
+        harpoon:list():select(4)
       end, opts)
     end,
   },
