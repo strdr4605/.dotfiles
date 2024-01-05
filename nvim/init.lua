@@ -857,6 +857,8 @@ require("lazy").setup({
       local lualine = require("lualine")
 
       vim.g.gitblame_display_virtual_text = 0 -- Disable virtual text
+      vim.g.gitblame_date_format = "%x"
+
       local git_blame = require("gitblame")
 
       lualine.setup({
@@ -914,7 +916,7 @@ require("lazy").setup({
               },
             },
           },
-          lualine_x = { "encoding", "fileformat", "filetype" },
+          lualine_x = { "encoding", "filetype" },
           lualine_y = { "progress" },
           lualine_z = { "location" },
         },
