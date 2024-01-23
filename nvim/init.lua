@@ -1065,14 +1065,27 @@ require("lazy").setup({
     end,
   },
   {
-    "tamton-aquib/duck.nvim",
+    "rgroli/other.nvim",
     config = function()
-      vim.keymap.set("n", "<leader>dd", function()
-        require("duck").hatch()
-      end, {})
-      vim.keymap.set("n", "<leader>dk", function()
-        require("duck").cook()
-      end, {})
+      require("other-nvim").setup({
+        mappings = {
+          {
+            pattern = "(.*).tsx$",
+            target = "%1.scss",
+            context = "style",
+          },
+          {
+            pattern = "(.*).tsx$",
+            target = "%1.css",
+            context = "style",
+          },
+          {
+            pattern = "(.*).ts$",
+            target = "%1.tests.ts",
+            context = "test",
+          },
+        },
+      })
     end,
   },
 })
