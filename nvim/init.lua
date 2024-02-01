@@ -44,7 +44,7 @@ vim.keymap.set("v", "J", ":move '>+1<CR>gv-gv", opts)
 vim.keymap.set("v", "K", ":move '<-2<CR>gv-gv", opts)
 
 -- Settings
-vim.opt.wrap = false
+vim.opt.wrap = true
 
 -- https://github.com/ThePrimeagen/init.lua/blob/master/lua/theprimeagen/set.lua
 vim.opt.swapfile = false
