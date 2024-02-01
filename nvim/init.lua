@@ -408,16 +408,14 @@ require("lazy").setup({
           interval = 1000,
           follow_files = true,
         },
-        attach_to_untracked = true,
+        auto_attach = true,
+        attach_to_untracked = false,
         current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
         current_line_blame_opts = {
           virt_text = true,
           virt_text_pos = "right_align", -- 'eol' | 'overlay' | 'right_align'
           delay = 1000,
           ignore_whitespace = false,
-        },
-        current_line_blame_formatter_opts = {
-          relative_time = true,
         },
         sign_priority = 6,
         update_debounce = 100,
