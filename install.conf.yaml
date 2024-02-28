@@ -22,18 +22,8 @@
     - command: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
       description: Installing Oh My Zsh
       stdout: true
-    - command: ./npmi.sh
-      description: Installing NPM global packages
-      stdout: true
-    # -
-    #   command: sudo ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
-    #   description: Linking openjdk-11
     - command: curl https://raw.githubusercontent.com/strdr4605/tt/latest/tt.sh > ~/tt.sh
       description: Installing tt
     - command: ./check_tmux_tpm.sh
       description: Tmux Plugin Manager
       allow_fail: true
-  # -
-  #   command: echo "\n>>>> Please run ./iterm2.sh after opening iTerm2"
-  #   description: iTerm2
-  #   stdout: true
