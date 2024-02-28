@@ -170,4 +170,5 @@ include ~/.fzf.zsh
   $(exit "$last_exit_status")
 }
 
+eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"

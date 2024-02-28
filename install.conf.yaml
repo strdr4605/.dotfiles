@@ -12,6 +12,7 @@
     ~/.config/nvim: ./nvim
     ~/.config/lf/lfrc: lfrc
     ~/.zshrc: .zshrc
+    ~/.config/starship.toml: starship.toml
     ~/.gitconfig: .gitconfig
 
 - shell:
