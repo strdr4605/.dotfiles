@@ -514,8 +514,14 @@ require("lazy").setup({
       require("mason").setup()
 
       require("lsp-format").setup({
-        typescript = { "eslint", "null-ls" },
-        typescriptreact = { "eslint", "null-ls" },
+        typescript = {
+          -- "eslint",
+          "null-ls",
+        },
+        typescriptreact = {
+          -- "eslint",
+          "null-ls",
+        },
       })
 
       require("mason-lspconfig").setup({
@@ -642,12 +648,6 @@ require("lazy").setup({
             capabilities = lsp_capabilities,
           }
 
-          local has_custom_opts, server_custom_opts =
-              pcall(require, "strdr4605.lsp_server_settings." .. server_name)
-          if has_custom_opts then
-            opts = vim.tbl_deep_extend("force", opts, server_custom_opts)
-          end
-
           if server_name == "lua_ls" then
             opts.settings = {
               Lua = {
@@ -666,6 +666,10 @@ require("lazy").setup({
 
           if server_name == "emmet_ls" then
             opts.filetypes = { "html", "css", "scss", "javascript", "typescript" }
+          end
+
+          if server_name == "stylelint_lsp" then
+            opts.filetypes = { "css", "scss", "html" }
           end
 
           if server_name == "jsonls" then
