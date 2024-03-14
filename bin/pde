@@ -4,7 +4,7 @@
 # tmux split-window -h
 # tmux select-pane -U
 
-tmux split-window -h -p 70
+tmux split-window -h -l 70%
 tmux select-pane -t 1
 tmux split-window -v
 tmux select-pane -t 3
