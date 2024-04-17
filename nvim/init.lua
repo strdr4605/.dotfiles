@@ -226,7 +226,7 @@ require("lazy").setup({
       local fzf_lua = require("fzf-lua")
 
       vim.keymap.set("n", "<leader>f", function()
-        require("fzf-lua").git_files()
+        require("fzf-lua").files()
       end, opts)
       vim.keymap.set("n", "<leader><S-f>", function()
         require("fzf-lua").live_grep_glob()
@@ -779,7 +779,7 @@ require("lazy").setup({
           -- Set `select` to `false` to only confirm explicitly selected items.
           ["<CR>"] = cmp.mapping.confirm({
             behavior = cmp.SelectBehavior.Replace,
-            select = false,
+            select = true,
           }),
           ["<Tab>"] = vim.schedule_wrap(function(fallback)
             if cmp.visible() and has_words_before() then
