@@ -725,6 +725,11 @@ require("lazy").setup({
                 client.server_capabilities.documentFormattingProvider = false
                 client.server_capabilities.documentRangeFormattingProvider = false
               end,
+              settings = {
+                tsserver_file_preferences = {
+                  importModuleSpecifierPreference = "relative",
+                },
+              },
             })
           else
             lspconfig[server_name].setup(opts)
