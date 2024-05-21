@@ -350,12 +350,29 @@ require("lazy").setup({
     },
   },
   {
-    "numToStr/Comment.nvim",
+    "preservim/vimux",
     config = function()
-      require("Comment").setup({
-        -- nvim-treesitter/nvim-treesitter-context
-        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
-      })
+      -- send current visual selection as command to execute in tmux pane
+      vim.cmd([[
+        vn <silent> <leader>ts :<C-U>VimuxRunCommand(VisualSelection())<cr>
+        function! VisualSelection()
+          let [line_start, column_start] = getpos("'<")[1:2]
+          let [line_end, column_end] = getpos("'>")[1:2]
+          let lines = getline(line_start, line_end)
+          if len(lines) == 0
+            return ''
+          endif
+          let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+          let lines[0] = lines[0][column_start - 1:]
+          return join(lines, "\n")
+        endfunction
+      ]])
+
+      -- send current line as command to execute in tmux pane
+      vim.keymap.set("n", "<leader>tl", function()
+        local line = vim.fn.getline(".")
+        vim.cmd("VimuxRunCommand '" .. line .. "'")
+      end)
     end,
   },
   "tpope/vim-dispatch",
@@ -564,12 +581,6 @@ require("lazy").setup({
         end, opts)
         vim.keymap.set("n", "<leader>ca", function()
           vim.lsp.buf.code_action()
-        end, opts)
-        vim.keymap.set("n", "[d", function()
-          vim.diagnostic.goto_prev({ border = "rounded" })
-        end, opts)
-        vim.keymap.set("n", "]d", function()
-          vim.diagnostic.goto_next({ border = "rounded" })
         end, opts)
         vim.keymap.set("n", "[e", function()
           vim.diagnostic.goto_prev({ border = "rounded", severity = vim.diagnostic.severity.ERROR })
@@ -926,6 +937,16 @@ require("lazy").setup({
 
       local git_blame = require("gitblame")
 
+      require("lsp-progress").setup()
+
+      -- listen lsp-progress event and refresh lualine
+      vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
+      vim.api.nvim_create_autocmd("User", {
+        group = "lualine_augroup",
+        pattern = "LspProgressStatusUpdated",
+        callback = require("lualine").refresh,
+      })
+
       lualine.setup({
         options = {
           icons_enabled = true,
@@ -968,17 +989,10 @@ require("lazy").setup({
               cond = git_blame.is_blame_text_available,
             },
             {
-              "lsp_progress",
-              spinner_symbols = {
-                "🌑 ",
-                "🌒 ",
-                "🌓 ",
-                "🌔 ",
-                "🌕 ",
-                "🌖 ",
-                "🌗 ",
-                "🌘 ",
-              },
+              function()
+                -- invoke `progress` here.
+                return require("lsp-progress").progress()
+              end,
             },
           },
           lualine_x = { "encoding", "filetype" },
@@ -1022,7 +1036,7 @@ require("lazy").setup({
       })
     end,
     dependencies = {
-      "WhoIsSethDaniel/lualine-lsp-progress.nvim",
+      "linrongbin16/lsp-progress.nvim",
       "f-person/git-blame.nvim",
     },
   },
