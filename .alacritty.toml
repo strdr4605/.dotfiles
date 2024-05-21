@@ -56,13 +56,6 @@ key = "Return"
 mods = "Command"
 
 [window]
-decorations = "buttonless"
-opacity = 1
-
-[window.dimensions]
-columns = 500
-lines = 50
-
-[window.position]
-x = 0
-y = 0
+decorations = "Buttonless"
+dynamic_title = true
+startup_mode = "Maximized"
