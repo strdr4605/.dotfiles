@@ -345,9 +345,25 @@ require("lazy").setup({
     end,
     dependencies = {
       "windwp/nvim-ts-autotag",
-      "JoosepAlviste/nvim-ts-context-commentstring",
       "nvim-treesitter/nvim-treesitter-context",
     },
+  },
+  {
+    "JoosepAlviste/nvim-ts-context-commentstring",
+    config = function()
+      vim.g.skip_ts_context_commentstring_module = true
+
+      require("nvim-treesitter.configs").setup({
+        enable_autocmd = false,
+      })
+
+      local get_option = vim.filetype.get_option
+      vim.filetype.get_option = function(filetype, option)
+        return option == "commentstring"
+            and require("ts_context_commentstring.internal").calculate_commentstring()
+            or get_option(filetype, option)
+      end
+    end,
   },
   {
     "preservim/vimux",
@@ -1115,7 +1131,7 @@ require("lazy").setup({
   {
     "rebelot/kanagawa.nvim",
     config = function()
-      vim.cmd("colorscheme kanagawa")
+      -- vim.cmd("colorscheme kanagawa")
       vim.opt.background = "light"
     end,
   },
