@@ -675,6 +675,9 @@ require("lazy").setup({
         capabilities = lsp_capabilities,
       })
 
+      require("lspconfig.configs").vtsls = require("vtsls")
+      .lspconfig                                                   -- set default server config, optional but recommended
+
       require("mason-lspconfig").setup_handlers({
         function(server_name)
           local opts = {
@@ -759,6 +762,7 @@ require("lazy").setup({
     dependencies = {
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason.nvim",
+      "yioneko/nvim-vtsls",
       "nvimtools/none-ls.nvim",
       "lukas-reineke/lsp-format.nvim",
     },
