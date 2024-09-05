@@ -478,6 +478,7 @@ require("lazy").setup({
       })
     end,
   },
+  "sindrets/diffview.nvim",
   {
     "junegunn/gv.vim",
     config = function()
