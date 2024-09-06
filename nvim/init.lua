@@ -543,8 +543,7 @@ require("lazy").setup({
         ensure_installed = {
           "jsonls",
           "lua_ls",
-          "vtsls", -- "tsserver",
-          "tailwindcss",
+          "tsserver",
           "cssls",
           "stylelint_lsp",
           "emmet_ls",
@@ -580,12 +579,6 @@ require("lazy").setup({
         end, opts)
         vim.keymap.set("n", "<leader>ca", function()
           vim.lsp.buf.code_action()
-        end, opts)
-        vim.keymap.set("n", "[d", function()
-          vim.diagnostic.goto_prev({ border = "rounded" })
-        end, opts)
-        vim.keymap.set("n", "]d", function()
-          vim.diagnostic.goto_next({ border = "rounded" })
         end, opts)
         vim.keymap.set("n", "[e", function()
           vim.diagnostic.goto_prev({ border = "rounded", severity = vim.diagnostic.severity.ERROR })
@@ -737,7 +730,22 @@ require("lazy").setup({
             }
           end
 
-          lspconfig[server_name].setup(opts)
+          -- add a special case for tsserver, since we want to go through typescript.nvim here
+          if server_name == "tsserver" then
+            require("typescript-tools").setup({
+              on_attach = function(client, bufnr)
+                client.server_capabilities.documentFormattingProvider = false
+                client.server_capabilities.documentRangeFormattingProvider = false
+              end,
+              settings = {
+                tsserver_file_preferences = {
+                  importModuleSpecifierPreference = "relative",
+                },
+              },
+            })
+          else
+            lspconfig[server_name].setup(opts)
+          end
         end,
       })
     end,
@@ -746,6 +754,7 @@ require("lazy").setup({
       "williamboman/mason.nvim",
       "yioneko/nvim-vtsls",
       "nvimtools/none-ls.nvim",
+      "pmizio/typescript-tools.nvim",
       "lukas-reineke/lsp-format.nvim",
     },
   },
