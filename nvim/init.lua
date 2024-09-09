@@ -136,6 +136,12 @@ vim.api.nvim_create_user_command("W", function()
   vim.cmd("noautocmd w")
 end, {})
 
+vim.api.nvim_create_user_command("CopyBufferPath", function()
+  local path = vim.fn.expand("%:p") -- Get the full path of the current buffer
+  vim.fn.setreg("+", path)         -- Copy to system clipboard
+  print("Buffer path copied to clipboard: " .. path)
+end, {})
+
 -- Better quickfix
 local fn = vim.fn
 
