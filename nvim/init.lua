@@ -543,7 +543,7 @@ require("lazy").setup({
         ensure_installed = {
           "jsonls",
           "lua_ls",
-          "tsserver",
+          "ts_ls",
           "cssls",
           "stylelint_lsp",
           "emmet_ls",
@@ -731,7 +731,7 @@ require("lazy").setup({
           end
 
           -- add a special case for tsserver, since we want to go through typescript.nvim here
-          if server_name == "tsserver" then
+          if server_name == "ts_ls" then
             require("typescript-tools").setup({
               on_attach = function(client, bufnr)
                 client.server_capabilities.documentFormattingProvider = false
