@@ -109,11 +109,11 @@ vim.api.nvim_create_autocmd("WinLeave", {
   group = augroup,
   command = "setlocal nocursorline",
 })
-vim.api.nvim_create_autocmd("InsertLeave", {
-  pattern = "*",
-  group = augroup,
-  command = "LuaSnipUnlinkCurrent",
-})
+-- vim.api.nvim_create_autocmd("InsertLeave", {
+--   pattern = "*",
+--   group = augroup,
+--   command = "LuaSnipUnlinkCurrent",
+-- })
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "typescript,typescriptreact",
   group = augroup,
@@ -788,12 +788,6 @@ require("lazy").setup({
     "hrsh7th/nvim-cmp",
     config = function()
       local cmp = require("cmp")
-      local luasnip = require("luasnip")
-
-      local check_backspace = function()
-        local col = vim.fn.col(".") - 1
-        return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
-      end
 
       local has_words_before = function()
         if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
@@ -805,11 +799,6 @@ require("lazy").setup({
       end
 
       cmp.setup({
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body) -- For `luasnip` users.
-          end,
-        },
         mapping = {
           ["<C-Space>"] = cmp.mapping.complete({
             config = { sources = { { name = "copilot", keyword_length = 0 } } },
@@ -868,15 +857,11 @@ require("lazy").setup({
       })
     end,
     dependencies = {
-      "hrsh7th/cmp-buffer",    -- buffer completions
-      "hrsh7th/cmp-path",      -- path completions
-      "hrsh7th/cmp-cmdline",   -- cmdline completions
-      "saadparwaiz1/cmp_luasnip", -- snippet completions
+      "hrsh7th/cmp-buffer", -- buffer completions
+      "hrsh7th/cmp-path", -- path completions
+      "hrsh7th/cmp-cmdline", -- cmdline completions
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-nvim-lua",
-
-      -- snippets
-      "L3MON4D3/LuaSnip", -- snippet engine
     },
   },
   {
