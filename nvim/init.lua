@@ -565,6 +565,7 @@ require("lazy").setup({
           "ts_ls",
           "cssls",
           "stylelint_lsp",
+          "tailwindcss",
           "emmet_ls",
           "eslint",
           "grammarly",
