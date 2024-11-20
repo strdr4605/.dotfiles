@@ -866,42 +866,54 @@ require("lazy").setup({
     },
   },
   {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    event = "InsertEnter",
+    "supermaven-inc/supermaven-nvim",
     config = function()
-      require("copilot").setup({
-        panel = {
-          enabled = true,
-          auto_refresh = false,
-          keymap = {
-            jump_prev = "[[",
-            jump_next = "]]",
-            accept = "<CR>",
-            refresh = "gr",
-            open = "<M-CR>",
-          },
-          layout = {
-            position = "bottom", -- | top | left | right
-            ratio = 0.4,
-          },
-        },
-        suggestion = {
-          enabled = true,
-          auto_trigger = true,
-          debounce = 75,
-          keymap = {
-            accept = "<C-v>",
-            accept_word = false,
-            accept_line = "<C-l>",
-            next = "<C-n>",
-            prev = "<C-p>",
-            dismiss = "<C-Esc>",
-          },
+      require("supermaven-nvim").setup({
+        keymaps = {
+          accept_suggestion = "<C-v>",
+          clear_suggestion = "<C-Esc>",
+          accept_word = "<C-l>",
         },
       })
     end,
   },
+  -- {
+  --   "zbirenbaum/copilot.lua",
+  --   cmd = "Copilot",
+  --   event = "InsertEnter",
+  --   config = function()
+  --     require("copilot").setup({
+  --       panel = {
+  --         enabled = true,
+  --         auto_refresh = false,
+  --         keymap = {
+  --           jump_prev = "[[",
+  --           jump_next = "]]",
+  --           accept = "<CR>",
+  --           refresh = "gr",
+  --           open = "<M-CR>",
+  --         },
+  --         layout = {
+  --           position = "bottom", -- | top | left | right
+  --           ratio = 0.4,
+  --         },
+  --       },
+  --       suggestion = {
+  --         enabled = true,
+  --         auto_trigger = true,
+  --         debounce = 75,
+  --         keymap = {
+  --           accept = "<C-v>",
+  --           accept_word = false,
+  --           accept_line = "<C-l>",
+  --           next = "<C-n>",
+  --           prev = "<C-p>",
+  --           dismiss = "<C-Esc>",
+  --         },
+  --       },
+  --     })
+  --   end,
+  -- },
   {
     "goolord/alpha-nvim",
     config = function()
