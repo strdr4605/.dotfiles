@@ -137,7 +137,7 @@ export PATH=~/.dotfiles/bin:$PATH
 alias vim="nvim"
 alias G="git"
 
-alias ls="exa -al --icons --group-directories-first --no-user --time-style=long-iso"
+alias ls="eza -al --icons --group-directories-first --no-user --time-style=long-iso"
 
 # JAVA stuff
 # export JAVA_HOME=$(/usr/libexec/java_home)

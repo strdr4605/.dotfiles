@@ -25,7 +25,7 @@ brew 'bat'
 brew 'gh'
 brew 'zoxide'
 brew 'lf'
-brew 'exa'
+brew 'eza'
 
 # FiraCode - https://github.com/tonsky/FiraCode/wiki/Installing#macos
 tap 'homebrew/cask-fonts'
