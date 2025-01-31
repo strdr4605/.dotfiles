@@ -512,7 +512,15 @@ require("lazy").setup({
       )
     end,
   },
-  -- lsp
+  {
+    "soulsam480/nvim-oxlint",
+    opts = function()
+      local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+      return {
+        capabilities = lsp_capabilities,
+      }
+    end,
+  }, -- lsp
   {
     "neovim/nvim-lspconfig",
     config = function()
@@ -646,36 +654,36 @@ require("lazy").setup({
       local util = require("lspconfig.util")
       local configs = require("lspconfig.configs")
 
-      configs.oxc_language_server = {
-        default_config = {
-          cmd = {
-            "oxc_language_server",
-          },
-          filetypes = {
-            "javascript",
-            "javascriptreact",
-            "typescript",
-            "typescriptreact",
-          },
-          root_dir = function(fname)
-            return util.find_package_json_ancestor(fname)
-                or util.find_node_modules_ancestor(fname)
-                or util.find_git_ancestor(fname)
-          end,
-          single_file_support = true,
-          -- settings is corresponding to https://github.com/oxc-project/oxc/blob/de2f83477444ea19e5e370419ab4678652c87d30/editors/vscode/package.json#L61C1-L95
-          settings = {
-            ["enable"] = true,
-            -- ["run"] = "onType",
-          },
-        },
-      }
-
-      lspconfig.oxc_language_server.setup({
-        on_attach = lsp_attach,
-        capabilities = lsp_capabilities,
-      })
-
+      -- configs.oxc_language_server = {
+      --   default_config = {
+      --     cmd = {
+      --       "oxc_language_server",
+      --     },
+      --     filetypes = {
+      --       "javascript",
+      --       "javascriptreact",
+      --       "typescript",
+      --       "typescriptreact",
+      --     },
+      --     root_dir = function(fname)
+      --       return util.find_package_json_ancestor(fname)
+      --           or util.find_node_modules_ancestor(fname)
+      --           or util.find_git_ancestor(fname)
+      --     end,
+      --     single_file_support = true,
+      --     -- settings is corresponding to https://github.com/oxc-project/oxc/blob/de2f83477444ea19e5e370419ab4678652c87d30/editors/vscode/package.json#L61C1-L95
+      --     settings = {
+      --       ["enable"] = true,
+      --       -- ["run"] = "onType",
+      --     },
+      --   },
+      -- }
+      --
+      -- lspconfig.oxc_language_server.setup({
+      --   on_attach = lsp_attach,
+      --   capabilities = lsp_capabilities,
+      -- })
+      --
       require("lspconfig.configs").vtsls = require("vtsls")
       .lspconfig                                                   -- set default server config, optional but recommended
 
@@ -725,6 +733,7 @@ require("lazy").setup({
                 description = "Prettier config",
                 fileMatch = {
                   ".prettierrc",
+                  ".prettierrc.js",
                   ".prettierrc.json",
                   "prettier.config.json",
                 },
