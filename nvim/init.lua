@@ -570,7 +570,7 @@ require("lazy").setup({
         ensure_installed = {
           "jsonls",
           "lua_ls",
-          "ts_ls",
+          "vtsls",
           "cssls",
           "stylelint_lsp",
           "tailwindcss",
@@ -765,22 +765,7 @@ require("lazy").setup({
             }
           end
 
-          -- add a special case for tsserver, since we want to go through typescript.nvim here
-          if server_name == "ts_ls" then
-            require("typescript-tools").setup({
-              on_attach = function(client, bufnr)
-                client.server_capabilities.documentFormattingProvider = false
-                client.server_capabilities.documentRangeFormattingProvider = false
-              end,
-              settings = {
-                tsserver_file_preferences = {
-                  importModuleSpecifierPreference = "relative",
-                },
-              },
-            })
-          else
-            lspconfig[server_name].setup(opts)
-          end
+          lspconfig[server_name].setup(opts)
         end,
       })
     end,
@@ -789,7 +774,6 @@ require("lazy").setup({
       "williamboman/mason.nvim",
       "yioneko/nvim-vtsls",
       "nvimtools/none-ls.nvim",
-      "pmizio/typescript-tools.nvim",
       "lukas-reineke/lsp-format.nvim",
     },
   },
