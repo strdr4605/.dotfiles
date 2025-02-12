@@ -575,7 +575,7 @@ require("lazy").setup({
           "stylelint_lsp",
           "tailwindcss",
           "emmet_ls",
-          "eslint",
+          -- "eslint",
           "grammarly",
         },
       })
