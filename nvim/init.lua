@@ -874,18 +874,18 @@ require("lazy").setup({
       "hrsh7th/cmp-nvim-lua",
     },
   },
-  {
-    "supermaven-inc/supermaven-nvim",
-    config = function()
-      require("supermaven-nvim").setup({
-        keymaps = {
-          accept_suggestion = "<C-v>",
-          clear_suggestion = "<C-Esc>",
-          accept_word = "<C-l>",
-        },
-      })
-    end,
-  },
+  -- {
+  --   "supermaven-inc/supermaven-nvim",
+  --   config = function()
+  --     require("supermaven-nvim").setup({
+  --       keymaps = {
+  --         accept_suggestion = "<C-v>",
+  --         clear_suggestion = "<C-Esc>",
+  --         accept_word = "<C-l>",
+  --       },
+  --     })
+  --   end,
+  -- },
   -- {
   --   "zbirenbaum/copilot.lua",
   --   cmd = "Copilot",
