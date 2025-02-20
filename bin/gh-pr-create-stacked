@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Find the closest parent branch using the upstream commit history
+BASE_BRANCH=$(git branch --sort=-committerdate --format '%(refname:short)' | while read branch; do
+  if git merge-base --is-ancestor "$branch" HEAD && [ "$branch" != "$(git rev-parse --abbrev-ref HEAD)" ]; then
+    LAST_COMMON_COMMIT=$(git merge-base "$branch" HEAD)
+    PARENT_COMMIT=$(git rev-parse "$branch")
+    if [ "$LAST_COMMON_COMMIT" = "$PARENT_COMMIT" ]; then
+      echo "$branch"
+      break
+    fi
+  fi
+done)
+
+# If no parent branch is found, exit
+if [ -z "$BASE_BRANCH" ]; then
+  echo "Error: Could not determine parent branch."
+  exit 1
+fi
+
+echo "Creating PR from $(git rev-parse --abbrev-ref HEAD) into $BASE_BRANCH..."
+
+# Create the PR
+gh pr create --base "$BASE_BRANCH"

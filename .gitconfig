@@ -13,9 +13,14 @@
   clone-for-worktrees = "!sh git-clone-bare-for-worktrees"
   graph = "!git log --oneline --graph --exclude=refs/remotes/origin/gh-pages --all"
   last = "!git reflog | grep checkout | awk '{print $NF}' | uniq | head -n 10 | fzf --height 10 --reverse --preview 'git log --oneline -n 5 {}' | xargs git checkout"
+  push-stacked = "!sh git-push-stacked"
 
 [includeIf "gitdir:~/Work/"]
   path = ~/Work/.gitconfig_work
+
+[rebase]
+    updateRefs = true
+
 [push]
 	autoSetupRemote = true
 

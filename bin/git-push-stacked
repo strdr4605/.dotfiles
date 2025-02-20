@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -e # Exit if any command fails
+
+# Get the current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Function to find stacked branches from current branch down to master
+find_stacked_branches() {
+  local branch="$1"
+  local stack=("$branch")
+
+  # Iterate through all branches
+  for parent in $(git branch --sort=-committerdate --format '%(refname:short)'); do
+    # Check if this branch is a descendant of the current branch
+    if git merge-base --is-ancestor "$parent" "$branch" && [ "$parent" != "$branch" ] && [ "$parent" != "master" ]; then
+      stack+=("$parent")
+    fi
+  done
+
+  # Return stacked branches
+  printf "%s\n" "${stack[@]}"
+}
+
+# Get the stacked branches (starting from current branch)
+STACKED_BRANCHES=($(find_stacked_branches "$CURRENT_BRANCH"))
+
+# Display the stacked branches
+echo "Detected stacked branches: ${STACKED_BRANCHES[@]}"
+
+# Ask for confirmation before pushing each branch
+for BRANCH in "${STACKED_BRANCHES[@]}"; do
+  echo
+  read -p "Do you want to push $BRANCH? (y/n): " confirm
+  if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+    echo "Pushing $BRANCH..."
+    git push --force-with-lease origin "$BRANCH"
+    echo "✅ Pushed $BRANCH!"
+  else
+    echo "❌ Skipped $BRANCH"
+  fi
+done
+
+echo "✅ All stacked branches have been pushed!"
