@@ -654,8 +654,19 @@ require("lazy").setup({
       local util = require("lspconfig.util")
       local configs = require("lspconfig.configs")
 
-      require("lspconfig.configs").vtsls = require("vtsls")
-      .lspconfig                                                   -- set default server config, optional but recommended
+      configs.vtsls = require("vtsls").lspconfig -- set default server config, optional but recommended
+
+      -- try to fix "The JS/TS language service crashed 5 times in the last 5 Minutes."
+      -- https://github.com/yioneko/nvim-vtsls/issues/15
+      lspconfig.vtsls.setup({
+        settings = {
+          typescript = {
+            tsserver = {
+              maxTsServerMemory = 8192, -- Increase memory limit (e.g., 8GB)
+            },
+          },
+        },
+      })
 
       require("mason-lspconfig").setup_handlers({
         function(server_name)
