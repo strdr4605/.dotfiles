@@ -18,30 +18,50 @@
 [includeIf "gitdir:~/Work/"]
   path = ~/Work/.gitconfig_work
 
+; https://blog.gitbutler.com/how-git-core-devs-configure-git/
 [rebase]
-    updateRefs = true
-
+	updateRefs = true
+	autoSquash = true
+	autoStash = true
+[pull]
+  rebase = true
 [push]
 	autoSetupRemote = true
-
+	followTags = true
 [core]
   pager = delta
-
+	fsmonitor = true
+	untrackedCache = true
 [interactive]
   diffFilter = delta --color-only
-
 [delta]
   navigate = true    # use n and N to move between diff sections
   light = true      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
   line-numbers = true
   side-by-side = false
-
 [merge]
-  conflictstyle = diff3
-
+	conflictstyle = zdiff3
 [diff]
-  colorMoved = default
-
+	colorMoved = plain
+	algorithm = histogram
+	mnemonicPrefix = true
+	renames = true
 [rerere]
   enabled = true
   autoUpdate = true
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[tag]
+	sort = version:refname
+[init]
+	defaultBranch = master
+[fetch]
+	prune = true
+	pruneTags = true
+	all = true
+[help]
+	autocorrect = prompt
+[commit]
+	verbose = true
