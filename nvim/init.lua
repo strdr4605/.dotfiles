@@ -754,6 +754,10 @@ require("lazy").setup({
       })
     end,
   },
+  {
+    "dmmulroy/ts-error-translator.nvim",
+    config = true,
+  },
   -- cmp
   {
     "saghen/blink.cmp",
