@@ -792,35 +792,10 @@ require("lazy").setup({
       end
 
       cmp.setup({
-        mapping = {
-          ["<C-Space>"] = cmp.mapping.complete({
-            config = { sources = { { name = "copilot", keyword_length = 0 } } },
-          }),
-          ["<C-e>"] = cmp.mapping({
-            i = cmp.mapping.abort(),
-            c = cmp.mapping.close(),
-          }),
-          -- Accept currently selected item. If none selected, `select` first item.
-          -- Set `select` to `false` to only confirm explicitly selected items.
-          ["<CR>"] = cmp.mapping.confirm({
-            behavior = cmp.SelectBehavior.Replace,
-            select = true,
-          }),
-          ["<Tab>"] = vim.schedule_wrap(function(fallback)
-            if cmp.visible() and has_words_before() then
-              cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-            else
-              fallback()
-            end
-          end),
-          ["<S-Tab>"] = vim.schedule_wrap(function(fallback)
-            if cmp.visible() and has_words_before() then
-              cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
-            else
-              fallback()
-            end
-          end),
-        },
+        mapping = cmp.mapping.preset.insert({
+          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          ["<Tab>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        }),
         sources = {
           -- { name = "copilot", keyword_length = 0 },
           { name = "luasnip" },
