@@ -43,6 +43,20 @@ vim.keymap.set("i", "?", "?<C-g>u", opts)
 vim.keymap.set("v", "J", ":move '>+1<CR>gv-gv", opts)
 vim.keymap.set("v", "K", ":move '<-2<CR>gv-gv", opts)
 
+-- Map yp to paste yanked line without newlines and without leading whitespace
+vim.keymap.set("n", "cp", function()
+  -- Get content from register 0 (most recent yank)
+  local yanked_text = vim.fn.getreg("0")
+  -- Remove trailing newline if present
+  yanked_text = yanked_text:gsub("\n$", "")
+  -- Remove leading whitespace
+  yanked_text = yanked_text:gsub("^%s+", "")
+  -- Store in register p
+  vim.fn.setreg("p", yanked_text)
+  -- Paste from register p
+  return '"pp'
+end, { expr = true })
+
 -- Settings
 vim.opt.wrap = true
 
