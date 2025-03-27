@@ -109,7 +109,6 @@ source ~/tt.sh
 
 # add me to .zshrc or .bashrc
 ORIGINAL_NPM=$(which npm)
-ORIGINAL_YARN=$(which yarn)
 RED='\033[0;31m'
 GREEN='\033[0;92m'
 NC='\033[0m' # No Color
@@ -120,15 +119,6 @@ npm() {
     meteor npm $@
   else
     eval $ORIGINAL_NPM $@
-  fi
-}
-yarn() {
-  if [[ -d .meteor ]]
-  then
-    echo "${RED}Meteor project${NC}\nRunning:\n\n\t${GREEN}meteor yarn $@${NC}\n";
-    meteor yarn $@
-  else
-    eval $ORIGINAL_YARN $@
   fi
 }
 
