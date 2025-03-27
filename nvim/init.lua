@@ -306,7 +306,7 @@ require("lazy").setup({
       -- REQUIRED
 
       vim.keymap.set("n", "<leader>h", function()
-        harpoon:list():append()
+        harpoon:list():add()
       end, opts)
       vim.keymap.set("n", "<leader>H", function()
         harpoon.ui:toggle_quick_menu(harpoon:list())
