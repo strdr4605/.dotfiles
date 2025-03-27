@@ -554,6 +554,10 @@ require("lazy").setup({
       local setup = function()
         local config = {
           virtual_text = false,
+          virtual_lines = {
+            -- Only show virtual line diagnostics for the current cursor line
+            current_line = true,
+          },
           update_in_insert = false,
           underline = true,
           severity_sort = true,
