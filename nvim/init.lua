@@ -170,6 +170,33 @@ vim.api.nvim_create_user_command("CopyBufferPath", function()
   print("Buffer path copied to clipboard: " .. path)
 end, {})
 
+-- Diagnostic
+vim.diagnostic.config({
+  virtual_lines = {
+    -- Only show virtual line diagnostics for the current cursor line
+    current_line = true,
+  },
+  update_in_insert = false,
+  underline = true,
+  severity_sort = true,
+  float = {
+    header = "",
+    prefix = "",
+  },
+})
+vim.keymap.set("n", "gd", function()
+  vim.lsp.buf.definition()
+end, opts)
+vim.keymap.set("n", "gl", function()
+  vim.diagnostic.open_float()
+end, opts)
+vim.keymap.set("n", "[e", function()
+  vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
+end, opts)
+vim.keymap.set("n", "]e", function()
+  vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
+end, opts)
+
 -- Better quickfix
 local fn = vim.fn
 
@@ -551,39 +578,6 @@ require("lazy").setup({
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local setup = function()
-        local config = {
-          virtual_text = false,
-          virtual_lines = {
-            -- Only show virtual line diagnostics for the current cursor line
-            current_line = true,
-          },
-          update_in_insert = false,
-          underline = true,
-          severity_sort = true,
-          float = {
-            focusable = false,
-            style = "minimal",
-            border = "rounded",
-            source = "always",
-            header = "",
-            prefix = "",
-          },
-        }
-
-        vim.diagnostic.config(config)
-
-        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-          border = "rounded",
-        })
-
-        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-          border = "rounded",
-        })
-      end
-
-      setup()
-
       require("mason").setup()
 
       require("lsp-format").setup({
@@ -616,26 +610,6 @@ require("lazy").setup({
           require("lsp-format").on_attach(client)
           client.server_capabilities.documentFormattingProvider = true
         end
-
-        local opts = { buffer = bufnr, remap = false, silent = true }
-        vim.keymap.set("n", "gd", function()
-          vim.lsp.buf.definition()
-        end, opts)
-        vim.keymap.set("n", "gl", function()
-          vim.diagnostic.open_float()
-        end, opts)
-        vim.keymap.set("n", "K", function()
-          vim.lsp.buf.hover()
-        end, opts)
-        vim.keymap.set("n", "<C-k>", function()
-          vim.lsp.buf.signature_help()
-        end, opts)
-        vim.keymap.set("n", "[e", function()
-          vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
-        end, opts)
-        vim.keymap.set("n", "]e", function()
-          vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
-        end, opts)
 
         vim.api.nvim_create_user_command("F", function()
           vim.lsp.buf.format({ async = true })
