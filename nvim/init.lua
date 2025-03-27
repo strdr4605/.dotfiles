@@ -631,10 +631,10 @@ require("lazy").setup({
           vim.lsp.buf.signature_help()
         end, opts)
         vim.keymap.set("n", "[e", function()
-          vim.diagnostic.goto_prev({ border = "rounded", severity = vim.diagnostic.severity.ERROR })
+          vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
         end, opts)
         vim.keymap.set("n", "]e", function()
-          vim.diagnostic.goto_next({ border = "rounded", severity = vim.diagnostic.severity.ERROR })
+          vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
         end, opts)
 
         vim.api.nvim_create_user_command("F", function()
