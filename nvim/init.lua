@@ -336,7 +336,7 @@ require("lazy").setup({
       vim.cmd("FzfLua register_ui_select")
     end,
   },
-  { "junegunn/fzf", build = "./install --all --no-bash --no-fish" },
+  { "junegunn/fzf",      build = "./install --all --no-bash --no-fish" },
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
@@ -766,7 +766,6 @@ require("lazy").setup({
           ["<Tab>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
         }),
         sources = {
-          -- { name = "copilot", keyword_length = 0 },
           { name = "luasnip" },
           { name = "nvim_lsp" },
           { name = "nvim_lua" },
@@ -801,55 +800,6 @@ require("lazy").setup({
       "hrsh7th/cmp-nvim-lua",
     },
   },
-  -- {
-  --   "supermaven-inc/supermaven-nvim",
-  --   config = function()
-  --     require("supermaven-nvim").setup({
-  --       keymaps = {
-  --         accept_suggestion = "<C-v>",
-  --         clear_suggestion = "<C-Esc>",
-  --         accept_word = "<C-l>",
-  --       },
-  --     })
-  --   end,
-  -- },
-  -- {
-  --   "zbirenbaum/copilot.lua",
-  --   cmd = "Copilot",
-  --   event = "InsertEnter",
-  --   config = function()
-  --     require("copilot").setup({
-  --       panel = {
-  --         enabled = true,
-  --         auto_refresh = false,
-  --         keymap = {
-  --           jump_prev = "[[",
-  --           jump_next = "]]",
-  --           accept = "<CR>",
-  --           refresh = "gr",
-  --           open = "<M-CR>",
-  --         },
-  --         layout = {
-  --           position = "bottom", -- | top | left | right
-  --           ratio = 0.4,
-  --         },
-  --       },
-  --       suggestion = {
-  --         enabled = true,
-  --         auto_trigger = true,
-  --         debounce = 75,
-  --         keymap = {
-  --           accept = "<C-v>",
-  --           accept_word = false,
-  --           accept_line = "<C-l>",
-  --           next = "<C-n>",
-  --           prev = "<C-p>",
-  --           dismiss = "<C-Esc>",
-  --         },
-  --       },
-  --     })
-  --   end,
-  -- },
   {
     "goolord/alpha-nvim",
     config = function()
