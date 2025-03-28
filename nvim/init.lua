@@ -112,6 +112,8 @@ vim.opt.iskeyword:append("-")                                                   
 vim.opt.guicursor =
 "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175"  -- setting for guicursor taken from :h 'guicursor'
 
+vim.opt.winborder = "rounded"
+
 vim.api.nvim_create_augroup("JavascriptMacros", { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
@@ -168,6 +170,33 @@ vim.api.nvim_create_user_command("CopyBufferPath", function()
   print("Buffer path copied to clipboard: " .. path)
 end, {})
 
+-- Diagnostic
+vim.diagnostic.config({
+  virtual_lines = {
+    -- Only show virtual line diagnostics for the current cursor line
+    current_line = true,
+  },
+  update_in_insert = false,
+  underline = true,
+  severity_sort = true,
+  float = {
+    header = "",
+    prefix = "",
+  },
+})
+vim.keymap.set("n", "gd", function()
+  vim.lsp.buf.definition()
+end, opts)
+vim.keymap.set("n", "gl", function()
+  vim.diagnostic.open_float()
+end, opts)
+vim.keymap.set("n", "[e", function()
+  vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
+end, opts)
+vim.keymap.set("n", "]e", function()
+  vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
+end, opts)
+
 -- Better quickfix
 local fn = vim.fn
 
@@ -217,6 +246,7 @@ vim.o.qftf = "{info -> v:lua._G.qftf(info)}"
 
 -- Plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+---@diagnostic disable-next-line: undefined-field
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",
@@ -306,7 +336,7 @@ require("lazy").setup({
       vim.cmd("FzfLua register_ui_select")
     end,
   },
-  { "junegunn/fzf", build = "./install --all --no-bash --no-fish" },
+  { "junegunn/fzf",      build = "./install --all --no-bash --no-fish" },
   {
     "ThePrimeagen/harpoon",
     branch = "harpoon2",
@@ -403,6 +433,7 @@ require("lazy").setup({
       })
 
       local get_option = vim.filetype.get_option
+      ---@diagnostic disable-next-line: duplicate-set-field
       vim.filetype.get_option = function(filetype, option)
         return option == "commentstring"
             and require("ts_context_commentstring.internal").calculate_commentstring()
@@ -438,7 +469,6 @@ require("lazy").setup({
   },
   "tpope/vim-dispatch",
   "tpope/vim-fugitive",
-  "tpope/vim-unimpaired",
   "tpope/vim-surround",
   {
     "lewis6991/gitsigns.nvim",
@@ -492,6 +522,7 @@ require("lazy").setup({
           col = 1,
         },
         on_attach = function(bufnr)
+          ---@diagnostic disable-next-line: redefined-local
           local function map(mode, lhs, rhs, opts)
             opts = vim.tbl_extend("force", { noremap = true, silent = true }, opts or {})
             vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
@@ -550,35 +581,6 @@ require("lazy").setup({
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local setup = function()
-        local config = {
-          virtual_text = false,
-          update_in_insert = false,
-          underline = true,
-          severity_sort = true,
-          float = {
-            focusable = false,
-            style = "minimal",
-            border = "rounded",
-            source = "always",
-            header = "",
-            prefix = "",
-          },
-        }
-
-        vim.diagnostic.config(config)
-
-        vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-          border = "rounded",
-        })
-
-        vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-          border = "rounded",
-        })
-      end
-
-      setup()
-
       require("mason").setup()
 
       require("lsp-format").setup({
@@ -606,49 +608,12 @@ require("lazy").setup({
         },
       })
 
+      ---@diagnostic disable-next-line: unused-local
       local lsp_attach = function(client, bufnr)
         if client.name ~= "tsserver" then
           require("lsp-format").on_attach(client)
           client.server_capabilities.documentFormattingProvider = true
         end
-
-        local opts = { buffer = bufnr, remap = false, silent = true }
-        vim.keymap.set("n", "gd", function()
-          vim.lsp.buf.definition()
-        end, opts)
-        vim.keymap.set("n", "gr", function()
-          vim.lsp.buf.references()
-        end, opts)
-        vim.keymap.set("n", "gl", function()
-          vim.diagnostic.open_float()
-        end, opts)
-        vim.keymap.set("n", "K", function()
-          vim.lsp.buf.hover()
-        end, opts)
-        vim.keymap.set("n", "<C-k>", function()
-          vim.lsp.buf.signature_help()
-        end, opts)
-        vim.keymap.set("n", "<leader>rn", function()
-          vim.lsp.buf.rename()
-        end, opts)
-        vim.keymap.set("n", "<leader>ca", function()
-          vim.lsp.buf.code_action()
-        end, opts)
-        vim.keymap.set("n", "[d", function()
-          vim.diagnostic.goto_prev({ border = "rounded" })
-        end, opts)
-        vim.keymap.set("n", "]d", function()
-          vim.diagnostic.goto_next({ border = "rounded" })
-        end, opts)
-        vim.keymap.set("n", "[e", function()
-          vim.diagnostic.goto_prev({ border = "rounded", severity = vim.diagnostic.severity.ERROR })
-        end, opts)
-        vim.keymap.set("n", "]e", function()
-          vim.diagnostic.goto_next({ border = "rounded", severity = vim.diagnostic.severity.ERROR })
-        end, opts)
-        vim.keymap.set("n", "<leader>q", function()
-          vim.diagnostic.setloclist()
-        end, opts)
 
         vim.api.nvim_create_user_command("F", function()
           vim.lsp.buf.format({ async = true })
@@ -677,7 +642,6 @@ require("lazy").setup({
       local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       local lspconfig = require("lspconfig")
-      local util = require("lspconfig.util")
       local configs = require("lspconfig.configs")
 
       configs.vtsls = require("vtsls").lspconfig -- set default server config, optional but recommended
@@ -696,6 +660,7 @@ require("lazy").setup({
 
       require("mason-lspconfig").setup_handlers({
         function(server_name)
+          ---@diagnostic disable-next-line: redefined-local
           local opts = {
             on_attach = lsp_attach,
             capabilities = lsp_capabilities,
@@ -784,6 +749,7 @@ require("lazy").setup({
       "lukas-reineke/lsp-format.nvim",
     },
   },
+  { "j-hui/fidget.nvim", opts = {} },
   {
     "dmmulroy/ts-error-translator.nvim",
     config = true,
@@ -794,22 +760,12 @@ require("lazy").setup({
     config = function()
       local cmp = require("cmp")
 
-      local has_words_before = function()
-        if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
-          return false
-        end
-        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-        return col ~= 0
-            and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
-      end
-
       cmp.setup({
         mapping = cmp.mapping.preset.insert({
           ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
           ["<Tab>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
         }),
         sources = {
-          -- { name = "copilot", keyword_length = 0 },
           { name = "luasnip" },
           { name = "nvim_lsp" },
           { name = "nvim_lua" },
@@ -844,55 +800,6 @@ require("lazy").setup({
       "hrsh7th/cmp-nvim-lua",
     },
   },
-  -- {
-  --   "supermaven-inc/supermaven-nvim",
-  --   config = function()
-  --     require("supermaven-nvim").setup({
-  --       keymaps = {
-  --         accept_suggestion = "<C-v>",
-  --         clear_suggestion = "<C-Esc>",
-  --         accept_word = "<C-l>",
-  --       },
-  --     })
-  --   end,
-  -- },
-  -- {
-  --   "zbirenbaum/copilot.lua",
-  --   cmd = "Copilot",
-  --   event = "InsertEnter",
-  --   config = function()
-  --     require("copilot").setup({
-  --       panel = {
-  --         enabled = true,
-  --         auto_refresh = false,
-  --         keymap = {
-  --           jump_prev = "[[",
-  --           jump_next = "]]",
-  --           accept = "<CR>",
-  --           refresh = "gr",
-  --           open = "<M-CR>",
-  --         },
-  --         layout = {
-  --           position = "bottom", -- | top | left | right
-  --           ratio = 0.4,
-  --         },
-  --       },
-  --       suggestion = {
-  --         enabled = true,
-  --         auto_trigger = true,
-  --         debounce = 75,
-  --         keymap = {
-  --           accept = "<C-v>",
-  --           accept_word = false,
-  --           accept_line = "<C-l>",
-  --           next = "<C-n>",
-  --           prev = "<C-p>",
-  --           dismiss = "<C-Esc>",
-  --         },
-  --       },
-  --     })
-  --   end,
-  -- },
   {
     "goolord/alpha-nvim",
     config = function()
@@ -941,16 +848,6 @@ require("lazy").setup({
 
       local git_blame = require("gitblame")
 
-      require("lsp-progress").setup()
-
-      -- listen lsp-progress event and refresh lualine
-      vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
-      vim.api.nvim_create_autocmd("User", {
-        group = "lualine_augroup",
-        pattern = "LspProgressStatusUpdated",
-        callback = require("lualine").refresh,
-      })
-
       lualine.setup({
         options = {
           icons_enabled = true,
@@ -991,12 +888,6 @@ require("lazy").setup({
             {
               git_blame.get_current_blame_text,
               cond = git_blame.is_blame_text_available,
-            },
-            {
-              function()
-                -- invoke `progress` here.
-                return require("lsp-progress").progress()
-              end,
             },
           },
           lualine_x = { "encoding", "filetype" },
@@ -1040,7 +931,6 @@ require("lazy").setup({
       })
     end,
     dependencies = {
-      "linrongbin16/lsp-progress.nvim",
       "f-person/git-blame.nvim",
     },
   },
