@@ -246,6 +246,7 @@ vim.o.qftf = "{info -> v:lua._G.qftf(info)}"
 
 -- Plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+---@diagnostic disable-next-line: undefined-field
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
     "git",
@@ -432,6 +433,7 @@ require("lazy").setup({
       })
 
       local get_option = vim.filetype.get_option
+      ---@diagnostic disable-next-line: duplicate-set-field
       vim.filetype.get_option = function(filetype, option)
         return option == "commentstring"
             and require("ts_context_commentstring.internal").calculate_commentstring()
@@ -520,6 +522,7 @@ require("lazy").setup({
           col = 1,
         },
         on_attach = function(bufnr)
+          ---@diagnostic disable-next-line: redefined-local
           local function map(mode, lhs, rhs, opts)
             opts = vim.tbl_extend("force", { noremap = true, silent = true }, opts or {})
             vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
@@ -605,6 +608,7 @@ require("lazy").setup({
         },
       })
 
+      ---@diagnostic disable-next-line: unused-local
       local lsp_attach = function(client, bufnr)
         if client.name ~= "tsserver" then
           require("lsp-format").on_attach(client)
@@ -638,7 +642,6 @@ require("lazy").setup({
       local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
 
       local lspconfig = require("lspconfig")
-      local util = require("lspconfig.util")
       local configs = require("lspconfig.configs")
 
       configs.vtsls = require("vtsls").lspconfig -- set default server config, optional but recommended
@@ -657,6 +660,7 @@ require("lazy").setup({
 
       require("mason-lspconfig").setup_handlers({
         function(server_name)
+          ---@diagnostic disable-next-line: redefined-local
           local opts = {
             on_attach = lsp_attach,
             capabilities = lsp_capabilities,
@@ -754,15 +758,6 @@ require("lazy").setup({
     "hrsh7th/nvim-cmp",
     config = function()
       local cmp = require("cmp")
-
-      local has_words_before = function()
-        if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
-          return false
-        end
-        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-        return col ~= 0
-            and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
-      end
 
       cmp.setup({
         mapping = cmp.mapping.preset.insert({
