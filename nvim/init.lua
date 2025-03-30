@@ -172,17 +172,9 @@ end, {})
 
 -- Diagnostic
 vim.diagnostic.config({
-  virtual_lines = {
-    -- Only show virtual line diagnostics for the current cursor line
-    current_line = true,
-  },
   update_in_insert = false,
   underline = true,
   severity_sort = true,
-  float = {
-    header = "",
-    prefix = "",
-  },
 })
 vim.keymap.set("n", "gd", function()
   vim.lsp.buf.definition()
@@ -190,12 +182,42 @@ end, opts)
 vim.keymap.set("n", "gl", function()
   vim.diagnostic.open_float()
 end, opts)
-vim.keymap.set("n", "[e", function()
-  vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR })
-end, opts)
+
+local function jumpWithVirtLineDiags(jumpCount, severity)
+  pcall(vim.api.nvim_del_augroup_by_name, "jumpWithVirtLineDiags") -- prevent autocmd for repeated jumps
+
+  vim.diagnostic.jump({ count = jumpCount, severity = severity })
+
+  local initialVirtTextConf = vim.diagnostic.config().virtual_text
+  vim.diagnostic.config({
+    virtual_text = false,
+    virtual_lines = { current_line = true },
+  })
+
+  vim.defer_fn(function() -- deferred to not trigger by jump itself
+    vim.api.nvim_create_autocmd("CursorMoved", {
+      desc = "User(once): Reset diagnostics virtual lines",
+      once = true,
+      group = vim.api.nvim_create_augroup("jumpWithVirtLineDiags", {}),
+      callback = function()
+        vim.diagnostic.config({ virtual_lines = false, virtual_text = initialVirtTextConf })
+      end,
+    })
+  end, 1)
+end
 vim.keymap.set("n", "]e", function()
-  vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR })
-end, opts)
+  jumpWithVirtLineDiags(1, vim.diagnostic.severity.ERROR)
+end, { desc = "Next ERROR diagnostic" })
+vim.keymap.set("n", "[e", function()
+  jumpWithVirtLineDiags(-1, vim.diagnostic.severity.ERROR)
+end, { desc = "Prev ERROR diagnostic" })
+
+vim.keymap.set("n", "]d", function()
+  jumpWithVirtLineDiags(1, nil)
+end, { desc = "Next diagnostic" })
+vim.keymap.set("n", "[d", function()
+  jumpWithVirtLineDiags(-1, nil)
+end, { desc = "Prev diagnostic" })
 
 -- Better quickfix
 local fn = vim.fn
