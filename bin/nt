@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Get the current directory
+CURRENT_DIR=$(pwd)
+
+# Extract folder and parent folder names
+FOLDER=$(basename "$CURRENT_DIR")
+PARENT=$(basename "$(dirname "$CURRENT_DIR")")
+
+# Create session name in format parent/folder
+SESSION_NAME="$PARENT/$FOLDER"
+
+# Check if we're already in a tmux session
+if [ -n "$TMUX" ]; then
+  # Get current session and pane
+  ORIGINAL_SESSION=$(tmux display-message -p '#{session_name}')
+  ORIGINAL_PANE=$(tmux display-message -p '#{pane_id}')
+
+  # First, create the new session (detached)
+  tmux new-session -d -s "$SESSION_NAME" -c "$CURRENT_DIR"
+
+  # Then, create a temporary file to execute the cleanup commands
+  TEMP_SCRIPT=$(mktemp)
+
+  # Write commands to:
+  # 1. Sleep briefly to make sure transitions happen cleanly
+  # 2. Kill the original pane
+  cat >"$TEMP_SCRIPT" <<EOF
+#!/bin/bash
+sleep 0.5
+tmux kill-pane -t $ORIGINAL_PANE
+rm "$TEMP_SCRIPT"
+EOF
+
+  chmod +x "$TEMP_SCRIPT"
+
+  # Run the cleanup script in background
+  nohup "$TEMP_SCRIPT" >/dev/null 2>&1 &
+
+  # Detach from current session and attach to the new one
+  tmux switch-client -t "$SESSION_NAME"
+else
+  # Not in tmux, just create and attach to new session
+  tmux new-session -s "$SESSION_NAME" -c "$CURRENT_DIR"
+fi
