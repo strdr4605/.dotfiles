@@ -439,6 +439,10 @@ require("lazy").setup({
         zindex = 20,
         on_attach = nil,
       })
+
+      vim.keymap.set("n", "[w", function()
+        require("treesitter-context").go_to_context(vim.v.count1)
+      end, { silent = true })
     end,
     dependencies = {
       "windwp/nvim-ts-autotag",
