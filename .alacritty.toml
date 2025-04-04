@@ -31,12 +31,21 @@ TERM = "alacritty"
 [font]
 size = 16.0
 
-[font.bold]
-family = "ComicCode Nerd Font"
-style = "medium"
-
 [font.normal]
 family = "ComicCode Nerd Font"
+style = "Regular"
+
+[font.bold]
+family = "ComicCode Nerd Font"
+style = "Medium"
+
+[font.italic]
+family = "ComicCode Nerd Font"
+style = "Italic"
+
+[font.bold_italic]
+family = "ComicCode Nerd Font"
+style = "Bold Italic"
 
 [[hints.enabled]]
 command = "open"
