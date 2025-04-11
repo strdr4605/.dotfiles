@@ -598,7 +598,7 @@ require("lazy").setup({
   {
     "soulsam480/nvim-oxlint",
     opts = function()
-      local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
       return {
         capabilities = lsp_capabilities,
       }
@@ -665,7 +665,7 @@ require("lazy").setup({
           formatting.stylua,
         },
       })
-      local lsp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
 
       local lspconfig = require("lspconfig")
       local configs = require("lspconfig.configs")
@@ -782,49 +782,49 @@ require("lazy").setup({
   },
   -- cmp
   {
-    "hrsh7th/nvim-cmp",
-    config = function()
-      local cmp = require("cmp")
+    "saghen/blink.cmp",
+    dependencies = { "rafamadriz/friendly-snippets" },
+    version = "1.*",
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      keymap = {
+        preset = "default",
+        ["<Tab>"] = { "select_and_accept", "fallback" },
+        ["<CR>"] = { "select_and_accept", "fallback" },
+      },
+      appearance = {
+        nerd_font_variant = "mono",
+      },
 
-      cmp.setup({
-        mapping = cmp.mapping.preset.insert({
-          ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<Tab>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-        }),
-        sources = {
-          { name = "luasnip" },
-          { name = "nvim_lsp" },
-          { name = "nvim_lua" },
-          { name = "buffer" },
-          { name = "path" },
-        },
-      })
+      completion = {
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+        list = { selection = { preselect = false, auto_insert = false } },
+      },
+      sources = {
+        default = { "lsp", "path", "buffer" },
+      },
 
-      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-      -- `/` cmdline setup.
-      cmp.setup.cmdline("/", {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = {
-          { name = "buffer" },
+      fuzzy = { implementation = "prefer_rust_with_warning" },
+
+      cmdline = {
+        keymap = {
+          -- recommended, as the default keymap will only show and select the next item
+          ["<Tab>"] = { "show", "accept" },
         },
-      })
-      -- `:` cmdline setup.
-      cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = cmp.config.sources({
-          { name = "path" },
-        }, {
-          { name = "cmdline" },
-        }),
-      })
-    end,
-    dependencies = {
-      "hrsh7th/cmp-buffer", -- buffer completions
-      "hrsh7th/cmp-path", -- path completions
-      "hrsh7th/cmp-cmdline", -- cmdline completions
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-nvim-lua",
+        completion = {
+          menu = {
+            ---@diagnostic disable-next-line: unused-local
+            auto_show = function(ctx)
+              return vim.fn.getcmdtype() == ":"
+              -- enable for inputs as well, with:
+              -- or vim.fn.getcmdtype() == '@'
+            end,
+          },
+        },
+      },
     },
+    opts_extend = { "sources.default" },
   },
   {
     "goolord/alpha-nvim",
