@@ -913,7 +913,12 @@ require("lazy").setup({
           lualine_c = {
             {
               git_blame.get_current_blame_text,
-              cond = git_blame.is_blame_text_available,
+              fmt = function(str)
+                return str:sub(1, 80)
+              end,
+              cond = function()
+                return git_blame.is_blame_text_available() and vim.o.columns > 160
+              end,
             },
           },
           lualine_x = { "encoding", "filetype" },
