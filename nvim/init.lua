@@ -595,6 +595,65 @@ require("lazy").setup({
       )
     end,
   },
+  -- formating
+  {
+    "stevearc/conform.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local conform = require("conform")
+
+      conform.setup({
+        formatters_by_ft = {
+          javascript = { "prettier" },
+          typescript = { "prettier" },
+          javascriptreact = { "prettier" },
+          typescriptreact = { "prettier" },
+          css = { "prettier" },
+          html = { "prettier" },
+          json = { "prettier" },
+          yaml = { "prettier" },
+          markdown = { "prettier" },
+          graphql = { "prettier" },
+          lua = { "stylua" },
+          sh = { "shfmt" },
+        },
+        format_on_save = {
+          lsp_fallback = true,
+          async = false,
+          timeout_ms = 1000,
+        },
+      })
+    end,
+  },
+  -- linting
+  {
+    "mfussenegger/nvim-lint",
+    event = {
+      "BufReadPre",
+      "BufNewFile",
+    },
+    config = function()
+      local lint = require("lint")
+
+      lint.linters_by_ft = {
+        -- using nvim-oxlint and eslint-lsp
+        -- javascript = { "eslint" },
+        -- typescript = { "eslint" },
+        -- javascriptreact = { "eslint" },
+        -- typescriptreact = { "eslint" },
+        sh = { "shellcheck" },
+      }
+
+      local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+        group = lint_augroup,
+        callback = function()
+          lint.try_lint()
+        end,
+      })
+    end,
+  },
   {
     "soulsam480/nvim-oxlint",
     opts = function()
@@ -603,22 +662,12 @@ require("lazy").setup({
         capabilities = lsp_capabilities,
       }
     end,
-  }, -- lsp
+  },
+  -- lsp
   {
     "neovim/nvim-lspconfig",
     config = function()
       require("mason").setup()
-
-      require("lsp-format").setup({
-        typescript = {
-          -- "eslint",
-          "null-ls",
-        },
-        typescriptreact = {
-          -- "eslint",
-          "null-ls",
-        },
-      })
 
       require("mason-lspconfig").setup({
         ensure_installed = {
@@ -628,43 +677,10 @@ require("lazy").setup({
           "cssls",
           "stylelint_lsp",
           "tailwindcss",
-          -- "emmet_ls",
-          -- "eslint",
-          -- "grammarly",
+          "eslint",
         },
       })
 
-      ---@diagnostic disable-next-line: unused-local
-      local lsp_attach = function(client, bufnr)
-        if client.name ~= "tsserver" then
-          require("lsp-format").on_attach(client)
-          client.server_capabilities.documentFormattingProvider = true
-        end
-
-        vim.api.nvim_create_user_command("F", function()
-          vim.lsp.buf.format({ async = true })
-        end, {})
-      end
-
-      local null_ls = require("null-ls")
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-      local formatting = null_ls.builtins.formatting
-      null_ls.setup({
-        debug = false,
-        on_attach = function(client, bufnr)
-          client.server_capabilities.documentFormattingProvider = true
-          lsp_attach(client, bufnr)
-        end,
-        sources = {
-          formatting.shfmt.with({
-            extra_args = { "-i", "2", "-ci" },
-          }),
-          formatting.prettier.with({
-            prefer_local = "node_modules/.bin",
-          }),
-          formatting.stylua,
-        },
-      })
       local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
 
       local lspconfig = require("lspconfig")
@@ -688,7 +704,6 @@ require("lazy").setup({
         function(server_name)
           ---@diagnostic disable-next-line: redefined-local
           local opts = {
-            on_attach = lsp_attach,
             capabilities = lsp_capabilities,
           }
 
@@ -771,8 +786,6 @@ require("lazy").setup({
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason.nvim",
       "yioneko/nvim-vtsls",
-      "nvimtools/none-ls.nvim",
-      "lukas-reineke/lsp-format.nvim",
     },
   },
   { "j-hui/fidget.nvim", opts = {} },
