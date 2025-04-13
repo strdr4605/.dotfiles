@@ -176,12 +176,9 @@ vim.diagnostic.config({
   underline = true,
   severity_sort = true,
 })
-vim.keymap.set("n", "gd", function()
-  vim.lsp.buf.definition()
-end, opts)
-vim.keymap.set("n", "gl", function()
-  vim.diagnostic.open_float()
-end, opts)
+-- Make tag commands split vertically by default
+vim.keymap.set("n", "<C-W>]", ":vertical wincmd ]<CR>", { silent = true })
+vim.keymap.set("n", "<C-W><C-]>", ":vertical wincmd ]<CR>", { silent = true })
 
 local function jumpWithVirtLineDiags(jumpCount, severity)
   pcall(vim.api.nvim_del_augroup_by_name, "jumpWithVirtLineDiags") -- prevent autocmd for repeated jumps
