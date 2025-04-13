@@ -670,7 +670,6 @@ require("lazy").setup({
         ensure_installed = {
           "jsonls",
           "lua_ls",
-          "stylua",
           "vtsls",
           "cssls",
           "stylelint_lsp",
