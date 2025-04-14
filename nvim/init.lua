@@ -678,21 +678,6 @@ require("lazy").setup({
       local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
 
       local lspconfig = require("lspconfig")
-      local configs = require("lspconfig.configs")
-
-      configs.vtsls = require("vtsls").lspconfig -- set default server config, optional but recommended
-
-      -- try to fix "The JS/TS language service crashed 5 times in the last 5 Minutes."
-      -- https://github.com/yioneko/nvim-vtsls/issues/15
-      lspconfig.vtsls.setup({
-        settings = {
-          typescript = {
-            tsserver = {
-              maxTsServerMemory = 8192, -- Increase memory limit (e.g., 8GB)
-            },
-          },
-        },
-      })
 
       require("mason-lspconfig").setup_handlers({
         function(server_name)
@@ -702,23 +687,13 @@ require("lazy").setup({
           }
 
           if server_name == "lua_ls" then
-            opts.settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { "vim" },
-                },
-                workspace = {
-                  library = {
-                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                    [vim.fn.stdpath("config") .. "/lua"] = true,
-                  },
-                },
-              },
-            }
+            vim.lsp.enable("lua_ls")
+            return
           end
 
-          if server_name == "emmet_ls" then
-            opts.filetypes = { "html", "css", "scss", "javascript", "typescript" }
+          if server_name == "cssls" then
+            vim.lsp.enable("cssls")
+            return
           end
 
           if server_name == "stylelint_lsp" then
@@ -726,53 +701,21 @@ require("lazy").setup({
           end
 
           if server_name == "jsonls" then
-            -- Find more schemas here: https://www.schemastore.org/json/
-            local schemas = {
-              {
-                description = "TypeScript compiler configuration file",
-                fileMatch = {
-                  "tsconfig.json",
-                  "tsconfig.*.json",
-                },
-                url = "https://json.schemastore.org/tsconfig.json",
-              },
-              {
-                description = "Prettier config",
-                fileMatch = {
-                  ".prettierrc",
-                  ".prettierrc.js",
-                  ".prettierrc.json",
-                  "prettier.config.json",
-                },
-                url = "https://json.schemastore.org/prettierrc",
-              },
-              {
-                description = "NPM configuration file",
-                fileMatch = {
-                  "package.json",
-                },
-                url = "https://json.schemastore.org/package.json",
-              },
-            }
-
-            opts.settings = {
-              json = {
-                schemas = schemas,
-              },
-            }
-
-            opts.setup = {
-              commands = {
-                Format = {
-                  function()
-                    vim.lsp.buf.range_formatting({}, { 0, 0 }, { vim.fn.line("$"), 0 })
-                  end,
-                },
-              },
-            }
+            vim.lsp.enable("jsonls")
+            return
           end
 
-          lspconfig[server_name].setup(opts)
+          if server_name == "vtsls" then
+            -- nvim/lsp/vtsls.lua
+            vim.lsp.enable("vtsls")
+
+            return
+          end
+
+          -- Enable lspconfig for tailwindcss only, other lsps should use native config nvim/lsp/*.lua
+          if server_name == "tailwindcss" then
+            lspconfig[server_name].setup(opts)
+          end
         end,
       })
     end,
