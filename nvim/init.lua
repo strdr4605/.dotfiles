@@ -669,55 +669,21 @@ require("lazy").setup({
           "lua_ls",
           "vtsls",
           "cssls",
-          "stylelint_lsp",
           "tailwindcss",
           "eslint",
         },
       })
 
-      local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
+      vim.lsp.enable("lua_ls")
+      vim.lsp.enable("cssls")
+      vim.lsp.enable("jsonls")
+      vim.lsp.enable("vtsls")
+      vim.lsp.enable("eslint")
 
       local lspconfig = require("lspconfig")
 
-      require("mason-lspconfig").setup_handlers({
-        function(server_name)
-          ---@diagnostic disable-next-line: redefined-local
-          local opts = {
-            capabilities = lsp_capabilities,
-          }
-
-          if server_name == "lua_ls" then
-            vim.lsp.enable("lua_ls")
-            return
-          end
-
-          if server_name == "cssls" then
-            vim.lsp.enable("cssls")
-            return
-          end
-
-          if server_name == "stylelint_lsp" then
-            opts.filetypes = { "css", "scss", "html" }
-          end
-
-          if server_name == "jsonls" then
-            vim.lsp.enable("jsonls")
-            return
-          end
-
-          if server_name == "vtsls" then
-            -- nvim/lsp/vtsls.lua
-            vim.lsp.enable("vtsls")
-
-            return
-          end
-
-          -- Enable lspconfig for tailwindcss only, other lsps should use native config nvim/lsp/*.lua
-          if server_name == "tailwindcss" then
-            lspconfig[server_name].setup(opts)
-          end
-        end,
-      })
+      lspconfig.tailwindcss.setup({})
+      lspconfig.astro.setup({})
     end,
     dependencies = {
       "williamboman/mason-lspconfig.nvim",
