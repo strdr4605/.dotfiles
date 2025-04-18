@@ -671,6 +671,7 @@ require("lazy").setup({
           "cssls",
           "tailwindcss",
           "eslint",
+          "astro",
         },
       })
 
