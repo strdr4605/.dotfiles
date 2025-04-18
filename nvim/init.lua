@@ -813,23 +813,6 @@ require("lazy").setup({
       },
 
       fuzzy = { implementation = "prefer_rust_with_warning" },
-
-      cmdline = {
-        keymap = {
-          -- recommended, as the default keymap will only show and select the next item
-          ["<Tab>"] = { "show", "accept" },
-        },
-        completion = {
-          menu = {
-            ---@diagnostic disable-next-line: unused-local
-            auto_show = function(ctx)
-              return vim.fn.getcmdtype() == ":"
-              -- enable for inputs as well, with:
-              -- or vim.fn.getcmdtype() == '@'
-            end,
-          },
-        },
-      },
     },
     opts_extend = { "sources.default" },
   },
