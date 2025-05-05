@@ -96,7 +96,7 @@ vim.opt.expandtab = true -- convert tabs to spaces
 vim.opt.shiftwidth = 2 -- the number of spaces inserted for each indentation
 vim.opt.tabstop = 2 -- insert 2 spaces for a tab
 vim.opt.cursorline = true -- highlight the current line
-vim.opt.number = false -- set numbered lines
+vim.opt.number = true -- set numbered lines
 vim.opt.relativenumber = true -- set relative numbered line
 vim.opt.laststatus = 3 -- only the last window will always have a status line
 vim.opt.showcmd = false -- hide (partial) command in the last line of the screen (for performance)
@@ -137,11 +137,6 @@ vim.api.nvim_create_autocmd("WinLeave", {
   group = augroup,
   command = "setlocal nocursorline",
 })
--- vim.api.nvim_create_autocmd("InsertLeave", {
---   pattern = "*",
---   group = augroup,
---   command = "LuaSnipUnlinkCurrent",
--- })
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "typescript,typescriptreact",
   group = augroup,
@@ -669,65 +664,45 @@ require("lazy").setup({
           "lua_ls",
           "vtsls",
           "cssls",
-          "stylelint_lsp",
           "tailwindcss",
           "eslint",
+          "astro",
         },
       })
 
-      local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
-
-      local lspconfig = require("lspconfig")
-      local configs = require("lspconfig.configs")
-
-      configs.vtsls = require("vtsls").lspconfig -- set default server config, optional but recommended
-
-      -- try to fix "The JS/TS language service crashed 5 times in the last 5 Minutes."
-      -- https://github.com/yioneko/nvim-vtsls/issues/15
-      lspconfig.vtsls.setup({
+      vim.lsp.config("lua_ls", {
         settings = {
-          typescript = {
-            tsserver = {
-              maxTsServerMemory = 8192, -- Increase memory limit (e.g., 8GB)
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
+            },
+            workspace = {
+              library = {
+                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                [vim.fn.stdpath("config") .. "/lua"] = true,
+              },
             },
           },
         },
       })
+      vim.lsp.enable("lua_ls")
 
-      require("mason-lspconfig").setup_handlers({
-        function(server_name)
-          ---@diagnostic disable-next-line: redefined-local
-          local opts = {
-            capabilities = lsp_capabilities,
-          }
+      vim.lsp.enable("cssls")
 
-          if server_name == "lua_ls" then
-            opts.settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { "vim" },
-                },
-                workspace = {
-                  library = {
-                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                    [vim.fn.stdpath("config") .. "/lua"] = true,
-                  },
-                },
-              },
-            }
-          end
-
-          if server_name == "emmet_ls" then
-            opts.filetypes = { "html", "css", "scss", "javascript", "typescript" }
-          end
-
-          if server_name == "stylelint_lsp" then
-            opts.filetypes = { "css", "scss", "html" }
-          end
-
-          if server_name == "jsonls" then
+      vim.lsp.config("jsonls", {
+        setup = {
+          commands = {
+            Format = {
+              function()
+                vim.lsp.buf.range_formatting({}, { 0, 0 }, { vim.fn.line("$"), 0 })
+              end,
+            },
+          },
+        },
+        settings = {
+          json = {
             -- Find more schemas here: https://www.schemastore.org/json/
-            local schemas = {
+            schemas = {
               {
                 description = "TypeScript compiler configuration file",
                 fileMatch = {
@@ -753,34 +728,60 @@ require("lazy").setup({
                 },
                 url = "https://json.schemastore.org/package.json",
               },
-            }
-
-            opts.settings = {
-              json = {
-                schemas = schemas,
-              },
-            }
-
-            opts.setup = {
-              commands = {
-                Format = {
-                  function()
-                    vim.lsp.buf.range_formatting({}, { 0, 0 }, { vim.fn.line("$"), 0 })
-                  end,
-                },
-              },
-            }
-          end
-
-          lspconfig[server_name].setup(opts)
-        end,
+            },
+          },
+        },
       })
+      vim.lsp.enable("jsonls")
+
+      vim.lsp.config("vtsls", {
+        cmd = { "vtsls", "--stdio" },
+        filetypes = {
+          "javascript",
+          "javascriptreact",
+          "javascript.jsx",
+          "typescript",
+          "typescriptreact",
+          "typescript.tsx",
+        },
+        root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
+        single_file_support = true,
+        settings = {
+          typescript = {
+            updateImportsOnFileMove = "always",
+            tsserver = {
+              -- try to fix "The JS/TS language service crashed 5 times in the last 5 Minutes."
+              -- https://github.com/yioneko/nvim-vtsls/issues/15
+              maxTsServerMemory = 8192, -- Increase memory limit (e.g., 8GB)
+            },
+          },
+          javascript = {
+            updateImportsOnFileMove = "always",
+          },
+          vtsls = {
+            enableMoveToFileCodeAction = true,
+          },
+        },
+      })
+      vim.lsp.enable("vtsls")
+
+      local lspconfig = require("lspconfig")
+
+      lspconfig.eslint.setup({})
+      lspconfig.tailwindcss.setup({})
+      lspconfig.astro.setup({})
     end,
     dependencies = {
       "williamboman/mason-lspconfig.nvim",
       "williamboman/mason.nvim",
       "yioneko/nvim-vtsls",
     },
+  },
+  {
+    "razak17/tailwind-fold.nvim",
+    opts = {},
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    ft = { "html", "svelte", "astro", "vue", "typescriptreact", "php", "blade" },
   },
   { "j-hui/fidget.nvim", opts = {} },
   {
