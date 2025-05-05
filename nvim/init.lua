@@ -96,7 +96,7 @@ vim.opt.expandtab = true -- convert tabs to spaces
 vim.opt.shiftwidth = 2 -- the number of spaces inserted for each indentation
 vim.opt.tabstop = 2 -- insert 2 spaces for a tab
 vim.opt.cursorline = true -- highlight the current line
-vim.opt.number = false -- set numbered lines
+vim.opt.number = true -- set numbered lines
 vim.opt.relativenumber = true -- set relative numbered line
 vim.opt.laststatus = 3 -- only the last window will always have a status line
 vim.opt.showcmd = false -- hide (partial) command in the last line of the screen (for performance)
@@ -137,11 +137,6 @@ vim.api.nvim_create_autocmd("WinLeave", {
   group = augroup,
   command = "setlocal nocursorline",
 })
--- vim.api.nvim_create_autocmd("InsertLeave", {
---   pattern = "*",
---   group = augroup,
---   command = "LuaSnipUnlinkCurrent",
--- })
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "typescript,typescriptreact",
   group = augroup,
@@ -675,14 +670,104 @@ require("lazy").setup({
         },
       })
 
+      vim.lsp.config("lua_ls", {
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
+            },
+            workspace = {
+              library = {
+                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                [vim.fn.stdpath("config") .. "/lua"] = true,
+              },
+            },
+          },
+        },
+      })
       vim.lsp.enable("lua_ls")
+
       vim.lsp.enable("cssls")
+
+      vim.lsp.config("jsonls", {
+        setup = {
+          commands = {
+            Format = {
+              function()
+                vim.lsp.buf.range_formatting({}, { 0, 0 }, { vim.fn.line("$"), 0 })
+              end,
+            },
+          },
+        },
+        settings = {
+          json = {
+            -- Find more schemas here: https://www.schemastore.org/json/
+            schemas = {
+              {
+                description = "TypeScript compiler configuration file",
+                fileMatch = {
+                  "tsconfig.json",
+                  "tsconfig.*.json",
+                },
+                url = "https://json.schemastore.org/tsconfig.json",
+              },
+              {
+                description = "Prettier config",
+                fileMatch = {
+                  ".prettierrc",
+                  ".prettierrc.js",
+                  ".prettierrc.json",
+                  "prettier.config.json",
+                },
+                url = "https://json.schemastore.org/prettierrc",
+              },
+              {
+                description = "NPM configuration file",
+                fileMatch = {
+                  "package.json",
+                },
+                url = "https://json.schemastore.org/package.json",
+              },
+            },
+          },
+        },
+      })
       vim.lsp.enable("jsonls")
+
+      vim.lsp.config("vtsls", {
+        cmd = { "vtsls", "--stdio" },
+        filetypes = {
+          "javascript",
+          "javascriptreact",
+          "javascript.jsx",
+          "typescript",
+          "typescriptreact",
+          "typescript.tsx",
+        },
+        root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
+        single_file_support = true,
+        settings = {
+          typescript = {
+            updateImportsOnFileMove = "always",
+            tsserver = {
+              -- try to fix "The JS/TS language service crashed 5 times in the last 5 Minutes."
+              -- https://github.com/yioneko/nvim-vtsls/issues/15
+              maxTsServerMemory = 8192, -- Increase memory limit (e.g., 8GB)
+            },
+          },
+          javascript = {
+            updateImportsOnFileMove = "always",
+          },
+          vtsls = {
+            enableMoveToFileCodeAction = true,
+          },
+        },
+      })
       vim.lsp.enable("vtsls")
-      vim.lsp.enable("eslint")
 
       local lspconfig = require("lspconfig")
 
+      lspconfig.eslint.setup({})
       lspconfig.tailwindcss.setup({})
       lspconfig.astro.setup({})
     end,
@@ -691,6 +776,12 @@ require("lazy").setup({
       "williamboman/mason.nvim",
       "yioneko/nvim-vtsls",
     },
+  },
+  {
+    "razak17/tailwind-fold.nvim",
+    opts = {},
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    ft = { "html", "svelte", "astro", "vue", "typescriptreact", "php", "blade" },
   },
   { "j-hui/fidget.nvim", opts = {} },
   {
