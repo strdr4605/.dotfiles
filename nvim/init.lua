@@ -668,6 +668,7 @@ require("lazy").setup({
           "eslint",
           "astro",
         },
+        automatic_enable = false,
       })
 
       vim.lsp.config("lua_ls", {
@@ -772,8 +773,8 @@ require("lazy").setup({
       lspconfig.astro.setup({})
     end,
     dependencies = {
-      "williamboman/mason-lspconfig.nvim",
-      "williamboman/mason.nvim",
+      "mason-org/mason-lspconfig.nvim",
+      "mason-org/mason.nvim",
       "yioneko/nvim-vtsls",
     },
   },
