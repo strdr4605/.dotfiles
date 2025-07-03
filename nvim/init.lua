@@ -750,6 +750,9 @@ require("lazy").setup({
         settings = {
           typescript = {
             updateImportsOnFileMove = "always",
+            preferences = {
+              importModuleSpecifier = "non-relative",
+            },
             tsserver = {
               -- try to fix "The JS/TS language service crashed 5 times in the last 5 Minutes."
               -- https://github.com/yioneko/nvim-vtsls/issues/15
