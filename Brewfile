@@ -2,6 +2,7 @@ cask 'alacritty'
 
 brew 'git'
 brew 'git-delta'
+brew 'jj'
 brew 'zsh'
 brew 'zsh-syntax-highlighting'
 brew 'starship'

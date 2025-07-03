@@ -486,6 +486,14 @@ require("lazy").setup({
   },
   "tpope/vim-dispatch",
   "tpope/vim-fugitive",
+  {
+    "nicolasgb/jj.nvim",
+    -- dir = "~/P/OSS/jj.nvim",
+    -- name = "jj.nvim",
+    config = function()
+      require("jj").setup({})
+    end,
+  },
   "tpope/vim-surround",
   {
     "lewis6991/gitsigns.nvim",
