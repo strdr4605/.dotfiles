@@ -1,0 +1,23 @@
+"$schema" = "https://jj-vcs.github.io/jj/latest/config-schema.json"
+
+[user]
+name = "Dragoș Străinu"
+email = "str.dr4605@gmail.com"
+
+# override user.email if the repository is located under ~/Work
+[[--scope]]
+--when.repositories = ["~/Work"]
+[--scope.user]
+name = "Cursor Editor AI"
+email = "dragos@planable.io"
+
+# disable pagination for `jj status`, use `delta` for `jj diff` and `jj show`
+# [[--scope]]
+# when.commands = ["status"]
+# [--scope.ui]
+# paginate = "never"
+# [[--scope]]
+# when.commands = ["diff", "show"]
+# [--scope.ui]
+# pager = "delta"
+

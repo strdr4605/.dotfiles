@@ -13,6 +13,7 @@
     ~/.zshrc: .zshrc
     ~/.config/starship.toml: starship.toml
     ~/.gitconfig: .gitconfig
+    ~/.config/jj/config.toml: .jjconfig.toml
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
