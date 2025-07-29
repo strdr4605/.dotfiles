@@ -305,7 +305,7 @@ require("lazy").setup({
         require("fzf-lua").files()
       end, opts)
       vim.keymap.set("n", "<leader><S-f>", function()
-        require("fzf-lua").live_grep_glob()
+        require("fzf-lua").live_grep()
       end, opts)
       vim.keymap.set("n", "<leader>r", function()
         require("fzf-lua").resume()
