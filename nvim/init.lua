@@ -660,6 +660,27 @@ require("lazy").setup({
       }
     end,
   },
+  {
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    config = function()
+      local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
+
+      require("typescript-tools").setup({
+        capabilities = lsp_capabilities,
+        settings = {
+          tsserver_file_preferences = {
+            updateImportsOnFileMove = "always",
+            includePackageJsonAutoImports = "auto",
+          },
+          tsserver_format_options = {
+            allowIncompleteCompletions = false,
+            allowRenameOfImportPath = false,
+          },
+        },
+      })
+    end,
+  },
   -- lsp
   {
     "neovim/nvim-lspconfig",
@@ -670,7 +691,6 @@ require("lazy").setup({
         ensure_installed = {
           "jsonls",
           "lua_ls",
-          "vtsls",
           "cssls",
           "tailwindcss",
           "eslint",
@@ -743,40 +763,6 @@ require("lazy").setup({
       })
       vim.lsp.enable("jsonls")
 
-      vim.lsp.config("vtsls", {
-        cmd = { "vtsls", "--stdio" },
-        filetypes = {
-          "javascript",
-          "javascriptreact",
-          "javascript.jsx",
-          "typescript",
-          "typescriptreact",
-          "typescript.tsx",
-        },
-        root_markers = { "tsconfig.json", "jsconfig.json", "package.json", ".git" },
-        single_file_support = true,
-        settings = {
-          typescript = {
-            updateImportsOnFileMove = "always",
-            preferences = {
-              importModuleSpecifier = "non-relative",
-            },
-            tsserver = {
-              -- try to fix "The JS/TS language service crashed 5 times in the last 5 Minutes."
-              -- https://github.com/yioneko/nvim-vtsls/issues/15
-              maxTsServerMemory = 8192, -- Increase memory limit (e.g., 8GB)
-            },
-          },
-          javascript = {
-            updateImportsOnFileMove = "always",
-          },
-          vtsls = {
-            enableMoveToFileCodeAction = true,
-          },
-        },
-      })
-      vim.lsp.enable("vtsls")
-
       -- vim.lsp.config("ts_go_ls", {
       --   cmd = { vim.loop.os_homedir() .. "/P/typescript-go/built/local/tsgo", "lsp", "-stdio" },
       --   filetypes = {
@@ -798,7 +784,6 @@ require("lazy").setup({
     dependencies = {
       "mason-org/mason-lspconfig.nvim",
       "mason-org/mason.nvim",
-      "yioneko/nvim-vtsls",
     },
   },
   {
