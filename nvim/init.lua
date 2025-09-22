@@ -791,11 +791,9 @@ require("lazy").setup({
       -- })
       -- vim.lsp.enable("ts_go_ls")
 
-      local lspconfig = require("lspconfig")
-
-      lspconfig.eslint.setup({})
-      lspconfig.tailwindcss.setup({})
-      lspconfig.astro.setup({})
+      vim.lsp.enable("eslint")
+      vim.lsp.enable("tailwindcss")
+      vim.lsp.enable("astro")
     end,
     dependencies = {
       "mason-org/mason-lspconfig.nvim",
