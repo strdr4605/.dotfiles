@@ -668,6 +668,26 @@ require("lazy").setup({
 
       require("typescript-tools").setup({
         capabilities = lsp_capabilities,
+        on_attach = function(client)
+          -- Remove annoying "Move to" code actions
+          -- https://github.com/pmizio/typescript-tools.nvim/issues/238
+          if client.name == "typescript-tools" then
+            local original_code_action = vim.lsp.buf.code_action
+
+            vim.lsp.buf.code_action = function(opts)
+              opts = opts or {}
+
+              opts.filter = function(action)
+                local title = action.title or ""
+                local is_move_action = title:lower():match("move to")
+
+                return not is_move_action
+              end
+
+              return original_code_action(opts)
+            end
+          end
+        end,
         settings = {
           tsserver_file_preferences = {
             updateImportsOnFileMove = "always",
@@ -677,6 +697,7 @@ require("lazy").setup({
             allowIncompleteCompletions = false,
             allowRenameOfImportPath = false,
           },
+          expose_as_code_action = { "add_missing_imports", "remove_unused_imports" },
         },
       })
     end,
