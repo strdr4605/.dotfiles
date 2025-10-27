@@ -713,6 +713,7 @@ require("lazy").setup({
           "jsonls",
           "lua_ls",
           "cssls",
+          "html",
           "tailwindcss",
           "eslint",
           "astro",
@@ -738,6 +739,8 @@ require("lazy").setup({
       vim.lsp.enable("lua_ls")
 
       vim.lsp.enable("cssls")
+
+      vim.lsp.enable("html")
 
       vim.lsp.config("jsonls", {
         setup = {
