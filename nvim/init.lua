@@ -68,7 +68,6 @@ vim.opt.undofile = true
 
 vim.opt.incsearch = true
 vim.opt.termguicolors = true
-
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "number"
 vim.opt.isfname:append("@-@")
@@ -90,7 +89,6 @@ vim.opt.smartcase = true -- smart case
 vim.opt.smartindent = true -- make indenting smarter again
 vim.opt.splitbelow = true -- force all horizontal splits to go below current window
 vim.opt.splitright = true -- force all vertical splits to go to the right of current window
-vim.opt.termguicolors = true -- set term gui colors (most terminals support this)
 vim.opt.timeoutlen = 1000 -- time to wait for a mapped sequence to complete (in milliseconds)
 vim.opt.expandtab = true -- convert tabs to spaces
 vim.opt.shiftwidth = 2 -- the number of spaces inserted for each indentation
@@ -102,7 +100,6 @@ vim.opt.laststatus = 3 -- only the last window will always have a status line
 vim.opt.showcmd = false -- hide (partial) command in the last line of the screen (for performance)
 vim.opt.ruler = false -- hide the line and column number of the cursor position
 vim.opt.numberwidth = 2 -- minimal number of columns to use for the line number {default 4}
-vim.opt.scrolloff = 8 -- minimal number of screen lines to keep above and below the cursor
 -- vim.opt.sidescrolloff = 8 -- minimal number of screen columns to keep to the left and right of the cursor if wrap is `false`
 vim.opt.guifont = "monospace:h17" -- the font used in graphical neovim applications
 -- vim.opt.fillchars.eob = " " -- show empty lines at the end of a buffer as ` ` {default `~`}
@@ -272,9 +269,6 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
 
 require("lazy").setup({
   "nvim-lua/plenary.nvim", -- Useful lua functions used ny lots of plugins
