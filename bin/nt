@@ -7,8 +7,8 @@ CURRENT_DIR=$(pwd)
 FOLDER=$(basename "$CURRENT_DIR")
 PARENT=$(basename "$(dirname "$CURRENT_DIR")")
 
-# Create session name in format parent/folder
-SESSION_NAME="$PARENT/$FOLDER"
+# Create session name in format parent/folder (dots replaced - tmux restriction)
+SESSION_NAME=$(echo "$PARENT/$FOLDER" | tr '.' '-')
 
 # Check if we're already in a tmux session
 if [ -n "$TMUX" ]; then
