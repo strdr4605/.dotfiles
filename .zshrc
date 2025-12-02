@@ -127,6 +127,7 @@ export PATH=~/.dotfiles/bin:$PATH
 
 alias vim="nvim"
 alias G="git"
+alias cc="claude"
 
 alias ls="eza -al --icons --group-directories-first --no-user --time-style=long-iso"
 
