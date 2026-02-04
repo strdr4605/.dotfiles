@@ -662,6 +662,7 @@ require("lazy").setup({
 
       require("typescript-tools").setup({
         capabilities = lsp_capabilities,
+        single_file_support = true,
         on_attach = function(client)
           -- Remove annoying "Move to" code actions
           -- https://github.com/pmizio/typescript-tools.nvim/issues/238
@@ -732,8 +733,18 @@ require("lazy").setup({
       })
       vim.lsp.enable("lua_ls")
 
+      local lsp_capabilities = require("blink.cmp").get_lsp_capabilities()
+
+      vim.lsp.config("cssls", {
+        capabilities = lsp_capabilities,
+        single_file_support = true,
+      })
       vim.lsp.enable("cssls")
 
+      vim.lsp.config("html", {
+        capabilities = lsp_capabilities,
+        single_file_support = true,
+      })
       vim.lsp.enable("html")
 
       vim.lsp.config("jsonls", {
