@@ -121,6 +121,8 @@ alias ls="eza -al --icons --group-directories-first --no-user --time-style=long-
 
 export PATH=/opt/homebrew/bin:$PATH
 
+export PATH="/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/3.4.0/bin:$PATH"
+
 # NVM
 export NVM_DIR=~/.nvm 
 source $(brew --prefix nvm)/nvm.sh
