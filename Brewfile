@@ -13,6 +13,7 @@ cask 'brave-browser'
 cask 'raycast'
 cask 'bitwarden'
 cask 'beeper'
+cask 'claude-code'
 
 brew 'tmux'
 brew 'neovim'
