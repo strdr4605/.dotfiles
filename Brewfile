@@ -29,10 +29,6 @@ brew 'zoxide'
 brew 'lf'
 brew 'eza'
 
-# FiraCode - https://github.com/tonsky/FiraCode/wiki/Installing#macos
-tap 'homebrew/cask-fonts'
-cask 'font-fira-code-nerd-font'
-
 # For ReactNative
 brew 'watchman'
 brew 'cocoapods'
