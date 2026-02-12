@@ -30,7 +30,8 @@
 	followTags = true
 [core]
   pager = delta
-	fsmonitor = true
+  ; For big repos enable this for better git status
+	; fsmonitor = true
 	untrackedCache = true
 [interactive]
   diffFilter = delta --color-only
