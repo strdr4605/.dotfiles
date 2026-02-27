@@ -1,3 +1,8 @@
+[custom.jj]
+when = "jj root"
+command = "jj-starship 2>/dev/null"
+format = "$output "
+
 [package]
 disabled=true
 

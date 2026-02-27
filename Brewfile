@@ -6,6 +6,8 @@ brew 'jj'
 brew 'zsh'
 brew 'zsh-syntax-highlighting'
 brew 'starship'
+tap 'dmmulroy/tap'
+brew 'dmmulroy/tap/jj-starship'
 
 brew 'nvm'
 
