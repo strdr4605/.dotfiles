@@ -258,7 +258,7 @@ vim.o.qftf = "{info -> v:lua._G.qftf(info)}"
 -- Plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 ---@diagnostic disable-next-line: undefined-field
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
@@ -376,16 +376,12 @@ require("lazy").setup({
       end, opts)
     end,
   },
+  { "folke/ts-comments.nvim", opts = {}, event = "VeryLazy" },
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
-        -- windwp/nvim-ts-autotag
-        autotag = {
-          enable = true,
-        },
-        -- A list of parser names, or "all" (the four listed parsers should always be installed)
         ensure_installed = {
           "javascript",
           "typescript",
@@ -393,24 +389,8 @@ require("lazy").setup({
           "vim",
           "vimdoc",
         },
-
-        -- Install parsers synchronously (only applied to `ensure_installed`)
         sync_install = false,
-
-        -- Automatically install missing parsers when entering buffer
-        -- Recommendation: set to false if you don"t have `tree-sitter` CLI installed locally
         auto_install = true,
-
-        highlight = {
-          -- `false` will disable the whole extension
-          enable = true,
-
-          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-          -- Set this to `true` if you depend on "syntax" being enabled (like for indentation).
-          -- Using this option may slow down your editor, and you may see some duplicate highlights.
-          -- Instead of true it can also be a list of languages
-          additional_vim_regex_highlighting = false,
-        },
       })
 
       require("treesitter-context").setup({
@@ -434,23 +414,6 @@ require("lazy").setup({
       "windwp/nvim-ts-autotag",
       "nvim-treesitter/nvim-treesitter-context",
     },
-  },
-  {
-    "JoosepAlviste/nvim-ts-context-commentstring",
-    config = function()
-      vim.g.skip_ts_context_commentstring_module = true
-
-      require("nvim-treesitter.configs").setup({
-        enable_autocmd = false,
-      })
-
-      local get_option = vim.filetype.get_option
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.filetype.get_option = function(filetype, option)
-        return option == "commentstring" and require("ts_context_commentstring.internal").calculate_commentstring()
-          or get_option(filetype, option)
-      end
-    end,
   },
   {
     "preservim/vimux",
@@ -1030,21 +993,21 @@ require("lazy").setup({
   },
   "kevinhwang91/nvim-bqf",
   {
-    "norcalli/nvim-colorizer.lua",
+    "catgoose/nvim-colorizer.lua",
     config = function()
-      local colorizer = require("colorizer")
-
-      colorizer.setup({ "css", "scss", "javascript", "javascriptreact", "html" }, {
-        RGB = true, -- #RGB hex codes
-        RRGGBB = true, -- #RRGGBB hex codes
-        names = true, -- "Name" codes like Blue
-        RRGGBBAA = true, -- #RRGGBBAA hex codes
-        rgb_fn = true, -- CSS rgb() and rgba() functions
-        hsl_fn = true, -- CSS hsl() and hsla() functions
-        css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-        -- Available modes: foreground, background
-        mode = "background", -- Set the display mode.
+      require("colorizer").setup({
+        filetypes = { "css", "scss", "javascript", "javascriptreact", "html" },
+        user_default_options = {
+          RGB = true,
+          RRGGBB = true,
+          names = true,
+          RRGGBBAA = true,
+          rgb_fn = true,
+          hsl_fn = true,
+          css = true,
+          css_fn = true,
+          mode = "background",
+        },
       })
     end,
   },
