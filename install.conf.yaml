@@ -14,6 +14,7 @@
     ~/.config/starship.toml: starship.toml
     ~/.gitconfig: .gitconfig
     ~/.config/jj/config.toml: .jjconfig.toml
+    ~/.config/opencode: opencode
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
