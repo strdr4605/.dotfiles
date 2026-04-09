@@ -1,4 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "minimax/MiniMax-M2.7"
+  "model": "minimax/MiniMax-M2.7",
+  "plugin": [
+    "superpowers@git+https://github.com/obra/superpowers.git",
+    "@mohak34/opencode-notifier@0.2.1"
+  ]
 }
