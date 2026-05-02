@@ -1,3 +1,37 @@
+# Conventional Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org) format for all commit messages:
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation only
+- `style`: Formatting, no code change
+- `refactor`: Code change, no feature/fix
+- `test`: Adding/updating tests
+- `chore`: Maintenance, deps, build
+- `perf`: Performance improvement
+- `ci`: CI/CD changes
+- `revert`: Revert previous commit
+
+**Rules:**
+- Use imperative mood ("add" not "added")
+- Keep subject under 72 characters
+- Reference issues: `Closes #<number>` in footer
+
+**Examples:**
+- `feat(auth): add OAuth2 login`
+- `fix(api): handle null response in /users endpoint`
+- `docs(readme): update installation instructions`
+
 # Tmux Window Management
 
 When running inside a tmux session, automatically manage the window name:
