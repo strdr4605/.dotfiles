@@ -378,47 +378,8 @@ require("lazy").setup({
   },
   { "folke/ts-comments.nvim", opts = {}, event = "VeryLazy" },
   {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        ensure_installed = {
-          "javascript",
-          "typescript",
-          "lua",
-          "vim",
-          "vimdoc",
-        },
-        sync_install = false,
-        auto_install = true,
-      })
-
-      require("treesitter-context").setup({
-        enable = true,
-        max_lines = 5, -- Changed this from default config
-        min_window_height = 0,
-        line_numbers = true,
-        multiline_threshold = 1, -- Changed this from default config
-        trim_scope = "outer",
-        mode = "cursor",
-        separator = nil,
-        zindex = 20,
-        on_attach = nil,
-      })
-
-      vim.keymap.set("n", "[w", function()
-        require("treesitter-context").go_to_context(vim.v.count1)
-      end, { silent = true })
-    end,
-    dependencies = {
-      "windwp/nvim-ts-autotag",
-      "nvim-treesitter/nvim-treesitter-context",
-    },
-  },
-  {
     "preservim/vimux",
     config = function()
-      -- send current visual selection as command to execute in tmux pane
       vim.cmd([[
         vn <silent> <leader>ts :<C-U>VimuxRunCommand(VisualSelection())<cr>
         function! VisualSelection()
@@ -434,7 +395,6 @@ require("lazy").setup({
         endfunction
       ]])
 
-      -- send current line as command to execute in tmux pane
       vim.keymap.set("n", "<leader>tl", function()
         local line = vim.fn.getline(".")
         vim.cmd("VimuxRunCommand '" .. line .. "'")
@@ -1066,7 +1026,6 @@ require("lazy").setup({
     version = "*", -- Only update on tagged releases
     dependencies = {
       "MunifTanjim/nui.nvim",
-      -- OPTIONAL: Choose your preferred markdown renderer (or omit for raw markdown)
       "MeanderingProgrammer/render-markdown.nvim", -- Clean rendering
       -- OR: "OXY2DEV/markview.nvim", -- Rich rendering with advanced features
     },
