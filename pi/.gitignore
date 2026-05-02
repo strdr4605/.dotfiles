@@ -1,0 +1,6 @@
+# Local agent config (not synced across machines)
+agent/auth.json
+agent/settings.json
+
+# Sessions (personal work history)
+agent/sessions/

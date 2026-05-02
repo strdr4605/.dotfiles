@@ -16,6 +16,11 @@ cask 'raycast'
 cask 'bitwarden'
 cask 'beeper'
 cask 'claude-code'
+tap 'anomalyco/tap'
+brew 'anomalyco/tap/opencode'
+brew 'pi-coding-agent'
+# For web search with pi
+brew 'ddgr'
 
 brew 'tmux'
 brew 'neovim'
