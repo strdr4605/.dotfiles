@@ -635,6 +635,7 @@ require("lazy").setup({
           "tailwindcss",
           "eslint",
           "astro",
+          "phpactor",
         },
         automatic_enable = false,
       })
@@ -732,6 +733,12 @@ require("lazy").setup({
       vim.lsp.enable("eslint")
       vim.lsp.enable("tailwindcss")
       vim.lsp.enable("astro")
+
+      vim.lsp.config("phpactor", {
+        capabilities = lsp_capabilities,
+        root_markers = { ".git", ".jj", "composer.json", ".phpactor.json", ".phpactor.yml" },
+      })
+      vim.lsp.enable("phpactor")
     end,
     dependencies = {
       "mason-org/mason-lspconfig.nvim",
