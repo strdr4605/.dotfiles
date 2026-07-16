@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -e
+
+# Adds a jj workspace as a sibling of .jjmain, the way `git worktree add` works
+# from a bare-for-worktrees container. Run this from the repo container directory
+# (the one holding .jjmain).
+#
+# Examples of call:
+# jj-workspace-add jj-ws-2
+# => Creates ./jj-ws-2 sharing ./.jjmain
+#
+# jj-workspace-add jj-ws-2 develop@origin
+# => Creates ./jj-ws-2 with its working copy started on top of develop@origin
+
+name=$1
+# Default to trunk() (the repo's main branch on origin — master@origin or main@origin).
+# Without a base revision the new workspace would start on the root commit (empty, no files),
+# because the inert .jjmain has no "current" commit to inherit. Override for feature work,
+# e.g. `jj-workspace-add feature-x develop@origin`.
+revision=${2:-trunk()}
+
+if [ -z "$name" ]; then
+  echo "usage: jj-workspace-add <dir-name> [revision]" >&2
+  exit 1
+fi
+
+if [ ! -d .jjmain ]; then
+  echo "no .jjmain in $(pwd) — cd into the repo container directory first" >&2
+  exit 1
+fi
+
+jj -R "$PWD/.jjmain" workspace add --revision "$revision" "$PWD/$name"

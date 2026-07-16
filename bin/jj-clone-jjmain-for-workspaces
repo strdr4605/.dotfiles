@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -e
+
+# Examples of call:
+# jj-clone-jjmain-for-workspaces git@github.com:name/repo.git
+# => Clones to a /repo directory
+#
+# jj-clone-jjmain-for-workspaces git@github.com:name/repo.git my-repo
+# => Clones to a /my-repo directory
+
+url=$1
+basename=${url##*/}
+name=${2:-${basename%.*}}
+
+mkdir "$name"
+cd "$name"
+
+# Clones with jj into a .jjmain directory that holds BOTH stores:
+#   .jjmain/.jj   -> jj's store (operation log, index, per-workspace state)
+#   .jjmain/.git  -> the backing git repo (jj's backend + git escape hatch, carries origin)
+#
+# jj sets up the `origin` remote and remote-tracking bookmarks (e.g. develop@origin)
+# and fetches all branches, so no manual refspec/fetch is needed (unlike a bare git clone).
+#
+# Plan is to create jj workspaces as siblings of .jjmain.
+# Example targeted structure:
+# .jjmain
+# jj-ws-1
+# jj-ws-2
+# jj-ws-3
+# ...
+jj git clone "$url" .jjmain
+
+# Makes .jjmain inert, the jj analog of a bare .bare directory: forgetting the default
+# workspace drops its working copy but keeps .jj/repo + .git intact. Sibling workspaces
+# reference this store; .jjmain itself is never used as a working directory.
+jj --repository .jjmain workspace forget default
+
+# Auto-creates a ready-to-use "default" workspace on trunk() (the repo's main branch on
+# origin) so you never start out on an empty root commit. Add more with `jj-workspace-add`.
+jj --repository .jjmain workspace add --revision "trunk()" "$PWD/default"
+
+cat <<EOF
+
+Done.
+  Store:     $(pwd)/.jjmain          (leave it alone — deleting it breaks every workspace)
+  Workspace: $(pwd)/default          (ready to use, on trunk())
+
+Start working:
+  cd "$(pwd)/default"
+  jj git fetch
+  jj new develop@origin -m "WIC-1234: ..."   # start feature work off develop
+
+Add more workspaces (run from $(pwd)):
+  jj-workspace-add jj-ws-1                    # on trunk()
+  jj-workspace-add jj-ws-2 develop@origin     # on develop
+
+Rare git escape hatch (has origin, all refs):
+  cd "$(pwd)/.jjmain" && git <cmd>
+  # then re-sync jj from any workspace: jj git import
+EOF

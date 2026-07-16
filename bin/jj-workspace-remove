@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+
+# Removes a jj workspace: forgets it from jj, then deletes its directory — the way
+# `git worktree remove` works. Run this from the repo container directory (the one
+# holding .jjmain), NOT from inside the workspace you're removing.
+#
+# jj leaves the directory on disk after `workspace forget`, so this does both steps.
+# Committed work that a bookmark points to lives in .jjmain and is safe; a workspace's
+# uncommitted working-copy changes (no bookmark) are lost — push/bookmark them first.
+#
+# Examples of call:
+# jj-workspace-remove jj-ws-2
+# => Forgets workspace jj-ws-2 and removes ./jj-ws-2
+
+name=$1
+
+if [ -z "$name" ]; then
+  echo "usage: jj-workspace-remove <dir-name>" >&2
+  exit 1
+fi
+
+if [ ! -d .jjmain ]; then
+  echo "no .jjmain in $(pwd) — cd into the repo container directory first" >&2
+  exit 1
+fi
+
+# Guard the store itself — .jjmain is the anchor, never a workspace.
+if [ "$name" = ".jjmain" ]; then
+  echo "refusing to remove .jjmain — it is the shared store, not a workspace" >&2
+  exit 1
+fi
+
+# 1. drop it from jj (by workspace name, which matches the dir name for our scripts)
+jj --repository "$PWD/.jjmain" workspace forget "$name"
+
+# 2. delete the directory
+rm -rf "$PWD/$name"
+
+echo "Removed workspace '$name'."
