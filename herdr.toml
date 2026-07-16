@@ -1,0 +1,43 @@
+# herdr configuration
+
+[theme]
+# Built-ins include: catppuccin, terminal, tokyo-night, dracula, nord,
+# gruvbox, one-dark, solarized, kanagawa, rose-pine, vesper.
+name = "gruvbox"
+# Uncomment to follow macOS light/dark appearance.
+# auto_switch = true
+
+[terminal]
+# Match tmux's `#{pane_current_path}` behavior.
+new_cwd = "follow"
+
+[keys]
+# Match tmux: C-a is the leader.
+prefix = "ctrl+a"
+
+# Splits mirror tmux: prefix+v = side-by-side, prefix+h = stacked.
+# This takes over prefix+h from the default pane-focus binding;
+# pane focus happens in navigate mode (hjkl without re-pressing prefix).
+split_vertical = "prefix+v"
+split_horizontal = "prefix+h"
+focus_pane_left = ""
+
+new_tab = "prefix+c"
+close_pane = "prefix+x"
+reload_config = "prefix+r"
+detach = "prefix+d"
+
+[ui]
+mouse_capture = true
+pane_borders = true
+pane_gaps = false
+
+# Quiet during dial-in; flip later.
+#[ui.toast]
+#delivery = "off"
+#[ui.sound]
+#enabled = false
+
+[advanced]
+# Rough equivalent of tmux `history-limit 10000` (~10MB).
+scrollback_limit_bytes = 10000000

@@ -17,6 +17,7 @@
     ~/.config/opencode: opencode
     ~/.pi: pi
     ~/.config/caveman: caveman
+    ~/.config/herdr/config.toml: herdr.toml
 
 
 - shell:
