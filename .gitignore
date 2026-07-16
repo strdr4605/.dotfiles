@@ -3,3 +3,4 @@ nvim/neovim_tips/user_tips.md
 
 # pi skills resolve outside the repo via ~/.agents/skills/
 pi/agent/skills/
+bin/islocked

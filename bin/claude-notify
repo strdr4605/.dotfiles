@@ -1,0 +1,56 @@
+#!/bin/sh
+# Claude Code Notification/Stop hook. Routes by where the user is:
+#   screen locked                     -> ntfy push (topic in ~/.claude/ntfy-topic)
+#   Alacritty front + this pane focus -> silent
+#   anything else                     -> macOS notification
+#
+# Setup on a new machine (settings.json is per-machine, not in dotfiles):
+#   1. swiftc -O ~/.dotfiles/bin/islocked.swift -o ~/.dotfiles/bin/islocked
+#   2. openssl rand -hex 16 > ~/.claude/ntfy-topic && chmod 600 ~/.claude/ntfy-topic; subscribe ntfy app to it
+#   3. merge ~/.dotfiles/claude/hooks.json into ~/.claude/settings.json
+# Needs: jq, curl, herdr (optional), terminal named Alacritty for the focus check.
+bin=$(dirname "$0")
+input=$(cat)
+event=$(printf '%s' "$input" | jq -r '.notification_type // .hook_event_name // ""')
+proj=$(basename "${CLAUDE_PROJECT_DIR:-$PWD}")
+
+case $event in
+  permission_prompt) tag="needs approval"; raw=$(printf '%s' "$input" | jq -r '.message // ""') ;;
+  idle_prompt)       tag="waiting"
+    # context from transcript: last user prompt + start of last reply
+    transcript=$(printf '%s' "$input" | jq -r '.transcript_path // ""')
+    q=$(jq -r 'select(.type=="user") | .message.content | if type=="string" then . else (map(select(.type=="text")|.text)|.[0] // empty) end | gsub("\n";" ")' "$transcript" 2>/dev/null | tail -1 | sed 's/<[^>]*>//g' | head -c 60)
+    a=$(jq -r 'select(.type=="assistant") | .message.content | if type=="string" then . else (map(select(.type=="text")|.text)|.[0] // empty) end | gsub("\n";" ")' "$transcript" 2>/dev/null | tail -1 | head -c 200)
+    raw="❯ ${q:-?} · ${a}" ;;
+  *)                 tag="done";           raw=$(printf '%s' "$input" | jq -r '.last_assistant_message // .message // ""') ;;
+esac
+
+# whole message on one line, markdown stripped, whitespace collapsed, word-boundary cut at 120 chars
+msg=$(printf '%s\n' "$raw" \
+  | sed -e 's/^[#>*[:space:]-]*//' -e 's/[*`]//g' -e 's/["\\]//g' \
+  | tr '\n' ' ' | sed -e 's/[[:space:]]\{1,\}/ /g' -e 's/^ //' -e 's/ $//' \
+  | awk '{ if (length($0) > 120) { s=substr($0,1,120); sub(/ [^ ]*$/,"",s); print s "…" } else print }')
+title="$proj: $tag"
+
+if "$bin/islocked"; then
+  topic=$(head -1 "$HOME/.claude/ntfy-topic" 2>/dev/null) || exit 0
+  push() { curl -s -m 10 -H "Title: $title" -H "Tags: robot" -d "${msg:-$tag}" "https://ntfy.sh/$topic"; }
+  if [ "$event" = idle_prompt ]; then
+    # idle fires at 60s; when locked wait until 5 min, then push only if still idle and still locked
+    transcript=$(printf '%s' "$input" | jq -r '.transcript_path // ""')
+    m0=$(stat -f %m "$transcript" 2>/dev/null)
+    ( trap '' HUP; sleep 240
+      [ "$(stat -f %m "$transcript" 2>/dev/null)" = "$m0" ] || exit 0
+      "$bin/islocked" || exit 0
+      push ) >/dev/null 2>&1 &
+  else
+    push >/dev/null 2>&1 &
+  fi
+  exit 0
+fi
+
+front=$(lsappinfo info -only name "$(lsappinfo front)" | sed 's/.*=//; s/"//g')
+focused=$(herdr agent get "$HERDR_PANE_ID" 2>/dev/null | jq -r '.result.agent.focused')
+[ "$front" = Alacritty ] && [ "$focused" = true ] && exit 0
+
+osascript -e "display notification \"${msg:-$tag}\" with title \"$title\""
