@@ -4,6 +4,9 @@
 name = "Dragoș Străinu"
 email = "str.dr4605@gmail.com"
 
+[ui]
+default-command = "log"
+
 # disable pagination for `jj status`, use `delta` for `jj diff` and `jj show`
 # [[--scope]]
 # when.commands = ["status"]
