@@ -137,6 +137,7 @@ include () {
 
 include ~/.zshrc_work
 include ~/.fzf.zsh
+include ~/.dotfiles/jj-git-nudge.zsh
 
 ,notify () {
   local last_exit_status="$?"
