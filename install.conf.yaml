@@ -16,6 +16,7 @@
     ~/.config/jj/config.toml: .jjconfig.toml
     ~/.config/opencode: opencode
     ~/.pi: pi
+    ~/.config/caveman: caveman
 
 
 - shell:
