@@ -29,4 +29,8 @@ if [ ! -d .jjmain ]; then
   exit 1
 fi
 
+# .jjmain's own working copy goes stale whenever another workspace runs an operation.
+# workspace add must snapshot it, so refresh first (no-op when already current).
+jj -R "$PWD/.jjmain" workspace update-stale --quiet 2>/dev/null || true
+
 jj -R "$PWD/.jjmain" workspace add --revision "$revision" "$PWD/$name"
