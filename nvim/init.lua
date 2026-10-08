@@ -471,8 +471,8 @@ require("lazy").setup({
           end
 
           -- Navigation
-          map("n", "]c", "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
-          map("n", "[c", "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", { expr = true })
+          vim.keymap.set("n", "]c", function() HunkNav(1) end, { buffer = bufnr })
+          vim.keymap.set("n", "[c", function() HunkNav(-1) end, { buffer = bufnr })
 
           -- Actions
           map("n", "<leader>hs", ":Gitsigns stage_hunk<CR>")
@@ -494,6 +494,77 @@ require("lazy").setup({
           map("x", "ih", ":<C-U>Gitsigns select_hunk<CR>")
         end,
       })
+    end,
+  },
+  {
+    "evanphx/jjsigns.nvim",
+    config = function()
+      require("jjsigns").setup({
+        signs = {
+          add = { text = "┃" },
+          change = { text = "┃" },
+          delete = { text = "_" },
+          topdelete = { text = "‾" },
+          changedelete = { text = "~" },
+        },
+        signcolumn = true,
+        numhl = false,
+        linehl = false,
+        sign_priority = 6,
+        update_debounce = 100,
+        attach = { auto = true },
+      })
+
+      -- jjsigns has no hunk navigation; derive hunks from its per-line signs
+      local function jj_nav_hunk(dir)
+        local signs = require("jjsigns.signs").get_buffer_signs(vim.api.nvim_get_current_buf())
+        if not signs or #signs == 0 then
+          return
+        end
+        local starts = {}
+        local prev
+        for _, s in ipairs(signs) do
+          if s.line ~= prev then
+            table.insert(starts, s.line)
+          end
+          prev = s.line + 1
+        end
+        local cur = vim.fn.line(".")
+        local target
+        if dir > 0 then
+          for _, l in ipairs(starts) do
+            if l > cur then
+              target = l
+              break
+            end
+          end
+          target = target or starts[1]
+        else
+          for i = #starts, 1, -1 do
+            if starts[i] < cur then
+              target = starts[i]
+              break
+            end
+          end
+          target = target or starts[#starts]
+        end
+        vim.cmd("normal! m'")
+        vim.api.nvim_win_set_cursor(0, { target, 0 })
+      end
+
+      -- Shared ]c/[c: diff mode > jjsigns > gitsigns. Global so gitsigns on_attach can reuse it.
+      function HunkNav(dir)
+        if vim.wo.diff then
+          vim.cmd.normal({ dir > 0 and "]c" or "[c", bang = true })
+        elseif require("jjsigns.signs").has_signs(vim.api.nvim_get_current_buf()) then
+          jj_nav_hunk(dir)
+        else
+          vim.cmd("Gitsigns " .. (dir > 0 and "next_hunk" or "prev_hunk"))
+        end
+      end
+
+      vim.keymap.set("n", "]c", function() HunkNav(1) end)
+      vim.keymap.set("n", "[c", function() HunkNav(-1) end)
     end,
   },
   "sindrets/diffview.nvim",
@@ -1039,7 +1110,7 @@ require("lazy").setup({
     opts = {
       -- OPTIONAL: Daily tip mode (default: 1)
       -- 0 = off, 1 = once per day, 2 = every startup
-      daily_tip = 1,
+      daily_tip = 0,
     },
   },
 })
