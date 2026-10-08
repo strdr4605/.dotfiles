@@ -135,7 +135,6 @@ include () {
     [[ -f "$1" ]] && source "$1"
 }
 
-include ~/.zshrc_work
 include ~/.fzf.zsh
 include ~/.dotfiles/jj-git-nudge.zsh
 
@@ -154,3 +153,6 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 source <(jj util completion zsh)
+
+# machine-specific overrides (work/personal), untracked
+include ~/.zshrc_local
