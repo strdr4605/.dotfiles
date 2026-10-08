@@ -8,12 +8,12 @@ email = "str.dr4605@gmail.com"
 default-command = "log"
 
 # disable pagination for `jj status`, use `delta` for `jj diff` and `jj show`
-# [[--scope]]
-# when.commands = ["status"]
+[[--scope]]
+when.commands = ["status"]
 # [--scope.ui]
 # paginate = "never"
-# [[--scope]]
-# when.commands = ["diff", "show"]
-# [--scope.ui]
-# pager = "delta"
+[[--scope]]
+when.commands = ["diff", "show"]
+[--scope.ui]
+pager = "delta"
 
