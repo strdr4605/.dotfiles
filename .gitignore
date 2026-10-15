@@ -1,5 +1,7 @@
 pi/agent/models-store.json
 nvim/neovim_tips/user_tips.md
+opencode/service.json
+opencode/opencode-notifier-state.json
 
 # pi skills resolve outside the repo via ~/.agents/skills/
 pi/agent/skills/

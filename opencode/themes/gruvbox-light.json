@@ -1,0 +1,226 @@
+{
+  "$schema": "https://opencode.ai/theme.json",
+  "defs": {
+    "gruvbox-light-black": "#fbf1c7",
+    "gruvbox-light-red": "#cc241d",
+    "gruvbox-light-green": "#98971a",
+    "gruvbox-light-yellow": "#d79921",
+    "gruvbox-light-blue": "#458588",
+    "gruvbox-light-magenta": "#b16286",
+    "gruvbox-light-cyan": "#689d6a",
+    "gruvbox-light-white": "#7c6f64",
+    "gruvbox-light-bright-black": "#928374",
+    "gruvbox-light-bright-red": "#9d0006",
+    "gruvbox-light-bright-green": "#79740e",
+    "gruvbox-light-bright-yellow": "#b57614",
+    "gruvbox-light-bright-blue": "#076678",
+    "gruvbox-light-bright-magenta": "#8f3f71",
+    "gruvbox-light-bright-cyan": "#427b58",
+    "gruvbox-light-bright-white": "#3c3836",
+    "gruvbox-light-fg": "#3c3836",
+    "gruvbox-light-bg": "#f9f5d7",
+    "gruvbox-light-fg2": "#282828"
+  },
+  "theme": {
+    "primary": {
+      "dark": "gruvbox-light-bright-blue",
+      "light": "gruvbox-light-blue"
+    },
+    "secondary": {
+      "dark": "gruvbox-light-bright-cyan",
+      "light": "gruvbox-light-cyan"
+    },
+    "accent": {
+      "dark": "gruvbox-light-bright-yellow",
+      "light": "gruvbox-light-yellow"
+    },
+    "error": {
+      "dark": "gruvbox-light-bright-red",
+      "light": "gruvbox-light-red"
+    },
+    "warning": {
+      "dark": "gruvbox-light-bright-yellow",
+      "light": "gruvbox-light-yellow"
+    },
+    "success": {
+      "dark": "gruvbox-light-bright-green",
+      "light": "gruvbox-light-green"
+    },
+    "info": {
+      "dark": "gruvbox-light-bright-blue",
+      "light": "gruvbox-light-blue"
+    },
+    "text": {
+      "dark": "gruvbox-light-bright-white",
+      "light": "gruvbox-light-fg"
+    },
+    "textMuted": {
+      "dark": "gruvbox-light-white",
+      "light": "gruvbox-light-white"
+    },
+    "background": {
+      "dark": "#282828",
+      "light": "gruvbox-light-bg"
+    },
+    "backgroundPanel": {
+      "dark": "#32302f",
+      "light": "#ebdbb2"
+    },
+    "backgroundElement": {
+      "dark": "#3c3836",
+      "light": "#d5c4a1"
+    },
+    "border": {
+      "dark": "#504945",
+      "light": "#7c6f64"
+    },
+    "borderActive": {
+      "dark": "#665c54",
+      "light": "#3c3836"
+    },
+    "borderSubtle": {
+      "dark": "#3c3836",
+      "light": "#7c6f64"
+    },
+    "diffAdded": {
+      "dark": "gruvbox-light-green",
+      "light": "gruvbox-light-green"
+    },
+    "diffRemoved": {
+      "dark": "gruvbox-light-red",
+      "light": "gruvbox-light-red"
+    },
+    "diffContext": {
+      "dark": "gruvbox-light-black",
+      "light": "gruvbox-light-white"
+    },
+    "diffHunkHeader": {
+      "dark": "gruvbox-light-bright-black",
+      "light": "gruvbox-light-white"
+    },
+    "diffHighlightAdded": {
+      "dark": "#3b4252",
+      "light": "#d5c4a1"
+    },
+    "diffHighlightRemoved": {
+      "dark": "gruvbox-light-red",
+      "light": "#f5c3c1"
+    },
+    "diffAddedBg": {
+      "dark": "#3b4252",
+      "light": "#d5c4a1"
+    },
+    "diffRemovedBg": {
+      "dark": "#3b4252",
+      "light": "#f5c3c1"
+    },
+    "diffContextBg": {
+      "dark": "#32302f",
+      "light": "#ebdbb2"
+    },
+    "diffLineNumber": {
+      "dark": "gruvbox-light-white",
+      "light": "gruvbox-light-fg"
+    },
+    "diffAddedLineNumberBg": {
+      "dark": "gruvbox-light-green",
+      "light": "gruvbox-light-bg"
+    },
+    "diffRemovedLineNumberBg": {
+      "dark": "gruvbox-light-red",
+      "light": "gruvbox-light-bg"
+    },
+    "markdownText": {
+      "dark": "gruvbox-light-bright-white",
+      "light": "gruvbox-light-fg"
+    },
+    "markdownHeading": {
+      "dark": "gruvbox-light-bright-red",
+      "light": "gruvbox-light-red"
+    },
+    "markdownLink": {
+      "dark": "gruvbox-light-bright-blue",
+      "light": "gruvbox-light-blue"
+    },
+    "markdownLinkText": {
+      "dark": "gruvbox-light-bright-cyan",
+      "light": "gruvbox-light-cyan"
+    },
+    "markdownCode": {
+      "dark": "gruvbox-light-bright-green",
+      "light": "gruvbox-light-green"
+    },
+    "markdownBlockQuote": {
+      "dark": "gruvbox-light-bright-black",
+      "light": "gruvbox-light-white"
+    },
+    "markdownEmph": {
+      "dark": "gruvbox-light-bright-yellow",
+      "light": "gruvbox-light-yellow"
+    },
+    "markdownStrong": {
+      "dark": "gruvbox-light-bright-red",
+      "light": "gruvbox-light-red"
+    },
+    "markdownHorizontalRule": {
+      "dark": "gruvbox-light-bright-black",
+      "light": "gruvbox-light-white"
+    },
+    "markdownListItem": {
+      "dark": "gruvbox-light-bright-blue",
+      "light": "gruvbox-light-blue"
+    },
+    "markdownListEnumeration": {
+      "dark": "gruvbox-light-bright-cyan",
+      "light": "gruvbox-light-cyan"
+    },
+    "markdownImage": {
+      "dark": "gruvbox-light-bright-magenta",
+      "light": "gruvbox-light-magenta"
+    },
+    "markdownImageText": {
+      "dark": "gruvbox-light-bright-magenta",
+      "light": "gruvbox-light-magenta"
+    },
+    "markdownCodeBlock": {
+      "dark": "gruvbox-light-black",
+      "light": "gruvbox-light-white"
+    },
+    "syntaxComment": {
+      "dark": "gruvbox-light-bright-black",
+      "light": "gruvbox-light-white"
+    },
+    "syntaxKeyword": {
+      "dark": "gruvbox-light-bright-red",
+      "light": "gruvbox-light-red"
+    },
+    "syntaxFunction": {
+      "dark": "gruvbox-light-bright-blue",
+      "light": "gruvbox-light-blue"
+    },
+    "syntaxVariable": {
+      "dark": "gruvbox-light-bright-cyan",
+      "light": "gruvbox-light-cyan"
+    },
+    "syntaxString": {
+      "dark": "gruvbox-light-bright-green",
+      "light": "gruvbox-light-green"
+    },
+    "syntaxNumber": {
+      "dark": "gruvbox-light-bright-magenta",
+      "light": "gruvbox-light-magenta"
+    },
+    "syntaxType": {
+      "dark": "gruvbox-light-bright-yellow",
+      "light": "gruvbox-light-yellow"
+    },
+    "syntaxOperator": {
+      "dark": "gruvbox-light-bright-red",
+      "light": "gruvbox-light-red"
+    },
+    "syntaxPunctuation": {
+      "dark": "gruvbox-light-bright-white",
+      "light": "gruvbox-light-fg"
+    }
+  }
+}
