@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -e
+
+REPO_NAME="${1:-$(basename "$PWD")}"
+
+if [[ -z "$REPO_NAME" ]]; then
+  echo "Usage: gh-my-new-repo <repo-name>"
+  exit 1
+fi
+
+if [[ ! -d .jj ]] && [[ ! -d .git ]]; then
+  echo "Error: not in a jj or git repo"
+  exit 1
+fi
+
+gh repo create "$REPO_NAME" \
+  --enable-issues \
+  --enable-prs \
+  --disable-projects \
+  --disable-wiki \
+  --default-branch master
+
+REPO_FULL=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "$REPO_NAME")
+
+REMOTE_URL="git@github.com:${REPO_FULL}.git"
+
+if command -v jj >/dev/null && [[ -d .jj ]]; then
+  jj git remote add origin "$REMOTE_URL"
+else
+  git remote add origin "$REMOTE_URL"
+fi
+
+gh repo edit "$REPO_FULL" \
+  --enable-squash-merge \
+  --enable-rebase-merge \
+  --enable-merge-commit=false \
+  --delete-branch-on-merge
