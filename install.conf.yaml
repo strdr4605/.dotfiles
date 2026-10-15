@@ -16,8 +16,8 @@
     ~/.config/jj/config.toml: .jjconfig.toml
     ~/.config/opencode: opencode
     ~/.pi: pi
-    ~/.config/caveman: caveman
     ~/.config/ponytail: ponytail
+    ~/.claude/AGENTS.md: agents/AGENTS.md
     ~/.config/herdr/config.toml: herdr.toml
 
 
