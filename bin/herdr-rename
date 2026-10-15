@@ -1,0 +1,25 @@
+#!/bin/sh
+# Rename herdr claude panes after their task, via a cheap isolated haiku call
+# on the pane's terminal title (Claude Code's own session summary).
+# Runs from crontab: 7 10-17 * * 1-5 $HOME/.dotfiles/bin/herdr-rename
+# Needs: herdr, jq, claude.
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+unset LOGNAME # with it set, claude -p answers "Not logged in"
+cd /tmp || exit 1
+seen="$HOME/.cache/herdr-rename"; mkdir -p "$seen"
+
+herdr agent list 2>/dev/null \
+  | jq -r '.result.agents[] | select(.agent=="claude" and (.terminal_title_stripped // "") != "") | [.pane_id, .terminal_title_stripped, .name // ""] | @tsv' \
+  | while IFS="$(printf '\t')" read -r pane title name; do
+  f="$seen/$(printf '%s' "$pane" | tr ':' '_')"
+  [ "$(cat "$f" 2>/dev/null)" = "$title" ] && continue
+  printf '%s' "$title" > "$f"
+  new=$(printf '%s\n' "$title" \
+    | claude -p --model haiku --setting-sources "" --strict-mcp-config --tools "" \
+        --disable-slash-commands --no-session-persistence \
+        --system-prompt 'Output only a kebab-case name, 2-3 words, matching [a-z][a-z0-9-]{0,31}, describing the task. No other text.' \
+    | tr -d '[:space:]')
+  printf '%s' "$new" | grep -Eq '^[a-z][a-z0-9_-]{0,31}$' || continue
+  [ "$new" = "$name" ] && continue
+  herdr agent rename "$pane" "$new" >/dev/null 2>&1 || herdr agent rename "$pane" "$new-2" >/dev/null 2>&1
+done
