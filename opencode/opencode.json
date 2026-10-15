@@ -4,6 +4,5 @@
   "plugin": [
     "superpowers@git+https://github.com/obra/superpowers.git",
     "@mohak34/opencode-notifier@0.2.1"
-  ],
-  "instructions": ["../agents/AGENTS.md"]
+  ]
 }
