@@ -19,6 +19,8 @@ cask 'claude-code'
 tap 'anomalyco/tap'
 brew 'anomalyco/tap/opencode'
 brew 'pi-coding-agent'
+# Token-saving CLI proxy for coding agents
+brew 'rtk'
 # For web search with pi
 brew 'ddgr'
 
