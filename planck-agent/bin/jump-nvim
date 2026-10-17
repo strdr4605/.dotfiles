@@ -1,0 +1,25 @@
+#!/bin/bash
+# Toggle between the current focused agent and a nvim pane in the same workspace. Saves the agent pane in a tmp file; on return, focuses its tab.
+set -eu
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+
+f=/tmp/planck-agent.nvimprev
+pane=$(herdr pane list | jq -r '.result.panes[] | select(.focused) | .pane_id')
+current=$(herdr pane process-info --pane "$pane" 2>/dev/null | jq -r '.result.process_info.foreground_processes[0].name // empty')
+
+if [ "$current" = nvim ] && [ -s "$f" ]; then
+  saved=$(cat "$f")
+  rm -f "$f"
+  tab=$(herdr pane get "$saved" | jq -r '.result.pane.tab_id')
+  herdr tab focus "$tab"
+else
+  echo "$pane" > "$f"
+  ws=$(herdr pane get "$pane" | jq -r '.result.pane.workspace_id')
+  herdr tab list | jq -r --arg ws "$ws" '.result.tabs[] | select(.workspace_id == $ws) | .tab_id' | while read tab_id; do
+    pane_id=$(herdr pane list | jq -r --arg tab "$tab_id" '.result.panes[] | select(.tab_id == $tab) | .pane_id' | head -1)
+    if [ "$(herdr pane process-info --pane "$pane_id" 2>/dev/null | jq -r '.result.process_info.foreground_processes[0].name // empty')" = nvim ]; then
+      herdr tab focus "$tab_id"
+      break
+    fi
+  done
+fi

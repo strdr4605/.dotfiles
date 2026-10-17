@@ -19,6 +19,9 @@
     "c": { "macro": "Fix the last error.", "color": "#8800ff" },
     "v": { "macro": "Propose the commit split for the current changes, then wait for my go.", "color": "#8800ff" },
     "b": { "macro": "Update the docs for this change.", "color": "#8800ff" },
-    "n": { "prompt": "Summarise what you did in 3 lines.", "color": "#ff00aa" }
+    "n": { "prompt": "Summarise what you did in 3 lines.", "color": "#ff00aa" },
+
+    "m": { "run": "$HOME/.dotfiles/planck-agent/bin/edit-config", "color": "#ff0000" },
+    ",": { "run": "$HOME/.dotfiles/planck-agent/bin/jump-nvim", "color": "#cc00cc" }
   }
 }

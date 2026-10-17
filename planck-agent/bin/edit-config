@@ -1,0 +1,15 @@
+#!/bin/bash
+# Toggle a side pane editing planck-agent/config.json. Tracks the open pane in a tmp file so a second invocation closes it.
+set -eu
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+
+f=/tmp/planck-agent.configpane
+pane=$(herdr agent list | jq -r '.result.agents[] | select(.focused) | .pane_id')
+if [ -s "$f" ]; then
+  herdr pane close "$(cat "$f")" >/dev/null 2>&1 || true
+  rm -f "$f"
+else
+  new=$(herdr pane split --pane "$pane" --direction right --ratio 0.5 --cwd "$HOME/.dotfiles/planck-agent" --no-focus | jq -r '.result.pane.pane_id')
+  echo "$new" > "$f"
+  herdr pane run "$new" "sh -c '${EDITOR:-nvim} $HOME/.dotfiles/planck-agent/config.json'"
+fi
