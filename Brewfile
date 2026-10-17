@@ -26,6 +26,7 @@ brew 'ddgr'
 
 brew 'tmux'
 brew 'neovim'
+brew 'herdr'
 
 # used by null-ls.nvim
 brew 'shfmt'
