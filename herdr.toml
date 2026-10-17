@@ -1,3 +1,4 @@
+onboarding = false
 # herdr configuration
 
 [theme]
@@ -41,3 +42,6 @@ pane_gaps = false
 [advanced]
 # Rough equivalent of tmux `history-limit 10000` (~10MB).
 scrollback_limit_bytes = 10000000
+
+[ui.toast]
+delivery = "system"
