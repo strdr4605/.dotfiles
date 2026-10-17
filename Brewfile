@@ -44,3 +44,6 @@ brew 'watchman'
 brew 'cocoapods'
 
 brew 'openjdk@11'
+
+cask "keymapp"
+brew "protobuf"
