@@ -1,6 +1,8 @@
 pi/agent/models-store.json
 pi/agent/npm/
 pi/agent/sessions/
+# herdr-managed: regenerated on `herdr integration install`
+pi/agent/extensions/herdr-agent-state.ts
 nvim/neovim_tips/user_tips.md
 opencode/service.json
 opencode/opencode-notifier-state.json

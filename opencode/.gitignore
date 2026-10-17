@@ -1,0 +1,10 @@
+node_modules
+package.json
+package-lock.json
+bun.lock
+
+# herdr-managed files: regenerated on `herdr integration install`
+herdr-tui-session.js
+herdr-opencode/
+plugins/herdr-agent-state.js
+tui.jsonc
