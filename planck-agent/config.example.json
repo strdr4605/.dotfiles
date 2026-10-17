@@ -1,0 +1,24 @@
+{
+  "colors": {
+    "blocked": "#ff0000",
+    "working": "#ffa500",
+    "done": "#0000ff",
+    "idle": "#00ff00",
+    "empty": "#202020"
+  },
+  "keys": {
+    "escape": { "keys": "esc", "color": "#ff0000" },
+    "a": { "keys": "enter", "color": "#00ff00" },
+    "s": { "prompt": "Continue.", "color": "#00aa00" },
+    "d": { "prompt": "/clear", "color": "#ffff00" },
+    "f": { "run": "planck-agent log", "color": "#ff8800" },
+    "g": { "run": "open -a Alacritty", "color": "#00ffff" },
+
+    "z": { "macro": "Review the current diff and report only actionable findings.", "color": "#8800ff" },
+    "x": { "macro": "Run the tests and fix any failures.", "color": "#8800ff" },
+    "c": { "macro": "Fix the last error.", "color": "#8800ff" },
+    "v": { "macro": "Propose the commit split for the current changes, then wait for my go.", "color": "#8800ff" },
+    "b": { "macro": "Update the docs for this change.", "color": "#8800ff" },
+    "n": { "prompt": "Summarise what you did in 3 lines.", "color": "#ff00aa" }
+  }
+}

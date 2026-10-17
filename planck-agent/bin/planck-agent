@@ -1,0 +1,139 @@
+#!/bin/bash
+# planck-agent: Planck EZ Glow as a herdr control deck.
+#   focus N   focus herdr agent in slot N (1-12, row 1) and raise the terminal
+#   key K     run the action config.json gives key K, named by keycap (rows 2-3)
+#   log       toggle jj log + jj status panes beside the focused agent, without stealing focus
+#   leds      loop: paint row 1 with agent states and rows 2-3 with key colours while the agent layer is active
+set -eu
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
+
+CONFIG="${PLANCK_AGENT_CONFIG:-$HOME/.config/planck-agent/config.json}"
+AGENT_LAYER="${PLANCK_AGENT_LAYER:-5}"
+TERMINAL_APP="${PLANCK_TERMINAL_APP:-Alacritty}"
+ROW2="escape a s d f g h j k l ; '"
+ROW3="shift z x c v b n m , . / enter"
+SPACE_LED=41
+
+main() {
+  case "${1:-}" in
+    focus) focus "$2" ;;
+    key) key "$2" ;;
+    log) log ;;
+    leds) leds ;;
+    *) sed -n '2,5p' "$0"; exit 2 ;;
+  esac
+}
+
+# shortcut: slots follow herdr sidebar order, so a new agent can shift slots; upgrade to sticky slots if it annoys
+agents() {
+  herdr agent list | jq -r '.result.agents[] | "\(.pane_id) \(.agent_status)"'
+}
+
+focused_pane() {
+  local pane
+  pane=$(herdr agent list | jq -r '.result.agents[] | select(.focused) | .pane_id')
+  [ -n "$pane" ] || { echo "planck-agent: no herdr agent is focused" >&2; exit 1; }
+  echo "$pane"
+}
+
+focus() {
+  local pane
+  pane=$(agents | sed -n "${1}p" | cut -d' ' -f1)
+  [ -n "$pane" ] || exit 0
+  herdr agent focus "$pane" >/dev/null
+  open -a "$TERMINAL_APP"
+}
+
+cfg() { jq -r "$1 // empty" "$CONFIG"; }
+
+# A key does one of: macro (type, unsubmitted), prompt (type and submit), keys (send key names), run (shell command).
+key() {
+  local k=$1 text
+  if text=$(cfg ".keys[\"$k\"].macro") && [ -n "$text" ]; then
+    herdr pane send-text "$(focused_pane)" "$text" >/dev/null
+  elif text=$(cfg ".keys[\"$k\"].prompt") && [ -n "$text" ]; then
+    herdr agent prompt "$(focused_pane)" "$text" >/dev/null
+  elif text=$(cfg ".keys[\"$k\"].keys") && [ -n "$text" ]; then
+    herdr agent send-keys "$(focused_pane)" $text >/dev/null
+  elif text=$(cfg ".keys[\"$k\"].run") && [ -n "$text" ]; then
+    sh -c "$text"
+  fi
+}
+
+# shortcut: one set of jj panes at a time, tracked in a tmp file; upgrade to per-agent panes if needed
+LOG_PANE_FILE=/tmp/planck-agent.logpanes
+log() {
+  local pane cwd top bottom
+  if [ -s "$LOG_PANE_FILE" ]; then
+    for p in $(cat "$LOG_PANE_FILE"); do herdr pane close "$p" >/dev/null 2>&1 || true; done
+    rm -f "$LOG_PANE_FILE"
+    return
+  fi
+  pane=$(focused_pane)
+  cwd=$(herdr agent list | jq -r --arg p "$pane" '.result.agents[] | select(.pane_id == $p) | .cwd')
+  top=$(herdr pane split --pane "$pane" --direction right --ratio 0.35 --cwd "$cwd" --no-focus | jq -r '.result.pane.pane_id')
+  bottom=$(herdr pane split --pane "$top" --direction down --cwd "$cwd" --no-focus | jq -r '.result.pane.pane_id')
+  echo "$top $bottom" > "$LOG_PANE_FILE"
+  herdr pane run "$top" "jj log" >/dev/null
+  herdr pane run "$bottom" "jj status" >/dev/null
+  herdr agent focus "$pane" >/dev/null
+}
+
+state_color() {
+  local c
+  c=$(cfg ".colors.$1")
+  case "$1" in
+    blocked) echo "${c:-#ff0000}" ;;
+    working) echo "${c:-#ffa500}" ;;
+    done) echo "${c:-#0000ff}" ;;
+    idle) echo "${c:-#00ff00}" ;;
+    *) echo "${c:-#202020}" ;;
+  esac
+}
+
+key_color() {
+  local c
+  c=$(cfg ".keys[\"$1\"].color")
+  echo "${c:-$(state_color empty)}"
+}
+
+worst() {
+  for s in blocked working done idle; do grep -q " $s\$" <<<"$1" && { echo "$s"; return; }; done
+  echo empty
+}
+
+paint() {
+  local frame=$1 i=0 status k
+  while [ $i -lt 12 ]; do
+    status=$(sed -n "$((i+1))p" <<<"$frame" | cut -d' ' -f2)
+    kontroll set-rgb --led $i --color "$(state_color "${status:-empty}")" >/dev/null || return 1
+    i=$((i+1))
+  done
+  for k in $ROW2 $ROW3; do
+    kontroll set-rgb --led $i --color "$(key_color "$k")" >/dev/null || return 1
+    i=$((i+1))
+  done
+  kontroll set-rgb --led $SPACE_LED --color "$(state_color "$(worst "$frame")")" >/dev/null
+}
+
+leds() {
+  trap "kontroll restore-rgb-leds >/dev/null" EXIT
+  local prev="" layer frame tick=0
+  while :; do
+    layer=$(kontroll status 2>/dev/null | awk -F'\t+' '/Current layer/{print $2}')
+    [ -n "$layer" ] || { kontroll connect-any >/dev/null 2>&1; sleep 1; continue; }
+    if [ "$layer" != "$AGENT_LAYER" ]; then
+      [ -z "$prev" ] || { kontroll restore-rgb-leds >/dev/null; prev=""; }
+      sleep 1; continue
+    fi
+    frame=$(agents | head -12)
+    tick=$((tick+1))
+    # repaint on change or every 5s: Oryx firmware redraws layer colours on keypress
+    if [ "$frame" != "$prev" ] || [ $((tick % 5)) -eq 0 ]; then
+      paint "$frame" && prev=$frame || { kontroll connect-any >/dev/null 2>&1; prev=""; }
+    fi
+    sleep 1
+  done
+}
+
+main "$@"

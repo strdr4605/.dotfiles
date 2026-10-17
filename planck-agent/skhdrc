@@ -1,0 +1,40 @@
+# Planck EZ layer 5 as flashed: row 1 sends Hyper+1..=, row 2 sends Hyper+q..]. Hyper = ctrl+alt+shift+cmd.
+# Actions are named by the printed keycap: row 1 = agents 1-12, row 2 = Esc A S D F G H J K L ; '
+hyper - 1 : $HOME/.local/bin/planck-agent focus 1
+hyper - 2 : $HOME/.local/bin/planck-agent focus 2
+hyper - 3 : $HOME/.local/bin/planck-agent focus 3
+hyper - 4 : $HOME/.local/bin/planck-agent focus 4
+hyper - 5 : $HOME/.local/bin/planck-agent focus 5
+hyper - 6 : $HOME/.local/bin/planck-agent focus 6
+hyper - 7 : $HOME/.local/bin/planck-agent focus 7
+hyper - 8 : $HOME/.local/bin/planck-agent focus 8
+hyper - 9 : $HOME/.local/bin/planck-agent focus 9
+hyper - 0 : $HOME/.local/bin/planck-agent focus 10
+hyper - 0x1B : $HOME/.local/bin/planck-agent focus 11
+hyper - 0x18 : $HOME/.local/bin/planck-agent focus 12
+hyper - q : $HOME/.local/bin/planck-agent key "escape"
+hyper - w : $HOME/.local/bin/planck-agent key "a"
+hyper - e : $HOME/.local/bin/planck-agent key "s"
+hyper - r : $HOME/.local/bin/planck-agent key "d"
+hyper - t : $HOME/.local/bin/planck-agent key "f"
+hyper - y : $HOME/.local/bin/planck-agent key "g"
+hyper - u : $HOME/.local/bin/planck-agent key "h"
+hyper - i : $HOME/.local/bin/planck-agent key "j"
+hyper - o : $HOME/.local/bin/planck-agent key "k"
+hyper - p : $HOME/.local/bin/planck-agent key "l"
+hyper - 0x21 : $HOME/.local/bin/planck-agent key ";"
+hyper - 0x1E : $HOME/.local/bin/planck-agent key "'"
+meh - q : $HOME/.local/bin/planck-agent key "escape"
+# Row 3 sends Hyper+a..' and Hyper+enter; actions named by keycap: Shift Z X C V B N M , . / Enter
+hyper -  : $HOME/.local/bin/planck-agent key ""
+hyper - a : $HOME/.local/bin/planck-agent key "shift"
+hyper - s : $HOME/.local/bin/planck-agent key "z"
+hyper - d : $HOME/.local/bin/planck-agent key "x"
+hyper - f : $HOME/.local/bin/planck-agent key "c"
+hyper - g : $HOME/.local/bin/planck-agent key "v"
+hyper - h : $HOME/.local/bin/planck-agent key "b"
+hyper - j : $HOME/.local/bin/planck-agent key "n"
+hyper - k : $HOME/.local/bin/planck-agent key "m"
+hyper - l : $HOME/.local/bin/planck-agent key ","
+hyper - 0x29 : $HOME/.local/bin/planck-agent key "."
+hyper - 0x27 : $HOME/.local/bin/planck-agent key "/"

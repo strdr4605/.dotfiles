@@ -22,12 +22,22 @@
     ~/.claude/CLAUDE.md: claude/CLAUDE.md
     ~/.claude/RTK.md: claude/RTK.md
     ~/.config/herdr/config.toml: herdr.toml
+    ~/.local/bin/planck-agent: planck-agent/bin/planck-agent
+    ~/.config/planck-agent/config.json: planck-agent/config.json
+    ~/.config/skhd/skhdrc: planck-agent/skhdrc
+    ~/Library/LaunchAgents/planck-agent.plist: planck-agent/planck-agent.plist
 
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - command: ./brew.sh
       description: Brew
+    - command: command -v kontroll || cargo install kontroll
+      description: Kontroll
+    - command: launchctl bootstrap gui/$UID ~/Library/LaunchAgents/planck-agent.plist 2>/dev/null || true
+      description: Planck LED daemon
+    - command: skhd --start-service 2>/dev/null || true
+      description: skhd (needs Accessibility; skip on MDM, use Raycast)
       stdout: true
     - command: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
       description: Installing Oh My Zsh

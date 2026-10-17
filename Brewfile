@@ -44,3 +44,9 @@ brew 'watchman'
 brew 'cocoapods'
 
 brew 'openjdk@11'
+
+cask "keymapp"
+brew "protobuf"
+brew "rust"
+tap "koekeishiya/formulae"
+brew "koekeishiya/formulae/skhd"
