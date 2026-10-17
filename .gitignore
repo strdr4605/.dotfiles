@@ -1,4 +1,6 @@
 pi/agent/models-store.json
+pi/agent/npm/
+pi/agent/sessions/
 nvim/neovim_tips/user_tips.md
 opencode/service.json
 opencode/opencode-notifier-state.json
