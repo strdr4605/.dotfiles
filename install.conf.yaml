@@ -36,6 +36,8 @@
       description: Kontroll
     - command: launchctl bootstrap gui/$UID ~/Library/LaunchAgents/planck-agent.plist 2>/dev/null || true
       description: Planck LED daemon
+    - command: skhd --start-service 2>/dev/null || true
+      description: skhd (needs Accessibility; skip on MDM, use Raycast)
       stdout: true
     - command: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
       description: Installing Oh My Zsh
