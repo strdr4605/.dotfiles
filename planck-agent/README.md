@@ -105,3 +105,11 @@ Environment: `PLANCK_AGENT_LAYER` (default 5), `PLANCK_TERMINAL_APP` (default Al
 The LED loop polls `kontroll status` once a second. On the agent layer it reads `herdr agent list` and paints row 1 with each agent's state, rows 2–3 with the configured colours, and the spacebar with the worst state. Off the layer it restores the Oryx colours. Key presses reach the script through the hotkey tool, which calls the herdr CLI.
 
 Agent slots follow herdr's sidebar order, so a new agent can shift the others by one.
+
+![planck-agent architecture](docs/architecture.png)
+
+See [`docs/architecture.d2`](docs/architecture.d2) for the source. Regenerate after changing `config.json`:
+
+```
+cd docs && ./make.sh
+```
