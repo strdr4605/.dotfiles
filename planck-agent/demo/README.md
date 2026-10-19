@@ -2,6 +2,8 @@
 
 Helpers that put herdr and the Planck LED row into a fixed state, so you can record the demo without surprises.
 
+[`RECORDING.md`](RECORDING.md) tells how the screen and the phone are recorded, and how they are joined. It tells the problems we met on the way.
+
 | Script | Does |
 |---|---|
 | `bootstrap` | creates the sandbox projects in `/tmp/planck-demo` |
