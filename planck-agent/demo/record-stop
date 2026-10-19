@@ -1,0 +1,62 @@
+#!/bin/bash
+# planck-demo record-stop: end a take, build the gif, and show where it is.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+if [ ! -f "$RECORD_STATE" ]; then
+  echo "planck-demo: no recording is running." >&2
+  exit 1
+fi
+
+# The screen recorder may still be starting. Wait for the state to be complete.
+for _ in $(seq 1 120); do
+  . "$RECORD_STATE"
+  [ "$SCREEN_PID" != "pending" ] && break
+  sleep 0.5
+done
+. "$RECORD_STATE"
+
+# The screen stops first. The phone keeps running for a moment, so its last
+# frames cover the last frames of the screen.
+[ "$SCREEN_PID" != "pending" ] && kill "$SCREEN_PID" 2>/dev/null
+sleep 2
+[ "$PHONE_PID" != "pending" ] && kill "$PHONE_PID" 2>/dev/null
+
+for _ in $(seq 1 40); do
+  kill -0 "$PHONE_PID" 2>/dev/null || break
+  sleep 0.25
+done
+
+start_of() {
+  sed -n 's/.*start: \([0-9.]*\).*/\1/p' "$1" 2>/dev/null | head -1
+}
+
+phone_start="${PHONE_START:-$(start_of "$OUT.phone.log")}"
+screen_start="${SCREEN_START:-$(start_of "$OUT.screen.log")}"
+
+if [ -z "$phone_start" ] || [ -z "$screen_start" ]; then
+  echo "planck-demo: the capture did not start. Read $OUT.screen.log and $OUT.phone.log." >&2
+  rm -f "$RECORD_STATE"
+  exit 1
+fi
+
+# The phone has to wait this long before its first frame lines up with the screen.
+offset=$(awk -v p="$phone_start" -v s="$screen_start" 'BEGIN { printf "%.3f", p - s }')
+
+echo "==> compositing, offset ${offset}s"
+ffmpeg -y -i "$OUT.screen.mov" -itsoffset "$offset" -i "$OUT.phone.mov" \
+  -filter_complex "[1:v]scale=480:270[ph];[0:v]scale=1280:720[sc];[sc][ph]overlay=${RECORD_PHONE_X}:${RECORD_PHONE_Y}:eof_action=pass" \
+  -preset ultrafast -r 15 "$OUT.mov" >/dev/null 2>&1
+
+echo "==> gif"
+ffmpeg -y -i "$OUT.mov" \
+  -vf "fps=12,scale=580:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse" "$OUT.gif" >/dev/null 2>&1
+
+rm -f "$RECORD_STATE"
+
+osascript -e "display notification \"Take saved to $OUT.gif\" with title \"planck-demo\"" >/dev/null 2>&1 || true
+
+echo "Done."
+ls -lh "$OUT.mov" "$OUT.gif"

@@ -1,0 +1,26 @@
+#!/bin/bash
+# planck-demo smoke: prove that stage and reset work, without recording.
+# It stages, waits for the agents to report, prints the LED row, and resets.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+printf '=== stage ===\n'
+"$HERE/stage"
+
+printf '\n=== wait 5s ===\n'
+sleep 5
+
+printf '\n=== agents ===\n'
+agent_slots | while IFS=$'\t' read -r slot backend state cwd; do
+  printf '%-5s %-9s %-8s %s\n' "$slot" "$backend" "$state" "$cwd"
+done
+
+printf '\n=== reset ===\n'
+"$HERE/reset"
+
+printf '\n=== agents after reset ===\n'
+agent_slots | while IFS=$'\t' read -r slot backend state cwd; do
+  printf '%-5s %-9s %-8s %s\n' "$slot" "$backend" "$state" "$cwd"
+done

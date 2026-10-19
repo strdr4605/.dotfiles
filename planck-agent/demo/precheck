@@ -1,0 +1,36 @@
+#!/bin/bash
+# planck-demo precheck: report the LED row before a take.
+# It focuses the real agents, so they count as seen and do not turn stale.
+# The states of the real agents do not matter. The shot shows what they really do.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+# The real agents sit in slots 1 and 2. Focus them to mark them seen.
+for pane in $(herdr agent list | jq -r '.result.agents[0:2][].pane_id'); do
+  herdr agent focus "$pane" >/dev/null 2>&1 || true
+done
+
+sleep 1
+
+printf 'Slot  Backend   State    Project\n'
+agent_slots | while IFS=$'\t' read -r slot backend state cwd; do
+  printf '%-5s %-9s %-8s %s\n' "$slot" "$backend" "$state" "$cwd"
+done
+
+warn=0
+while IFS=$'\t' read -r slot backend state cwd; do
+  case "$slot" in
+    1 | 2)
+      [ "$state" = "idle" ] || {
+        printf '\ninfo: slot %s is %s. That is fine, the shot shows the real state.\n' "$slot" "$state"
+        warn=1
+      }
+      ;;
+  esac
+done < <(agent_slots)
+
+if [ "$warn" -eq 0 ]; then
+  printf '\nThe real agents are idle.\n'
+fi

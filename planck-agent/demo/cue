@@ -1,0 +1,33 @@
+#!/bin/bash
+# planck-demo cue: give a sandbox agent a task, so its Planck LED changes on cue.
+#   cue pi    long task on the pi sandbox agent: orange for a while, then blue
+#   cue lint  short task on the opencode sandbox agent
+#   cue all   both tasks
+# Run it in a second terminal, off camera, right before a take.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+[ -f "$STATE_FILE" ] || {
+  echo "planck-demo: no stage is live. Run $HERE/stage first." >&2
+  exit 1
+}
+. "$STATE_FILE"
+
+cue_pi() {
+  herdr agent prompt "$DEMO_PANE_HELLO" "$TASK_LONG" >/dev/null
+  echo "pi sandbox agent: working"
+}
+
+cue_lint() {
+  herdr agent prompt "$DEMO_PANE_LINT" "$TASK_SHORT" >/dev/null
+  echo "opencode sandbox agent: working"
+}
+
+case "${1:-}" in
+  pi) cue_pi ;;
+  lint) cue_lint ;;
+  all) cue_pi; cue_lint ;;
+  *) sed -n '2,6p' "$0"; exit 2 ;;
+esac

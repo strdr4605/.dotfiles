@@ -1,0 +1,45 @@
+#!/bin/bash
+# planck-demo reset: undo stage.
+# It closes the demo workspace, so the demo agents stop and the LED row goes back
+# to your real agents. It never touches your real projects.
+# It is safe to run again, and safe to run when nothing is staged.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+if [ -f "$RECORD_STATE" ]; then
+  . "$RECORD_STATE"
+  kill "$SCREEN_PID" "$PHONE_PID" 2>/dev/null || true
+  rm -f "$RECORD_STATE"
+  echo "Stopped a running recording."
+fi
+
+if [ -f "$STATE_FILE" ]; then
+  . "$STATE_FILE"
+  if [ -n "${DEMO_WORKSPACE:-}" ]; then
+    herdr workspace close "$DEMO_WORKSPACE" >/dev/null 2>&1 || true
+  fi
+  rm -f "$STATE_FILE"
+fi
+
+rm -f "$ROSTER_FILE"
+
+# Drop the flags of panes that no longer exist.
+if [ -f /tmp/planck-agent.flagged ]; then
+  herdr agent list | jq -r '.result.agents[].pane_id' >/tmp/planck-agent.live
+  grep -x -F -f /tmp/planck-agent.live /tmp/planck-agent.flagged >/tmp/planck-agent.flagged.new 2>/dev/null || true
+  mv /tmp/planck-agent.flagged.new /tmp/planck-agent.flagged
+  rm -f /tmp/planck-agent.live
+fi
+
+# Put the terminal back on the first real agent.
+first=$(herdr agent list | jq -r '.result.agents[0].pane_id // empty')
+if [ -n "$first" ]; then
+  herdr agent focus "$first" >/dev/null 2>&1 || true
+fi
+
+printf 'Reset. Sandbox projects stay in %s\n' "$DEMO_ROOT"
+agent_slots | while IFS=$'\t' read -r slot backend state cwd; do
+  printf '%-5s %-9s %-8s %s\n' "$slot" "$backend" "$state" "$cwd"
+done

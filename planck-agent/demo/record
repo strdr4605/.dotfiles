@@ -1,0 +1,71 @@
+#!/bin/bash
+# planck-demo record: capture the screen and the phone, then build one GIF.
+#   record 12 /tmp/gif1
+# The screen shows the terminal. The phone is the iPhone as a Continuity Camera.
+# It points down at the Planck. The phone video is turned the right way up and
+# cropped to the keyboard, then it sits in the bottom right corner of the screen.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+SECS="${1:-12}"
+OUT="${2:-/tmp/planck-demo-shot}"
+
+PHONE_SECS=$((SECS + RECORD_PHONE_LEAD + 6))
+
+mkdir -p "$(dirname "$OUT")"
+rm -f "$OUT.screen.mov" "$OUT.phone.mov" "$OUT.mov" "$OUT.gif"
+
+echo "==> recording ${SECS}s"
+
+ffmpeg -y -f avfoundation -framerate 30 -i "${RECORD_PHONE_DEVICE}:none" \
+  -vf "$RECORD_PHONE_FILTER" \
+  -preset ultrafast -r 15 -t "$PHONE_SECS" "$OUT.phone.mov" >"$OUT.phone.log" 2>&1 &
+phone_pid=$!
+
+sleep "$RECORD_PHONE_LEAD"
+
+ffmpeg -y -f avfoundation -framerate 15 -pixel_format nv12 -i "${RECORD_SCREEN_DEVICE}:none" \
+  -vf "$RECORD_SCREEN_FILTER" \
+  -preset ultrafast -r 15 -t "$SECS" "$OUT.screen.mov" >"$OUT.screen.log" 2>&1 &
+screen_pid=$!
+
+# The screen is live when the first frame is encoded, not when the device opens.
+for _ in $(seq 1 120); do
+  grep -q 'frame= *[1-9]' "$OUT.screen.log" 2>/dev/null && break
+  sleep 0.25
+done
+echo "==> screen recorder is live, act now"
+record_signal
+
+wait "$phone_pid" "$screen_pid"
+
+start_of() {
+  sed -n 's/.*start: \([0-9.]*\).*/\1/p' "$1" | head -1
+}
+
+screen_start=$(start_of "$OUT.screen.log")
+phone_start=$(start_of "$OUT.phone.log")
+
+if [ -z "$screen_start" ] || [ -z "$phone_start" ]; then
+  echo "planck-demo: the capture did not start. Read $OUT.screen.log and $OUT.phone.log." >&2
+  exit 1
+fi
+
+# The phone has to wait this long before its first frame lines up with the screen.
+offset=$(awk -v p="$phone_start" -v s="$screen_start" 'BEGIN { printf "%.3f", p - s }')
+
+echo "==> compositing, offset ${offset}s"
+ffmpeg -y -i "$OUT.screen.mov" -itsoffset "$offset" -i "$OUT.phone.mov" \
+  -filter_complex "[1:v]scale=480:270[ph];[0:v]scale=1280:720[sc];[sc][ph]overlay=${RECORD_PHONE_X}:${RECORD_PHONE_Y}:eof_action=pass" \
+  -preset ultrafast -r 15 "$OUT.mov" >/dev/null 2>&1
+
+echo "==> gif"
+ffmpeg -y -i "$OUT.mov" \
+  -vf "fps=12,scale=580:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse" "$OUT.gif" >/dev/null 2>&1
+
+rm -f "$OUT.screen.mov" "$OUT.phone.mov" "$OUT.screen.log" "$OUT.phone.log"
+
+echo "Done."
+ls -lh "$OUT.mov" "$OUT.gif"

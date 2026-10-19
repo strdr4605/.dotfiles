@@ -1,0 +1,25 @@
+#!/bin/bash
+# planck-demo: helpers for the planck-agent demo.
+#   planck-demo bootstrap  create the sandbox projects
+#   planck-demo stage      start the demo agents in herdr
+#   planck-demo precheck   make the LED row ready for a take
+#   planck-demo cue        give a sandbox agent a task
+#   planck-demo reset      stop the demo agents
+#   planck-demo smoke      prove stage and reset work
+#   planck-demo record     capture the screen and the phone, then build a gif
+#                         planck-demo record [seconds] [output-path]
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+
+case "${1:-}" in
+  bootstrap | stage | precheck | cue | reset | smoke) exec "$HERE/${1}" "${2:-}" ;;
+  record)
+    # The seconds are optional. If the first value is not a number, it is the path.
+    if [ -n "${2:-}" ] && [ "${2}" -eq "${2}" ] 2>/dev/null; then
+      exec "$HERE/record" "$2" "${3:-/tmp/planck-demo-shot}"
+    fi
+    exec "$HERE/record" 12 "${2:-/tmp/planck-demo-shot}"
+    ;;
+  *) sed -n '2,8p' "$0"; exit 2 ;;
+esac

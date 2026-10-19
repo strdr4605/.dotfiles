@@ -134,3 +134,14 @@ See [`docs/architecture.d2`](docs/architecture.d2) and [`docs/legend.d2`](docs/l
 ```
 cd docs && ./make.sh
 ```
+
+## Demo
+
+`demo/` holds helpers that put herdr and the LED row into a fixed state, for recording. See [`demo/README.md`](demo/README.md).
+
+```
+demo/planck-demo bootstrap   # create the sandbox projects
+demo/planck-demo stage       # start the demo agents
+demo/planck-demo precheck    # make the LED row ready for a take
+demo/planck-demo reset       # stop the demo agents
+```

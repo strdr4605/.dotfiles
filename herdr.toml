@@ -8,6 +8,7 @@ name = "gruvbox"
 # Uncomment to follow macOS light/dark appearance.
 # auto_switch = true
 
+auto_switch = false
 [terminal]
 # Match tmux's `#{pane_current_path}` behavior.
 new_cwd = "follow"

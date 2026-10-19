@@ -1,0 +1,63 @@
+#!/bin/bash
+# planck-demo stage: put herdr into the state that the demo needs.
+# It creates one demo workspace with three tabs, starts the two sandbox agents,
+# and writes a roster that maps agent slots to keys.
+# It always starts from a clean slate, so you can run it again after a failed take.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+"$HERE/bootstrap" >/dev/null
+"$HERE/reset" >/dev/null
+
+create=$(herdr workspace create --cwd "$SANDBOX_HELLO" --label "$DEMO_LABEL" --no-focus)
+workspace=$(jq -r '.result.workspace.workspace_id' <<<"$create")
+pane_hello=$(jq -r '.result.root_pane.pane_id' <<<"$create")
+
+create=$(herdr tab create --workspace "$workspace" --cwd "$SANDBOX_LINT" --label lint --no-focus)
+pane_lint=$(jq -r '.result.root_pane.pane_id' <<<"$create")
+
+create=$(herdr tab create --workspace "$workspace" --cwd "$SANDBOX_SUMMARISE" --label summarise --no-focus)
+pane_summarise=$(jq -r '.result.root_pane.pane_id' <<<"$create")
+
+herdr agent start demo-hello --kind pi --pane "$pane_hello" --timeout 60000 >/dev/null
+herdr agent start demo-lint --kind opencode --pane "$pane_lint" --timeout 60000 >/dev/null
+
+cat >"$STATE_FILE" <<EOF
+DEMO_WORKSPACE=$workspace
+DEMO_PANE_HELLO=$pane_hello
+DEMO_PANE_LINT=$pane_lint
+DEMO_PANE_SUMMARISE=$pane_summarise
+EOF
+
+cat >"$ROSTER_FILE" <<EOF
+# Demo roster
+
+Workspace \`$workspace\`, label \`$DEMO_LABEL\`.
+
+| Slot | Backend | Project | Tab |
+|---|---|---|---|
+| 1 | pi | (real agent) | — |
+| 2 | opencode | (real agent) | — |
+| 3 | pi | hello-5-styles | demo-hello |
+| 4 | opencode | fix-lint | demo-lint |
+| 5 | pi | summarise | start it on camera |
+
+Live state:
+
+| Slot | Backend | State | Project |
+|---|---|---|---|
+EOF
+
+agent_slots | while IFS=$'\t' read -r slot backend state cwd; do
+  printf '| %s | %s | %s | %s |\n' "$slot" "$backend" "$state" "$cwd" >>"$ROSTER_FILE"
+done
+
+printf 'Staged in workspace %s\n\n' "$workspace"
+printf 'Slot  Backend   State    Project\n'
+agent_slots | while IFS=$'\t' read -r slot backend state cwd; do
+  printf '%-5s %-9s %-8s %s\n' "$slot" "$backend" "$state" "$cwd"
+done
+
+printf '\nRoster: %s\n' "$ROSTER_FILE"

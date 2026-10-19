@@ -1,0 +1,43 @@
+#!/bin/bash
+# planck-demo bootstrap: create the sandbox projects that the demo agents work on.
+# Run it once before a demo. It is safe to run again: existing files stay.
+# It never touches your real projects.
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+. "$HERE/common.sh"
+
+make_project() {
+  local dir=$1 title=$2 body=$3
+  mkdir -p "$dir"
+
+  if [ ! -d "$dir/.jj" ]; then
+    (cd "$dir" && jj git init >/dev/null 2>&1)
+  fi
+
+  if [ ! -f "$dir/README.md" ]; then
+    printf '%s\n' "$body" > "$dir/README.md"
+    (cd "$dir" && jj describe -m "demo: seed ${title}" >/dev/null 2>&1 && jj new >/dev/null 2>&1)
+  fi
+
+  printf '%-20s %s\n' "$(basename "$dir")" "$title"
+}
+
+printf 'Sandbox projects in %s\n\n' "$DEMO_ROOT"
+
+make_project "$SANDBOX_HELLO" "hello-5-styles" \
+  '# Hello, five styles
+
+This sandbox holds a demo agent. It shows a working state on the Planck LED row.'
+
+make_project "$SANDBOX_LINT" "fix-lint" \
+  '# Fix the lint
+
+This sandbox holds a demo agent. It shows an idle state on the Planck LED row.'
+
+make_project "$SANDBOX_SUMMARISE" "summarise, added on camera" \
+  '# Summarise
+
+This sandbox holds the agent that you add on camera.'
+
+printf '\nDone. Next: %s/stage\n' "$HERE"
