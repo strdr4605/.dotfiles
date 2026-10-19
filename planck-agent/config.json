@@ -4,6 +4,7 @@
     "working": "#ffa500",
     "done": "#0000ff",
     "idle": "#00ff00",
+    "stale": "#aa00ff",
     "empty": "#202020"
   },
   "keys": {
@@ -46,6 +47,10 @@
     "b": {
       "prompt": "Update the docs for this change.",
       "color": "#cc00cc"
+    },
+    "h": {
+      "run": "planck-agent flag",
+      "color": "#0000ff"
     },
     "f": {
       "run": "planck-agent log",

@@ -3,6 +3,7 @@
 #   focus N   focus herdr agent in slot N (1-12, row 1) and raise the terminal
 #   key K     run the action config.json gives key K, named by keycap (rows 2-3)
 #   log       toggle jj log + jj status panes beside the focused agent, without stealing focus
+#   flag      toggle the focused agent back to blue (done) until it works or you refocus it
 #   leds      loop: paint row 1 with agent states and rows 2-3 with key colours while the agent layer is active
 set -eu
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
@@ -10,6 +11,8 @@ export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
 CONFIG="${PLANCK_AGENT_CONFIG:-$HOME/.config/planck-agent/config.json}"
 AGENT_LAYER="${PLANCK_AGENT_LAYER:-5}"
 TERMINAL_APP="${PLANCK_TERMINAL_APP:-Alacritty}"
+STALE_SECS="${PLANCK_STALE_SECS:-600}"
+FLAG_FILE=/tmp/planck-agent.flagged
 ROW2="escape a s d f g h j k l ; '"
 ROW3="shift z x c v b n m , . / enter"
 SPACE_LED=41
@@ -19,14 +22,15 @@ main() {
     focus) focus "$2" ;;
     key) key "$2" ;;
     log) log ;;
+    flag) flag ;;
     leds) leds ;;
-    *) sed -n '2,5p' "$0"; exit 2 ;;
+    *) sed -n '2,6p' "$0"; exit 2 ;;
   esac
 }
 
 # shortcut: slots follow herdr sidebar order, so a new agent can shift slots; upgrade to sticky slots if it annoys
 agents() {
-  herdr agent list | jq -r '.result.agents[] | "\(.pane_id) \(.agent_status)"'
+  herdr agent list | jq -r '.result.agents[] | "\(.pane_id) \(.agent_status) \(.focused)"'
 }
 
 focused_pane() {
@@ -79,6 +83,32 @@ log() {
   herdr agent focus "$pane" >/dev/null
 }
 
+# Flagged agents paint blue (done) while idle, so a seen agent is not forgotten. The flag clears when the agent works or gets refocused.
+flag() {
+  local pane
+  pane=$(focused_pane)
+  if grep -qx "$pane" "$FLAG_FILE" 2>/dev/null; then
+    sed -i '' "/^$pane\$/d" "$FLAG_FILE"
+  else
+    echo "$pane" >>"$FLAG_FILE"
+  fi
+}
+
+# stdin: "pane status" lines. $1: previous "pane status since" lines. Prints "pane status since".
+track() {
+  awk -v now=$SECONDS 'NR==FNR { since[$1 FS $2]=$3; next } { k=$1 FS $2; print $1, $2, (k in since ? since[k] : now) }' <(echo "$1") -
+}
+
+# "pane status since" lines -> "pane status" lines: flagged idle becomes done, long idle becomes stale
+frame_of() {
+  local flagged
+  flagged=" $(tr '\n' ' ' <"$FLAG_FILE") "
+  awk -v now=$SECONDS -v stale="$STALE_SECS" -v flagged="$flagged" '
+    $2 == "idle" && index(flagged, " " $1 " ") { $2 = "done" }
+    $2 == "idle" && now - $3 > stale { $2 = "stale" }
+    { print $1, $2 }' <<<"$1"
+}
+
 state_color() {
   local c
   c=$(cfg ".colors.$1")
@@ -86,6 +116,7 @@ state_color() {
     blocked) echo "${c:-#ff0000}" ;;
     working) echo "${c:-#ffa500}" ;;
     done) echo "${c:-#0000ff}" ;;
+    stale) echo "${c:-#aa00ff}" ;;
     idle) echo "${c:-#00ff00}" ;;
     *) echo "${c:-#202020}" ;;
   esac
@@ -98,7 +129,7 @@ key_color() {
 }
 
 worst() {
-  for s in blocked working done idle; do grep -q " $s\$" <<<"$1" && { echo "$s"; return; }; done
+  for s in blocked working done stale idle; do grep -q " $s\$" <<<"$1" && { echo "$s"; return; }; done
   echo empty
 }
 
@@ -118,8 +149,19 @@ paint() {
 
 leds() {
   trap "kontroll restore-rgb-leds >/dev/null" EXIT
-  local prev="" down="" layer frame tick=0
+  local prev="" down="" layer frame list hist="" focused prevfocus="" tick=0
+  touch "$FLAG_FILE"
   while :; do
+    list=$(agents | head -12)
+    hist=$(track "$hist" <<<"$list")
+    # refocusing an agent counts as seeing it: drop its flag and restart its stale timer
+    focused=$(awk '$3 == "true" { print $1 }' <<<"$list")
+    if [ "$focused" != "$prevfocus" ] && [ -n "$focused" ]; then
+      sed -i '' "/^$focused\$/d" "$FLAG_FILE"
+      hist=$(awk -v p="$focused" -v now=$SECONDS '$1 == p { $3 = now } { print }' <<<"$hist")
+    fi
+    prevfocus=$focused
+    for p in $(cat "$FLAG_FILE"); do grep -q "^$p working " <<<"$hist" && sed -i '' "/^$p\$/d" "$FLAG_FILE"; done
     layer=$(kontroll status 2>/dev/null | awk -F'\t+' '/Current layer/{print $2}')
     [ -n "$layer" ] || {
       [ -n "$down" ] || osascript -e 'display notification "Start Keymapp" with title "planck-agent"' || true
@@ -130,7 +172,7 @@ leds() {
       [ -z "$prev" ] || { kontroll restore-rgb-leds >/dev/null || true; prev=""; }
       sleep 1; continue
     fi
-    frame=$(agents | head -12)
+    frame=$(frame_of "$hist")
     tick=$((tick+1))
     # repaint on change or every 5s: Oryx firmware redraws layer colours on keypress
     if [ "$frame" != "$prev" ] || [ $((tick % 5)) -eq 0 ]; then

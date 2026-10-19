@@ -4,6 +4,7 @@
     "working": "#ffa500",
     "done": "#0000ff",
     "idle": "#00ff00",
+    "stale": "#aa00ff",
     "empty": "#202020"
   },
   "keys": {
@@ -12,6 +13,7 @@
     "s": { "prompt": "Continue.", "color": "#00aa00" },
     "d": { "prompt": "/clear", "color": "#ffff00" },
     "f": { "run": "planck-agent log", "color": "#ff8800" },
+    "h": { "run": "planck-agent flag", "color": "#0000ff" },
     "g": { "run": "open -a Alacritty", "color": "#00ffff" },
 
     "z": { "macro": "Review the current diff and report only actionable findings.", "color": "#8800ff" },

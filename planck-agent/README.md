@@ -13,7 +13,9 @@ Inspired by [micro-manager](https://github.com/schacon/micro-manager), which doe
 | 3 | ⇧, Z…/, ⏎ | macros and prompts, your text |
 | Space | | the worst state across all agents |
 
-LED colours: red blocked, orange working, blue done (unseen), green idle, dark empty. Row 2 and 3 keys show the colour you give them in config.
+LED colours: red blocked, orange working, blue done (unseen), green idle, purple stale (idle for 10 minutes since you last focused it), dark empty. Row 2 and 3 keys show the colour you give them in config.
+
+If you looked at a done agent but did not act, press the flag key (`h` by default) to turn it blue again. The flag clears when the agent works or when you focus it again.
 
 The lights and keys are active only on the agent layer. On other layers the board shows its normal Oryx colours.
 
@@ -68,11 +70,12 @@ skhd --start-service
 
 ```json
 {
-  "colors": { "blocked": "#ff0000", "working": "#ffa500", "done": "#0000ff", "idle": "#00ff00", "empty": "#202020" },
+  "colors": { "blocked": "#ff0000", "working": "#ffa500", "done": "#0000ff", "idle": "#00ff00", "stale": "#aa00ff", "empty": "#202020" },
   "keys": {
     "a": { "keys": "enter", "color": "#00ff00" },
     "s": { "prompt": "Continue.", "color": "#00aa00" },
     "f": { "run": "planck-agent log", "color": "#ff8800" },
+    "h": { "run": "planck-agent flag", "color": "#0000ff" },
     "z": { "macro": "Review the current diff and report only actionable findings.", "color": "#8800ff" }
   }
 }
@@ -95,10 +98,11 @@ See `config.example.json` for the full default layout.
 planck-agent focus N   # focus herdr agent N and raise the terminal
 planck-agent key K     # run the config action for keycap K
 planck-agent log       # toggle jj log + jj status panes beside the focused agent
+planck-agent flag      # toggle the focused agent back to blue until it works or you refocus it
 planck-agent leds      # the LED loop (run by launchd)
 ```
 
-Environment: `PLANCK_AGENT_LAYER` (default 5), `PLANCK_TERMINAL_APP` (default Alacritty), `PLANCK_AGENT_CONFIG`.
+Environment: `PLANCK_AGENT_LAYER` (default 5), `PLANCK_TERMINAL_APP` (default Alacritty), `PLANCK_STALE_SECS` (default 600), `PLANCK_AGENT_CONFIG`.
 
 ## How it works
 
