@@ -11,73 +11,73 @@
       "keys": "esc",
       "color": "#ff0000"
     },
-    "a": {
-      "prompt": "Approve and continue with this approach.",
-      "color": "#00cccc"
-    },
     "enter": {
       "keys": "enter",
-      "color": "#00cccc"
+      "color": "#ffffff"
+    },
+    "a": {
+      "prompt": "Approve and continue with this approach.",
+      "color": "#cc00cc"
     },
     "s": {
       "prompt": "Summarise the current state in one line.",
-      "color": "#dddd00"
+      "color": "#cc00cc"
     },
     "d": {
       "prompt": "Mark this task done. List remaining.",
-      "color": "#dddd00"
+      "color": "#cc00cc"
     },
     "n": {
       "prompt": "Are we done with this task, or there is something missing? What's next?",
-      "color": "#dddd00"
-    },
-    "f": {
-      "run": "planck-agent log",
-      "color": "#cc00cc"
-    },
-    "g": {
-      "run": "open -a Alacritty",
-      "color": "#cc00cc"
-    },
-    ";": {
-      "macro": "Plan first. Do not make changes yet — list 2-3 options and trade-offs.",
       "color": "#cc00cc"
     },
     "/": {
       "prompt": "/compact",
       "color": "#cc00cc"
     },
-    "m": {
-      "run": "$HOME/.dotfiles/planck-agent/bin/edit-config",
-      "color": "#ff0000"
-    },
-    ",": {
-      "run": "$HOME/.dotfiles/planck-agent/bin/jump-nvim",
-      "color": "#cc00cc"
-    },
     "'": {
       "prompt": "Explain this change to me as a peer. I'm a senior engineer and co-author, but I lost the thread. Skip basics. Cover: what changed, why, and what I must know to maintain it.",
-      "color": "#dddd00"
-    },
-    "z": {
-      "macro": "Review the current diff and report only actionable findings.",
-      "color": "#8800ff"
-    },
-    "x": {
-      "macro": "Run the tests and fix any failures.",
-      "color": "#8800ff"
-    },
-    "c": {
-      "macro": "Fix the last error.",
-      "color": "#8800ff"
+      "color": "#cc00cc"
     },
     "v": {
       "prompt": "Propose the commit split for the current changes, then wait for my go.",
-      "color": "#8800ff"
+      "color": "#cc00cc"
     },
     "b": {
       "prompt": "Update the docs for this change.",
-      "color": "#8800ff"
+      "color": "#cc00cc"
+    },
+    "f": {
+      "run": "planck-agent log",
+      "color": "#dddd00"
+    },
+    "g": {
+      "run": "open -a Alacritty",
+      "color": "#dddd00"
+    },
+    "m": {
+      "run": "$HOME/.dotfiles/planck-agent/bin/edit-config",
+      "color": "#dddd00"
+    },
+    ",": {
+      "run": "$HOME/.dotfiles/planck-agent/bin/jump-nvim",
+      "color": "#dddd00"
+    },
+    ";": {
+      "macro": "Plan first. Do not make changes yet — list 2-3 options and trade-offs.",
+      "color": "#00cccc"
+    },
+    "z": {
+      "macro": "Review the current diff and report only actionable findings.",
+      "color": "#00cccc"
+    },
+    "x": {
+      "macro": "Run the tests and fix any failures.",
+      "color": "#00cccc"
+    },
+    "c": {
+      "macro": "Fix the last error.",
+      "color": "#00cccc"
     }
   }
 }
