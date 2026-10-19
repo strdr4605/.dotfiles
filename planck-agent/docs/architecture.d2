@@ -1,58 +1,46 @@
 vars: {
   d2-config: {
-    layout-engine: dagre
+    layout-engine: tala
     pad: 30
   }
 }
 
-direction: right
+direction: up
 
-# Input
-keyboard: "Planck EZ" {
+keyboard: "Planck EZ Glow" {
   shape: image
   icon: ./planck.png
   width: 400
   height: 170
 }
 
-# Hotkey layer (skhd or raycast)
 hotkey: "hotkey layer\n(skhd or raycast)" {
   shape: rectangle
   style.fill: "#ffe0b3"
 }
 
-# Dispatcher
 pa: "planck-agent\naction dispatcher" {
   shape: rectangle
   style.fill: "#b3d9ff"
   style.bold: true
 }
 
-# Config
-config: "config.json\nkey -> {type, value, color}" {
+config: "config.json\nkey -> {macro | prompt | keys | run, color}" {
   shape: page
 }
 
-# Terminal: grouped herdr / pane / shell
-herdr: "herdr: panes CLI" {
+herdr: "herdr: agent panes" {
   icon: ./ram.svg
   style.fill: "#f5f5f5"
   style.stroke: "#666666"
 }
-pane: "pane: agent process" {
-  near: pa
-  style.fill: "#f5f5f5"
-  style.stroke: "#666666"
-  style.font-color: "#aa8800"
-  style.bold: true
-}
-shell: "shell: fork exec" {
+
+shell: "sh -c" {
   style.fill: "#f5f5f5"
   style.stroke: "#666666"
 }
 
-# Feedback
-nled: "nLED\nper-key LED firmware" {
+keymapp: "Keymapp\n(kontroll)" {
   shape: hexagon
   style.fill: "#1a1a1a"
   style.font-color: "#ffffff"
@@ -63,7 +51,7 @@ keyboard -> hotkey: "Hyper+key" {
   style.stroke: "#0066cc"
   style.stroke-width: 2
 }
-hotkey -> pa: "name" {
+hotkey -> pa: "focus N / key K" {
   style.stroke: "#0066cc"
   style.stroke-width: 2
 }
@@ -71,11 +59,7 @@ pa -> config: "lookup" {
   style.stroke: "#dcdcdc"
   style.stroke-width: 2
 }
-pa -> herdr: "exec" {
-  style.stroke: "#0066cc"
-  style.stroke-width: 2
-}
-pa -> pane: "type" {
+pa -> herdr: "focus, prompt,\nsend-text, send-keys" {
   style.stroke: "#0066cc"
   style.stroke-width: 2
 }
@@ -83,19 +67,17 @@ pa -> shell: "run" {
   style.stroke: "#0066cc"
   style.stroke-width: 2
 }
-herdr -> pane
-shell -> pane
-pa -> nled: "color" {
-  style.stroke: "#cc4400"
-  style.stroke-width: 2
-}
 
 # Feedback flow (red)
-pane -> pa: "status" {
+herdr -> pa: "agent list (status)" {
   style.stroke: "#cc4400"
   style.stroke-width: 2
 }
-nled -> keyboard: "visible" {
+pa -> keymapp: "set-rgb" {
+  style.stroke: "#cc4400"
+  style.stroke-width: 2
+}
+keymapp -> keyboard: "LED colours" {
   style.stroke: "#cc4400"
   style.stroke-width: 2
   style.stroke-dash: 4

@@ -25,8 +25,8 @@ echo "==> Rasterizing planck.svg -> planck.png"
 rsvg-convert -w 846 -h 360 "${HERE}/planck.svg" -o "${HERE}/planck.png"
 
 echo "==> Rendering architecture.d2 -> architecture.{svg,png}"
-D2_LAYOUT=tala d2 --theme=300 --sketch --scale=0.7 "${HERE}/architecture.d2" "${HERE}/architecture.png"
-D2_LAYOUT=tala d2 --theme=300 --sketch --scale=0.7 "${HERE}/architecture.d2" "${HERE}/architecture.svg"
+d2 --theme=300 --sketch --scale=0.7 "${HERE}/architecture.d2" "${HERE}/architecture.png"
+d2 --theme=300 --sketch --scale=0.7 "${HERE}/architecture.d2" "${HERE}/architecture.svg"
 
 echo "Done."
 ls -lh "${HERE}"/planck.{svg,png} "${HERE}"/architecture.{svg,png}
