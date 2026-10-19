@@ -1,2 +1,2 @@
 @RTK.md
-@AGENTS.md
+@../agents/AGENTS.md
