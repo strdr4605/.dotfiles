@@ -4,6 +4,7 @@
 #   key K     run the action config.json gives key K, named by keycap (rows 2-3)
 #   log       toggle jj log + jj status panes beside the focused agent, without stealing focus
 #   flag      toggle the focused agent back to blue (done) until it works or you refocus it
+#   restart   reload the launchd LED loop after you edit this script or the plist
 #   leds      loop: paint row 1 with agent states and rows 2-3 with key colours while the agent layer is active
 set -eu
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
@@ -23,8 +24,9 @@ main() {
     key) key "$2" ;;
     log) log ;;
     flag) flag ;;
+    restart) launchctl kickstart -k "gui/$(id -u)/planck-agent" ;;
     leds) leds ;;
-    *) sed -n '2,6p' "$0"; exit 2 ;;
+    *) sed -n '2,7p' "$0"; exit 2 ;;
   esac
 }
 

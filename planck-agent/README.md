@@ -99,10 +99,21 @@ planck-agent focus N   # focus herdr agent N and raise the terminal
 planck-agent key K     # run the config action for keycap K
 planck-agent log       # toggle jj log + jj status panes beside the focused agent
 planck-agent flag      # toggle the focused agent back to blue until it works or you refocus it
+planck-agent restart   # reload the LED loop after you edit the script or the plist
 planck-agent leds      # the LED loop (run by launchd)
 ```
 
 Environment: `PLANCK_AGENT_LAYER` (default 5), `PLANCK_TERMINAL_APP` (default Alacritty), `PLANCK_STALE_SECS` (default 600), `PLANCK_AGENT_CONFIG`.
+
+To change one for the LED loop, add it to `planck-agent.plist`, then copy the plist to `~/Library/LaunchAgents/` and run `planck-agent restart`:
+
+```xml
+<key>EnvironmentVariables</key><dict>
+  <key>PLANCK_STALE_SECS</key><string>300</string>
+</dict>
+```
+
+Config edits apply live. Script edits need `planck-agent restart`.
 
 ## How it works
 
