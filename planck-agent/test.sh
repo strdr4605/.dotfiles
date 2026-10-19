@@ -37,6 +37,14 @@ check "worst blocked" "$(worst "$(printf 'p1 idle\np2 blocked')")" blocked
 check "worst stale over idle" "$(worst "$(printf 'p1 idle\np2 stale')")" stale
 check "worst empty" "$(worst "")" empty
 
+# key_led maps a keycap to its LED: escape is first after row 1, enter is last before the spacebar
+check "key_led escape" "$(key_led escape)" 12
+check "key_led enter" "$(key_led enter)" 35
+check "key_led unknown fails" "$(key_led nope || echo fail)" fail
+
+# flash blinks white then restores the key colour
+check "flash" "$(flash a 2>&1)" "$(printf 'set-rgb --led 13 --color #ffffff\nset-rgb --led 13 --color #00ff00')"
+
 # paint sends one colour per LED: row 1 states, rows 2-3 key colours, then the spacebar
 out=$(paint "$(printf 'p1 working\np2 stale')" 2>&1)
 check "led 0 working" "$(sed -n 1p <<<"$out")" "set-rgb --led 0 --color #ffa500"

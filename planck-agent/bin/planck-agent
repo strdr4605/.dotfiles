@@ -63,7 +63,29 @@ key() {
     herdr agent send-keys "$(focused_pane)" $text >/dev/null
   elif text=$(cfg ".keys[\"$k\"].run") && [ -n "$text" ]; then
     sh -c "$text"
+  else
+    return
   fi
+  flash "$k"
+}
+
+# LED index of a row 2-3 keycap: row 1 takes LEDs 0-11, then ROW2 and ROW3 in order
+key_led() {
+  local i=12 k
+  for k in $ROW2 $ROW3; do
+    [ "$k" = "$1" ] && { echo $i; return; }
+    i=$((i+1))
+  done
+  return 1
+}
+
+# Blink the key white after its action ran, then put its colour back. Keymapp down is not an error here.
+flash() {
+  local led
+  led=$(key_led "$1") || return 0
+  kontroll set-rgb --led "$led" --color "#ffffff" >/dev/null || return 0
+  sleep 0.15
+  kontroll set-rgb --led "$led" --color "$(key_color "$1")" >/dev/null || true
 }
 
 # shortcut: one set of jj panes at a time, tracked in a tmp file; upgrade to per-agent panes if needed
