@@ -118,19 +118,23 @@ paint() {
 
 leds() {
   trap "kontroll restore-rgb-leds >/dev/null" EXIT
-  local prev="" layer frame tick=0
+  local prev="" down="" layer frame tick=0
   while :; do
     layer=$(kontroll status 2>/dev/null | awk -F'\t+' '/Current layer/{print $2}')
-    [ -n "$layer" ] || { kontroll connect-any >/dev/null 2>&1; sleep 1; continue; }
+    [ -n "$layer" ] || {
+      [ -n "$down" ] || osascript -e 'display notification "Start Keymapp" with title "planck-agent"' || true
+      down=1; kontroll connect-any >/dev/null 2>&1 || true; sleep 5; continue
+    }
+    down=""
     if [ "$layer" != "$AGENT_LAYER" ]; then
-      [ -z "$prev" ] || { kontroll restore-rgb-leds >/dev/null; prev=""; }
+      [ -z "$prev" ] || { kontroll restore-rgb-leds >/dev/null || true; prev=""; }
       sleep 1; continue
     fi
     frame=$(agents | head -12)
     tick=$((tick+1))
     # repaint on change or every 5s: Oryx firmware redraws layer colours on keypress
     if [ "$frame" != "$prev" ] || [ $((tick % 5)) -eq 0 ]; then
-      paint "$frame" && prev=$frame || { kontroll connect-any >/dev/null 2>&1; prev=""; }
+      paint "$frame" && prev=$frame || { kontroll connect-any >/dev/null 2>&1 || true; prev=""; }
     fi
     sleep 1
   done
