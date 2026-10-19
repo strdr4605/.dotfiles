@@ -55,8 +55,6 @@ run: "Run: shell commands" {
     - H: flag agent (blue again)
     - M: edit config
     - ,: jump to nvim
-    - L: start the demo recording
-    - K: stop the demo recording
   |
 }
 
@@ -75,5 +73,5 @@ macros: "Macros: type into the pane" {
 
 states -> keyboard: "row 1" {style.stroke: "#cc0000"; style.stroke-dash: 4}
 keyboard -> prompts: "A S D  N V B  / '" {style.stroke: "#cc00cc"; style.stroke-dash: 4}
-keyboard -> run: "F G H M , L K" {style.stroke: "#aaaa00"; style.stroke-dash: 4}
+keyboard -> run: "F G H M ," {style.stroke: "#aaaa00"; style.stroke-dash: 4}
 keyboard -> macros: "; Z X C" {style.stroke: "#00aaaa"; style.stroke-dash: 4}

@@ -56,7 +56,14 @@ Hyper means ctrl+alt+shift+cmd. The agent layer is layer 5.
 | record start | Hyper+P | begin the take |
 | record stop | Hyper+O | end the take, and build the gif |
 
-The keys are in `config.json`, so they work with skhd and with Raycast. They need no change in `skhdrc`.
+The keys are not in the daily `config.json`. Add them when you record:
+
+```json
+"l": { "run": "$HOME/.dotfiles/planck-agent/demo/record-start", "color": "#dddd00" },
+"k": { "run": "$HOME/.dotfiles/planck-agent/demo/record-stop", "color": "#dddd00" }
+```
+
+The keycaps need no change in `skhdrc`, so skhd and Raycast both use them as soon as the config holds them.
 
 ## Recording with the Planck
 

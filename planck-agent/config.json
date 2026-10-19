@@ -68,14 +68,6 @@
       "run": "$HOME/.dotfiles/planck-agent/bin/jump-nvim",
       "color": "#dddd00"
     },
-    "l": {
-      "run": "$HOME/.dotfiles/planck-agent/demo/record-start",
-      "color": "#dddd00"
-    },
-    "k": {
-      "run": "$HOME/.dotfiles/planck-agent/demo/record-stop",
-      "color": "#dddd00"
-    },
     ";": {
       "macro": "Plan first. Do not make changes yet — list 2-3 options and trade-offs.",
       "color": "#00cccc"
