@@ -103,6 +103,8 @@ planck-agent restart   # reload the LED loop after you edit the script or the pl
 planck-agent leds      # the LED loop (run by launchd)
 ```
 
+Run `./test.sh` after you change the script. It checks the state logic and the colours sent to the keyboard with a stubbed `kontroll`.
+
 Environment: `PLANCK_AGENT_LAYER` (default 5), `PLANCK_TERMINAL_APP` (default Alacritty), `PLANCK_STALE_SECS` (default 600), `PLANCK_AGENT_CONFIG`.
 
 To change one for the LED loop, add it to `planck-agent.plist`, then copy the plist to `~/Library/LaunchAgents/` and run `planck-agent restart`:
