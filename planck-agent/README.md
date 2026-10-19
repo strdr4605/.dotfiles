@@ -125,7 +125,11 @@ Agent slots follow herdr's sidebar order, so a new agent can shift the others by
 
 ![planck-agent architecture](docs/architecture.png)
 
-See [`docs/architecture.d2`](docs/architecture.d2) for the source. Regenerate after changing `config.json`:
+Key legend (example bindings from `config.json`):
+
+![planck-agent key legend](docs/legend.png)
+
+See [`docs/architecture.d2`](docs/architecture.d2) and [`docs/legend.d2`](docs/legend.d2) for the sources. Regenerate after changing `config.json`:
 
 ```
 cd docs && ./make.sh

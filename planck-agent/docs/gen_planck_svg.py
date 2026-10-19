@@ -12,6 +12,7 @@ Color rules (per planck-agent):
 
 from pathlib import Path
 import json
+import sys
 import subprocess
 import uuid
 import svgwrite
@@ -74,7 +75,8 @@ AGENT_ROW_STATES = [
     'idle',      # 2  W
     'done',      # 3  E
     'blocked',   # 4  R
-    None, None, None, None, None, None, None,  # 5-11 unused
+    'stale',     # 5  T
+    None, None, None, None, None, None,  # 6-11 unused
 ]
 
 # Resolve agent-state colours from config.colors; allow fallback defaults.
@@ -86,6 +88,7 @@ def _state_color(state):
         'working': '#ffa500',
         'done':    '#0000ff',
         'idle':    '#00ff00',
+        'stale':   '#aa00ff',
         'empty':   '#202020',
     }.get(state)
 
@@ -284,14 +287,43 @@ for label, w in THUMB_LAYOUT:
     draw_key(x_cursor, thumb_y0, w=w, label=label, color=color)
     x_cursor += w * KEY_W + (w - 1) * GAP + GAP
 
+# ---- Legend overlay: dashed box around each run of same-coloured keys ----
+# `--legend` writes planck-legend.svg, used by legend.d2.
+LEGEND = '--legend' in sys.argv
+
+def legend_box(x, y, w, color):
+    dwg.add(dwg.rect(
+        insert=(x - 4, y - 4), size=(w + 8, KEY_H + 8),
+        rx=12, ry=12, fill='none', stroke=color,
+        stroke_width=2.5, stroke_dasharray='7,5',
+    ))
+
+if LEGEND:
+    legend_box(main_x0 - 8, main_y0 - 4, main_w + 16, '#cc0000')
+    legend_box(thumb_x0 + 5 * (KEY_W + GAP), thumb_y0 - 2, 2 * KEY_W + GAP, '#cc0000')
+
+    for r in (1, 2):
+        y = main_y0 + r * (KEY_H + GAP)
+        start = None
+        for c, label in enumerate(ROW_LABELS[r] + [None]):
+            color = key_color(label) if label else None
+            if color in ('#ffffff', '#ff0000'):
+                color = None  # Esc and Enter: not part of the legend
+            if start is not None and color != start[1]:
+                x0 = main_x0 + start[0] * (KEY_W + GAP)
+                legend_box(x0, y, (c - start[0]) * (KEY_W + GAP) - GAP, start[1])
+                start = None
+            if color and start is None:
+                start = (c, color)
+
 # ---- Save ----
-out_svg = Path('planck.svg')
+out_svg = Path('planck-legend.svg' if LEGEND else 'planck.svg')
 dwg.saveas(str(out_svg))
 print(f'Wrote {out_svg} ({board_w}x{board_h})')
 
 subprocess.run(
     ['rsvg-convert', '-w', str(board_w), '-h', str(board_h),
-     str(out_svg), '-o', 'planck.png'],
+     str(out_svg), '-o', str(out_svg.with_suffix('.png'))],
     check=True,
 )
-print('Wrote planck.png')
+print(f'Wrote {out_svg.with_suffix(".png")}')

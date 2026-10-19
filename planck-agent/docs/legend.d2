@@ -1,0 +1,77 @@
+vars: {
+  d2-config: {
+    layout-engine: tala
+    pad: 30
+  }
+}
+
+direction: down
+
+keyboard: "Example bindings from config.json" {
+  shape: image
+  icon: ./planck-legend.png
+  width: 700
+  height: 298
+}
+
+states: "Agents row (Tab, Q, W, E ...) + Space = worst state" {
+  grid-columns: 6
+  style.fill: "#ffe0e0"
+  style.double-border: false
+  style.stroke: "#cc0000"
+  working: "working" {style.fill: "#ffa500"}
+  idle: "idle" {style.fill: "#00ff00"}
+  done: "done" {style.fill: "#0000ff"; style.font-color: "#ffffff"}
+  blocked: "blocked" {style.fill: "#ff0000"}
+  stale: "stale" {style.fill: "#aa00ff"; style.font-color: "#ffffff"}
+  empty: "empty" {style.fill: "#202020"; style.font-color: "#ffffff"}
+}
+
+prompts: "Prompts: submit to the agent" {
+  style.fill: "#f5e0f5"
+  style.double-border: false
+  style.stroke: "#cc00cc"
+  style.font-color: "#cc00cc"
+  list: |md
+    - A: approve and continue
+    - S: summarise state
+    - D: mark done, list remaining
+    - N: are we done? what's next?
+    - V: propose commit split
+    - B: update the docs
+    - /: /compact
+    - ': explain change as a peer
+  |
+}
+
+run: "Run: shell commands" {
+  style.fill: "#ffffe0"
+  style.double-border: false
+  style.stroke: "#aaaa00"
+  style.font-color: "#888800"
+  list: |md
+    - F: planck-agent log
+    - G: open Alacritty
+    - H: flag agent (blue again)
+    - M: edit config
+    - ,: jump to nvim
+  |
+}
+
+macros: "Macros: type into the pane" {
+  style.fill: "#e0ffff"
+  style.double-border: false
+  style.stroke: "#00aaaa"
+  style.font-color: "#008888"
+  list: |md
+    - ;: plan first, 2-3 options
+    - Z: review the diff
+    - X: run tests, fix failures
+    - C: fix the last error
+  |
+}
+
+states -> keyboard: "row 1" {style.stroke: "#cc0000"; style.stroke-dash: 4}
+keyboard -> prompts: "A S D  N V B  / '" {style.stroke: "#cc00cc"; style.stroke-dash: 4}
+keyboard -> run: "F G H M ," {style.stroke: "#aaaa00"; style.stroke-dash: 4}
+keyboard -> macros: "; Z X C" {style.stroke: "#00aaaa"; style.stroke-dash: 4}
