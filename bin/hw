@@ -1,0 +1,9 @@
+#!/bin/sh
+# Herdr twin of nt: open a workspace named parent/folder in the current
+# directory, focus it, and close the pane this was run from.
+dir=$(pwd)
+label="$(basename "$(dirname "$dir")")/$(basename "$dir")"
+
+herdr workspace create --cwd "$dir" --label "$label" --focus >/dev/null || exit 1
+
+[ -n "$HERDR_PANE_ID" ] && herdr pane close "$HERDR_PANE_ID" >/dev/null
