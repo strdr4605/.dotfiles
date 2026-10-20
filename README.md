@@ -8,6 +8,8 @@ My current dev environment
 - [alacritty](https://alacritty.org/) (terminal emulator)
 - [tmux](https://github.com/tmux/tmux) (terminal multiplexer to handle my tabs/panes)
 - zsh, [starship](https://starship.rs/)
+- [pi](https://pi.dev) (AI coding agent)
+  - [pi/](pi) holds the whole pi setup: `pi/install.sh` installs the packages, `pi/agent/` is the agent directory
 - [Comic Code font](https://tosche.net/fonts/comic-code)
 
 ![screenshot](screenshot.png)

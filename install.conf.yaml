@@ -46,7 +46,5 @@
     - command: ./check_tmux_tpm.sh
       description: Tmux Plugin Manager
       allow_fail: true
-    - command: pi install npm:pi-web-access
-      description: Pi web access extension
-    - command: pi install git:github.com/DietrichGebert/ponytail
-      description: Pi ponytail extension
+    - command: ./pi/install.sh
+      description: Pi packages
