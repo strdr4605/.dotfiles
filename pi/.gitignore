@@ -1,6 +1,19 @@
 # Local agent config (not synced across machines)
 agent/auth.json
 agent/settings.json
+agent/oauth.json
+agent/oauth.json.migrated
+agent/keybindings.json
 
 # Sessions (personal work history)
 agent/sessions/
+
+# Regenerated model catalog cache
+agent/models-store.json
+
+# Local model overrides (the pi.dev catalog is the source of truth)
+agent/models.json
+
+# pi-web-access runtime state (fetched page cache and provider keys)
+agent/web-search-cache/
+agent/web-search.json

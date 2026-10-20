@@ -1,6 +1,3 @@
-pi/agent/models-store.json
-pi/agent/npm/
-pi/agent/sessions/
 # herdr-managed: regenerated on `herdr integration install`
 pi/agent/extensions/herdr-agent-state.ts
 nvim/neovim_tips/user_tips.md
@@ -9,5 +6,8 @@ opencode/opencode-notifier-state.json
 
 # pi skills resolve outside the repo via ~/.agents/skills/
 pi/agent/skills/
+# pi extension installs: keep the manifest, drop the installed tree
+pi/agent/npm/node_modules/
+pi/agent/npm/package-lock.json
 bin/islocked
 .DS_Store
