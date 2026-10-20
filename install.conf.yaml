@@ -17,8 +17,8 @@
     ~/.config/opencode: opencode
     ~/.pi: pi
     ~/.config/ponytail: ponytail
+    ~/AGENTS.md: agents/AGENTS.md
     ~/.claude/AGENTS.md: agents/AGENTS.md
-    ~/.config/opencode/AGENTS.md: agents/AGENTS.md
     ~/.claude/CLAUDE.md: claude/CLAUDE.md
     ~/.claude/RTK.md: claude/RTK.md
     ~/.config/herdr/config.toml: herdr.toml

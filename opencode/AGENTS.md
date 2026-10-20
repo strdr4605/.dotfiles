@@ -1,1 +1,1 @@
-/Users/strdr4605/.dotfiles/agents/AGENTS.md
+../agents/AGENTS.md
