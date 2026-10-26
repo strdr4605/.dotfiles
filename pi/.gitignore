@@ -17,3 +17,4 @@ agent/models.json
 # pi-web-access runtime state (fetched page cache and provider keys)
 agent/web-search-cache/
 agent/web-search.json
+agent/pi-web-access/last-seen-version.json
