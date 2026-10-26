@@ -11,3 +11,7 @@ pi/agent/npm/node_modules/
 pi/agent/npm/package-lock.json
 bin/islocked
 .DS_Store
+
+# claude mods: engine regenerates types and tsconfig on every load
+claude/mods/*/.claude-plugin/types/
+claude/mods/*/tsconfig.json
