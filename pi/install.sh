@@ -7,6 +7,7 @@ set -euo pipefail
 packages=(
   "npm:pi-web-access"
   "git:github.com/DietrichGebert/ponytail"
+  "npm:surf-cli"
 )
 
 if ! command -v pi >/dev/null; then
@@ -19,5 +20,12 @@ for package in "${packages[@]}"; do
   pi install "$package"
 done
 
+if ! command -v surf >/dev/null; then
+  echo ">>>> Installing the surf CLI"
+  npm install -g surf-cli
+fi
+
 echo ">>>> Refreshing the pi model catalog"
 pi update --models || echo "Catalog refresh failed. Run 'pi update --models' later."
+
+echo ">>>> Next: run ./pi/surf-host.sh to connect surf to the browser"
