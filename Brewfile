@@ -23,6 +23,8 @@ brew 'pi-coding-agent'
 brew 'rtk'
 # For web search with pi
 brew 'ddgr'
+# For bin/slack-latest
+brew 'slackdump'
 
 brew 'tmux'
 brew 'neovim'

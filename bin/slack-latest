@@ -1,0 +1,36 @@
+#!/bin/sh
+# Pull recent Slack messages (channels, DMs, threads) into a local archive and
+# print them as plain text for an agent to read. Read-only.
+#
+# USAGE:
+#
+#   $ slack-latest          # last 24h
+#   $ slack-latest 72       # last 72h
+#   $ slack-latest 24 -n    # print only, skip fetch
+#
+# SETUP (once per machine): slackdump workspace new
+set -e
+
+hours=${1:-24}
+archive=${SLACK_ARCHIVE:-$HOME/slack-archive}
+since=$(date -u -v-"${hours}"H +%Y-%m-%dT%H:%M:%S)
+
+[ "$2" = "-n" ] || slackdump archive -o "$archive" -time-from "$since" >/dev/null 2>&1
+
+sqlite3 -separator ' ' "$archive/slackdump.sqlite" "
+with msg as (
+  select channel_id, ts, thread_ts, txt, json_extract(data,'\$.user') uid
+  from message where id >= $(date -u -v-"${hours}"H +%s)
+  group by channel_id, ts
+)
+select
+  '#' || coalesce(nullif(c.name,''), 'dm:' || coalesce(du.username, c.id)),
+  datetime(cast(m.ts as int),'unixepoch'),
+  case when m.thread_ts is not null and m.thread_ts != m.ts then '  ↳' else '' end,
+  coalesce(u.username, m.uid) || ':',
+  replace(m.txt, char(10), ' ')
+from msg m
+left join (select * from channel group by id) c on c.id = m.channel_id
+left join (select * from s_user group by id) u on u.id = m.uid
+left join (select * from s_user group by id) du on du.id = json_extract(c.data,'\$.user')
+order by m.channel_id, coalesce(m.thread_ts, m.ts), m.ts"
