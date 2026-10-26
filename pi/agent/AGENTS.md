@@ -28,7 +28,17 @@ which rtk       # Verify correct binary
 
 Warning: `rtk gain` fails when the Rust Type Kit (`reachingforthejack/rtk`) is installed instead.
 
-## Notes
+## Browser work with surf
+
+When Pi drives the browser with `surf`, keep the user oriented:
+
+- Session name: `pi-surf`.
+- Move the surf tab into the window the user watches: `surf tab.move <tabId> --to-window <focusedWindowId>`. Get the window id from `surf window.list --tabs` (the window marked `[focused]`).
+- Group the tab as `pi:surf ⏳` while the work runs, and `pi:surf ✅` when the work is done.
+- Set the tab title to `⏳ pi:surf` while the work runs, and `✅ pi:surf` when the work is done. Navigation resets the title, so set it again after each `surf go`.
+- Leave the tab open for the user, or close it with `surf session.close "$SURF_SESSION"`.
+
+# Notes
 
 - `--ultra-compact` was removed in 1.0. Do not use it.
 - Run `rtk --help` for the full command reference.
