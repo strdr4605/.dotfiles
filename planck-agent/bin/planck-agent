@@ -17,6 +17,7 @@ FLAG_FILE=/tmp/planck-agent.flagged
 ROW2="escape a s d f g h j k l ; '"
 ROW3="shift z x c v b n m , . / enter"
 SPACE_LED=41
+SCAN_SECS=10
 
 main() {
   case "${1:-}" in
@@ -133,12 +134,75 @@ frame_of() {
     { print $1, $2 }' <<<"$1"
 }
 
+# Phrases in an agent's last reply that mean it waits for your go. Config "awaits_go" replaces the defaults.
+go_phrases() {
+  local p
+  p=$(jq -r '(.awaits_go // empty)[]' "$CONFIG")
+  if [ -n "$p" ]; then echo "$p"; else printf '%s\n' 'say "go"' 'say go' 'your "go"' 'your go' 'on your word' 'wait for my go' 'should i'; fi
+}
+
+# "pane ..." lines -> "pane flags" lines. Reads the detection buffer of each pane once.
+scan() {
+  local phrases p
+  phrases=$(go_phrases)
+  for p in $(cut -d' ' -f1 <<<"$1"); do
+    echo "$p$(herdr agent read "$p" --source detection 2>/dev/null | detect "$phrases")"
+  done
+}
+
+# stdin: a detection buffer. $1: go phrases, one per line. Prints the flags it finds, each with a space before it:
+#   draft  the input box (the line between the last two rules) has typed text
+#   go     the last reply (after the last prompt line, above the input box) has a go phrase
+#   heavy  the token-weather band just above the input box shows 100% or more of the smart zone
+detect() {
+  PHRASES=$1 awk -v nbsp="$(printf '\302\240')" '
+    { line[NR] = $0 }
+    index($0, "────") == 1 { top = bottom; bottom = NR }
+
+    END {
+      if (!top) exit
+      for (i = top + 1; i < bottom; i++) {
+        if (index(line[i], "❯") != 1) continue
+        s = substr(line[i], length("❯") + 1)
+        gsub(nbsp, "", s); gsub(/[ \t]/, "", s)
+        if (s != "") flags = flags " draft"
+      }
+
+      start = 1
+      for (i = 1; i < top; i++) if (index(line[i], "❯") == 1) start = i + 1
+      for (i = start; i < top; i++) reply = reply " " line[i]
+      reply = tolower(reply); gsub(/[ \t]+/, " ", reply)
+      n = split(tolower(ENVIRON["PHRASES"]), phrase, "\n")
+      for (j = 1; j <= n; j++) if (phrase[j] != "" && index(reply, phrase[j])) { flags = flags " go"; break }
+
+      for (i = top - 5; i < top; i++)
+        if (i > 0 && match(line[i], /[0-9]+% of smart zone/) && substr(line[i], RSTART) + 0 >= 100) { flags = flags " heavy"; break }
+
+      printf "%s", flags
+    }'
+}
+
+# $1: "pane status" lines. $2: "pane flags" lines from scan. Prints "pane state", plus " draft" when the key must blink.
+# go makes idle, done or stale agents awaits-go. heavy makes idle or stale agents heavy. A blocked agent never blinks.
+mark() {
+  awk 'NR == FNR { f[$1] = " " $0 " "; next }
+    NF == 0 { next }
+    {
+      s = $2; x = f[$1]
+      if (index(x, " go ") && (s == "idle" || s == "done" || s == "stale")) s = "awaits-go"
+      else if (index(x, " heavy ") && (s == "idle" || s == "stale")) s = "heavy"
+      print $1, s (index(x, " draft ") && s != "blocked" ? " draft" : "")
+    }' <(echo "$2") <(echo "$1")
+}
+
 state_color() {
   local c
-  c=$(cfg ".colors.$1")
+  c=$(cfg ".colors[\"$1\"]")
   case "$1" in
     blocked) echo "${c:-#ff0000}" ;;
+    awaits-go) echo "${c:-#00ffff}" ;;
     working) echo "${c:-#ffa500}" ;;
+    heavy) echo "${c:-#880000}" ;;
     done) echo "${c:-#0000ff}" ;;
     stale) echo "${c:-#aa00ff}" ;;
     idle) echo "${c:-#00ff00}" ;;
@@ -153,30 +217,55 @@ key_color() {
 }
 
 worst() {
-  for s in blocked working done stale idle; do grep -q " $s\$" <<<"$1" && { echo "$s"; return; }; done
+  for s in blocked awaits-go working done heavy stale idle; do grep -qE " $s( draft)?\$" <<<"$1" && { echo "$s"; return; }; done
   echo empty
 }
 
+# $1: state. $2: "draft" or empty. $3: blink phase, 1 on, 0 off. A draft key is dark in the off phase.
+led_color() {
+  if [ "$2" = draft ] && [ "$3" = 0 ]; then echo "#000000"; else state_color "$1"; fi
+}
+
+# The spacebar shows the worst state of all agents. It blinks if an agent has a draft, unless the worst state is blocked.
+space_color() {
+  local s draft=""
+  s=$(worst "$1")
+  [ "$s" != blocked ] && grep -q ' draft$' <<<"$1" && draft=draft
+  led_color "$s" "$draft" "$2"
+}
+
+# $1: "pane state [draft]" lines for all agents. $2: blink phase (default 1, on). Row 1 shows the first 12 agents.
 paint() {
-  local frame=$1 i=0 status k
+  local frame=$1 phase=${2:-1} i=0 state draft k
   while [ $i -lt 12 ]; do
-    status=$(sed -n "$((i+1))p" <<<"$frame" | cut -d' ' -f2)
-    kontroll set-rgb --led $i --color "$(state_color "${status:-empty}")" >/dev/null || return 1
+    read -r _ state draft <<<"$(sed -n "$((i+1))p" <<<"$frame")"
+    kontroll set-rgb --led $i --color "$(led_color "${state:-empty}" "$draft" "$phase")" >/dev/null || return 1
     i=$((i+1))
   done
   for k in $ROW2 $ROW3; do
     kontroll set-rgb --led $i --color "$(key_color "$k")" >/dev/null || return 1
     i=$((i+1))
   done
-  kontroll set-rgb --led $SPACE_LED --color "$(state_color "$(worst "$frame")")" >/dev/null
+  kontroll set-rgb --led $SPACE_LED --color "$(space_color "$frame" "$phase")" >/dev/null
+}
+
+# Repaint only the LEDs that blink: row 1 drafts and the spacebar.
+blink() {
+  local frame=$1 i=0 state draft
+  while read -r _ state draft; do
+    [ "$draft" = draft ] && { kontroll set-rgb --led $i --color "$(led_color "$state" draft "$2")" >/dev/null || return 1; }
+    i=$((i+1))
+  done < <(head -12 <<<"$frame")
+  grep -q ' draft$' <<<"$frame" || return 0
+  kontroll set-rgb --led $SPACE_LED --color "$(space_color "$frame" "$2")" >/dev/null
 }
 
 leds() {
   trap "kontroll restore-rgb-leds >/dev/null" EXIT
-  local prev="" down="" layer frame list hist="" focused prevfocus="" tick=0
+  local prev="" down="" layer frame list hist="" focused prevfocus="" tick=0 det="" scanned=-$SCAN_SECS phase
   touch "$FLAG_FILE"
   while :; do
-    list=$(agents | head -12)
+    list=$(agents)
     hist=$(track "$hist" <<<"$list")
     # refocusing an agent counts as seeing it: drop its flag and restart its stale timer
     focused=$(awk '$3 == "true" { print $1 }' <<<"$list")
@@ -196,11 +285,19 @@ leds() {
       [ -z "$prev" ] || { kontroll restore-rgb-leds >/dev/null || true; prev=""; }
       sleep 1; continue
     fi
-    frame=$(frame_of "$hist")
+    if [ $((SECONDS - scanned)) -ge $SCAN_SECS ]; then
+      det=$(scan "$list")
+      scanned=$SECONDS
+    fi
+    frame=$(mark "$(frame_of "$hist")" "$det")
     tick=$((tick+1))
+    phase=$((tick % 2))
+
     # repaint on change or every 5s: Oryx firmware redraws layer colours on keypress
     if [ "$frame" != "$prev" ] || [ $((tick % 5)) -eq 0 ]; then
-      paint "$frame" && prev=$frame || { kontroll connect-any >/dev/null 2>&1 || true; prev=""; }
+      paint "$frame" $phase && prev=$frame || { kontroll connect-any >/dev/null 2>&1 || true; prev=""; }
+    else
+      blink "$frame" $phase || { kontroll connect-any >/dev/null 2>&1 || true; prev=""; }
     fi
     sleep 1
   done

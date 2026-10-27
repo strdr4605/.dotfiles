@@ -54,5 +54,49 @@ check "led 12 escape" "$(sed -n 13p <<<"$out")" "set-rgb --led 12 --color #ff000
 check "spacebar worst" "$(tail -1 <<<"$out")" "set-rgb --led 41 --color #ffa500"
 check "led count" "$(wc -l <<<"$out" | tr -d ' ')" 37
 
+# detect reads flags from a detection buffer: draft in the input box, go phrase in the last reply, heavy band
+RULE="────────────────────"
+NBSP=$(printf '\302\240')
+buffer() {  # $1: last reply, $2: band percent, $3: input box text
+  printf '%s\n' "⏺ old reply: say \"go\"" "❯${NBSP}do it" "⏺ $1" " name @peer │ ↯  Compact soon  $2% of smart zone" "$RULE" "❯${NBSP}$3" "$RULE" "  [PONYTAIL]"
+}
+phrases=$(go_phrases)
+check "detect nothing" "$(buffer "Done." 40 "" | detect "$phrases")" ""
+check "detect draft" "$(buffer "Done." 40 "push it" | detect "$phrases")" " draft"
+check "detect go" "$(buffer "Two commits. Say \"go\" and I commit." 40 "" | detect "$phrases")" " go"
+check "detect go is case-insensitive" "$(buffer "SHOULD I push?" 40 "" | detect "$phrases")" " go"
+check "detect go only in last reply" "$(buffer "Pushed." 40 "" | detect "$phrases")" ""
+check "detect heavy at 100" "$(buffer "Done." 100 "" | detect "$phrases")" " heavy"
+check "detect not heavy at 99" "$(buffer "Done." 99 "" | detect "$phrases")" ""
+check "detect all" "$(buffer "Wait for my go." 137 "x" | detect "$phrases")" " draft go heavy"
+check "detect no input box" "$(printf 'say go\n' | detect "$phrases")" ""
+echo '{"awaits_go":["ship it"]}' >"$FLAG_FILE"
+check "config phrases replace defaults" "$(CONFIG=$FLAG_FILE go_phrases)" "ship it"
+: >"$FLAG_FILE"
+
+# mark turns flags into states: go beats done and stale, heavy beats idle only, blocked never blinks
+frame=$(printf 'p1 done\np2 idle\np3 working\np4 blocked\np5 stale\np6 idle')
+det=$(printf 'p1 go\np2 heavy draft\np3 heavy draft\np4 draft go\np5 go heavy\np6')
+check "mark" "$(mark "$frame" "$det")" "$(printf 'p1 awaits-go\np2 heavy draft\np3 working draft\np4 blocked\np5 awaits-go\np6 idle')"
+
+# priority: blocked > awaits-go > working > done > heavy > stale > idle
+check "worst awaits-go over working" "$(worst "$(printf 'p1 working draft\np2 awaits-go')")" awaits-go
+check "worst blocked over awaits-go" "$(worst "$(printf 'p1 awaits-go\np2 blocked')")" blocked
+check "worst done over heavy" "$(worst "$(printf 'p1 heavy\np2 done')")" done
+check "worst heavy over stale" "$(worst "$(printf 'p1 stale\np2 heavy draft')")" heavy
+
+# a draft key blinks: its colour in phase 1, dark in phase 0. The spacebar blinks too, unless the worst state is blocked.
+frame=$(printf 'p1 heavy draft\np2 idle')
+check "paint draft on" "$(paint "$frame" 1 2>&1 | sed -n 1p)" "set-rgb --led 0 --color #880000"
+check "paint draft off" "$(paint "$frame" 0 2>&1 | sed -n 1p)" "set-rgb --led 0 --color #000000"
+check "blink repaints only drafts" "$(blink "$frame" 0 2>&1)" "$(printf 'set-rgb --led 0 --color #000000\nset-rgb --led 41 --color #000000')"
+check "blink nothing without drafts" "$(blink "p1 idle" 0 2>&1)" ""
+check "spacebar blocked does not blink" "$(space_color "$(printf 'p1 blocked\np2 idle draft')" 0)" "#ff0000"
+check "awaits-go colour" "$(state_color awaits-go)" "#00ffff"
+
+# the spacebar counts agents past slot 12
+frame=$(for i in $(seq 1 12); do echo "p$i idle"; done; echo "p13 blocked")
+check "spacebar sees slot 13" "$(paint "$frame" 2>&1 | tail -1)" "set-rgb --led 41 --color #ff0000"
+
 [ $fail -eq 0 ] && echo "ok"
 exit $fail

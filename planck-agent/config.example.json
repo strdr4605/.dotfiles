@@ -1,12 +1,15 @@
 {
   "colors": {
     "blocked": "#ff0000",
+    "awaits-go": "#00ffff",
     "working": "#ffa500",
     "done": "#0000ff",
+    "heavy": "#880000",
     "idle": "#00ff00",
     "stale": "#aa00ff",
     "empty": "#202020"
   },
+  "awaits_go": ["say \"go\"", "say go", "your \"go\"", "your go", "on your word", "wait for my go", "should i"],
   "keys": {
     "escape": { "keys": "esc", "color": "#ff0000" },
     "a": { "keys": "enter", "color": "#00ff00" },

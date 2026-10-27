@@ -1,8 +1,10 @@
 {
   "colors": {
     "blocked": "#ff0000",
+    "awaits-go": "#00ffff",
     "working": "#ffa500",
     "done": "#0000ff",
+    "heavy": "#880000",
     "idle": "#00ff00",
     "stale": "#aa00ff",
     "empty": "#202020"
