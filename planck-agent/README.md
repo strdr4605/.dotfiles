@@ -126,6 +126,16 @@ Config edits apply live. Script edits need `planck-agent restart`.
 
 The LED loop polls `kontroll status` once a second. On the agent layer it reads `herdr agent list` and paints row 1 with each agent's state, rows 2–3 with the configured colours, and the spacebar with the worst state. Every 10 seconds it also reads the screen of each agent to find drafts, go phrases and the token-weather band. Off the layer it restores the Oryx colours. Key presses reach the script through the hotkey tool, which calls the herdr CLI.
 
+Screen detection works for Claude Code and pi panes:
+
+| | Claude Code | pi |
+|---|---|---|
+| Draft | text after `❯` in the input box | any text in the input box |
+| Last reply | lines after the last `❯` prompt | last 4 non-blank lines above the input box (`PI_REPLY_LINES`) |
+| Token-weather band | above the input box | below the input box |
+
+Pi has no prompt marker, so a go phrase more than 4 lines from the end of a pi reply is missed. To read more lines, add `PI_REPLY_LINES` to `EnvironmentVariables` in `planck-agent.plist`.
+
 Agent slots follow herdr's sidebar order, so a new agent can shift the others by one.
 
 ![planck-agent architecture](docs/architecture.png)
