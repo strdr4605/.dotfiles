@@ -11,13 +11,18 @@
  *
  * Usage: /token-weather toggles the band. /token-weather 150000 sets the
  * budget. The budget also comes from PI_SMART_ZONE.
+ *
+ * Inside herdr, the band starts with the herdr agent name, so you can tell
+ * the panes apart. Pi has no peer names, so the label has only that name.
  */
 
+import { execFile } from "node:child_process";
 import type { ExtensionAPI, ExtensionContext, ThemeColor } from "@earendil-works/pi-coding-agent";
 
 const HISTORY = 12;
 const BARS = "▁▂▃▄▅▆▇█";
 const DEFAULT_SMART_ZONE = 100_000;
+const LOOKUP_MS = 30_000;
 
 // Single-width text symbols, not emoji: they line up in every terminal font.
 export const FORECAST = [
@@ -80,10 +85,16 @@ export function formatLine(tokens: number[], zone: number, fg?: (color: ThemeCol
 	return parts.join(" ");
 }
 
+export function withLabel(name: string, line: string, bold?: (text: string) => string): string {
+	return name ? `│ ${bold ? bold(name) : name} │ ${line}` : line;
+}
+
 export default function tokenWeatherExtension(pi: ExtensionAPI) {
 	const readings: number[] = [];
 	let zone = zoneFromEnv(process.env.PI_SMART_ZONE);
 	let enabled = true;
+	let herdrName = "";
+	let lastLookup = 0;
 
 	function render(ctx: ExtensionContext) {
 		if (ctx.mode !== "tui") return;
@@ -94,7 +105,33 @@ export default function tokenWeatherExtension(pi: ExtensionAPI) {
 		// The footer puts extension statuses on one line, sorted by key. The key
 		// "token-weather" sorts after "ponytail", so the band sits next to it.
 		const fg = ctx.ui.theme?.fg?.bind(ctx.ui.theme);
-		ctx.ui.setStatus("token-weather", formatLine(readings, zone, fg));
+		const bold = ctx.ui.theme?.bold?.bind(ctx.ui.theme);
+		ctx.ui.setStatus("token-weather", withLabel(herdrName, formatLine(readings, zone, fg), bold));
+	}
+
+	// herdr names the agent after pi starts (agent start or rename), and clears
+	// the name on release. Most panes never get a name, so look it up at most
+	// once per LOOKUP_MS, not on each turn.
+	function lookUpName(ctx: ExtensionContext) {
+		const pane = process.env.HERDR_PANE_ID;
+		if (process.env.HERDR_ENV !== "1" || !pane) return;
+		if (Date.now() - lastLookup < LOOKUP_MS) return;
+		lastLookup = Date.now();
+
+		const bin = process.env.HERDR_BIN_PATH ?? "herdr";
+		execFile(bin, ["agent", "get", pane], { timeout: 3000 }, (error, stdout) => {
+			// A failed lookup keeps the last known name, so the label does not flicker.
+			if (error) return;
+			let name: string;
+			try {
+				name = JSON.parse(stdout).result?.agent?.name ?? "";
+			} catch {
+				return;
+			}
+			if (name === herdrName) return;
+			herdrName = name;
+			render(ctx);
+		});
 	}
 
 	function takeReading(ctx: ExtensionContext) {
@@ -108,11 +145,13 @@ export default function tokenWeatherExtension(pi: ExtensionAPI) {
 		readings.length = 0;
 		takeReading(ctx);
 		render(ctx);
+		lookUpName(ctx);
 	});
 
 	pi.on("turn_end", (_event, ctx) => {
 		takeReading(ctx);
 		render(ctx);
+		lookUpName(ctx);
 	});
 
 	pi.on("session_compact", (_event, ctx) => {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { chart, forecastFor, formatLine, short, zoneFromEnv } from "../extensions/token-weather.ts";
+import { chart, forecastFor, formatLine, short, withLabel, zoneFromEnv } from "../extensions/token-weather.ts";
 
 test("band edges", () => {
 	assert.equal(forecastFor(0).word, "Clear");
@@ -57,4 +57,10 @@ test("the full zone asks for /compact or /handoff", () => {
 	assert.doesNotMatch(formatLine([99_000], 100_000), /handoff/);
 	// The hint must stay near the front, because the footer cuts the tail.
 	assert.ok(line.indexOf("handoff") < line.indexOf("% of smart zone"));
+});
+
+test("herdr label", () => {
+	assert.equal(withLabel("", "☀ Clear"), "☀ Clear");
+	assert.equal(withLabel("planner", "☀ Clear"), "│ planner │ ☀ Clear");
+	assert.equal(withLabel("planner", "☀ Clear", (s) => `*${s}*`), "│ *planner* │ ☀ Clear");
 });
