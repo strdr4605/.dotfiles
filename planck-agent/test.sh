@@ -70,6 +70,17 @@ check "detect heavy at 100" "$(buffer "Done." 100 "" | detect "$phrases")" " hea
 check "detect not heavy at 99" "$(buffer "Done." 99 "" | detect "$phrases")" ""
 check "detect all" "$(buffer "Wait for my go." 137 "x" | detect "$phrases")" " draft go heavy"
 check "detect no input box" "$(printf 'say go\n' | detect "$phrases")" ""
+
+# pi: no ❯ marker, the prompt and reply share one block, the band sits below the input box
+pi_buffer() {  # $1: last reply line, $2: band percent, $3: input box text
+  printf '%s\n' " Say go if you agree." "$RULE" " old prompt" " r1" " r2" " r3" " $1" "" "$RULE" "$3" "$RULE" "~/.dotfiles" "○ ponytail │ pi-probe │ ↯ Compact soon $2% of smart zone"
+}
+check "pi detect nothing" "$(pi_buffer "Done." 40 "" | detect "$phrases")" ""
+check "pi detect draft" "$(pi_buffer "Done." 40 "push it" | detect "$phrases")" " draft"
+check "pi detect go" "$(pi_buffer "Say \"go\"." 40 "" | detect "$phrases")" " go"
+check "pi detect go only in last lines" "$(pi_buffer "Pushed." 40 "" | detect "$phrases")" ""
+check "pi detect heavy below box" "$(pi_buffer "Done." 120 "" | detect "$phrases")" " heavy"
+check "claude draft on 2 lines counts once" "$(printf '%s\n' "$RULE" "❯${NBSP}line one" "  line two" "$RULE" | detect "$phrases")" " draft"
 echo '{"awaits_go":["ship it"]}' >"$FLAG_FILE"
 check "config phrases replace defaults" "$(CONFIG=$FLAG_FILE go_phrases)" "ship it"
 : >"$FLAG_FILE"
