@@ -11,6 +11,9 @@
 //
 // Usage: /token-weather toggles the band. /token-weather 150000 sets the
 // budget for this session.
+//
+// The band starts with a label: the herdr agent name (bold) and the Claude
+// peer name that SendMessage uses (dim), so you can tell the two apart.
 
 const HISTORY = 12;
 const BARS = "▁▂▃▄▅▆▇█";
@@ -34,6 +37,12 @@ let zone = DEFAULT_SMART_ZONE;
 let override;
 let enabled = true;
 
+// Label names. Empty until a lookup finds them.
+let inHerdr = false;
+let herdrName = "";
+let peerName = "";
+let steps = 0;
+
 export function register(on) {
   on("session.start", async ($, e, next) => {
     const result = await next(e);
@@ -45,6 +54,8 @@ export function register(on) {
     });
     readings = [];
     await takeReading($);
+    inHerdr = (await $.env.get("HERDR_ENV")) === "1";
+    await lookUpNames($);
     return result;
   });
 
@@ -54,6 +65,8 @@ export function register(on) {
     if (!e.agentId) {
       zone = override ?? zoneForModel(e.model);
       await takeReading($);
+      steps++;
+      if (!peerName || (inHerdr && !herdrName) || steps % 10 === 0) await lookUpNames($);
     }
     return result;
   });
@@ -76,9 +89,12 @@ export function register(on) {
   });
 
   on("ui.render", { component: "AbovePrompt" }, ($, e, next) => {
-    if (!enabled || e.hasSurvey || readings.length === 0) return next(e);
+    if (!enabled || e.hasSurvey) return next(e);
     const { Box, Text } = $.ui.resolve(e);
-    return band(Box, Text, e.bodyColumns ?? 80);
+    const parts = label(Text);
+    if (readings.length > 0) parts.push(...band(Text, parts.length > 0, e.bodyColumns ?? 80));
+    if (parts.length === 0) return next(e);
+    return Box({ flexDirection: "row", paddingX: 1, children: parts });
   });
 
   on("command.run", { command: "token-weather" }, ($, e) => {
@@ -124,11 +140,57 @@ async function takeReading($) {
   }
 }
 
-function band(Box, Text, columns) {
+// A lookup that fails returns undefined and keeps the last name.
+async function lookUpNames($) {
+  const [herdr, peer] = await Promise.all([herdrNameOf($), peerNameOf($)]);
+  const next = { herdr: herdr ?? herdrName, peer: peer || peerName };
+  if (next.herdr === herdrName && next.peer === peerName) return;
+  herdrName = next.herdr;
+  peerName = next.peer;
+  $.ui.invalidate("ui.render");
+}
+
+// "" when the agent has no herdr name (or the session is not in herdr).
+async function herdrNameOf($) {
+  try {
+    const pane = await $.env.get("HERDR_PANE_ID");
+    if (!inHerdr || !pane) return "";
+    const { exitCode, stdout } = await $.process.run(["herdr", "agent", "get", pane], { timeoutMs: 5000 });
+    if (exitCode !== 0) return undefined;
+    return JSON.parse(stdout).result?.agent?.name ?? "";
+  } catch {
+    return undefined;
+  }
+}
+
+// The mod API does not give the peer name. Each running session writes it to
+// <config dir>/sessions/<pid>.json, next to its session id.
+async function peerNameOf($) {
+  try {
+    const id = await $.session.id();
+    const script = 'jq -r --arg id "$1" \'select(.sessionId == $id) | .name // empty\' "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/sessions/*.json';
+    const { stdout } = await $.process.run(["sh", "-c", script, "sh", id], { timeoutMs: 5000 });
+    return stdout.trim().split("\n")[0];
+  } catch {
+    return "";
+  }
+}
+
+// "<herdr-name> @<peer>". Without a herdr name: "@<peer>". Without both: nothing.
+function label(Text) {
+  const parts = [];
+  if (herdrName) parts.push(Text({ bold: true, children: herdrName }));
+  if (peerName) parts.push(Text({ dimColor: true, children: `${herdrName ? " " : ""}@${peerName}` }));
+  return parts;
+}
+
+function band(Text, afterLabel, columns) {
   const now = readings[readings.length - 1];
   const percent = Math.round((now / zone) * 100);
   const f = forecastFor(percent);
-  const parts = [Text({ color: f.color, bold: true, children: `${f.icon}  ${f.word}` })];
+  const parts = [];
+  if (afterLabel) parts.push(Text({ dimColor: true, children: " │ " }));
+  parts.push(Text({ color: f.color, bold: true, children: `${f.icon}  ${f.word}` }));
   if (percent >= 100) parts.push(Text({ color: "red", children: "  use /compact" }));
   parts.push(Text({ children: `  ${percent}% of smart zone` }));
   parts.push(Text({ dimColor: true, children: `  ${short(now)} / ${short(zone)}` }));
@@ -137,7 +199,7 @@ function band(Box, Text, columns) {
     parts.push(Text({ color: f.color, children: chart() }));
     parts.push(Text({ dimColor: true, children: `  ${trendWord()}` }));
   }
-  return Box({ flexDirection: "row", paddingX: 1, children: parts });
+  return parts;
 }
 
 function forecastFor(percent) {
