@@ -46,3 +46,20 @@ scrollback_limit_bytes = 10000000
 
 [ui.toast]
 delivery = "system"
+
+
+# Morning status report, built by ~/P/recap (launchd, weekdays 07:30).
+[[keys.command]]
+key = "prefix+i"
+type = "popup"
+command = "$HOME/.local/bin/recap"
+description = "recap report"
+width = "85%"
+height = "85%"
+
+# Focus today's recap-YYYY-MM-DD agent, or open (or resume) it in a new tab.
+[[keys.command]]
+key = "prefix+u"
+type = "shell"
+command = "$HOME/.local/bin/recap plan"
+description = "recap plan"
