@@ -71,12 +71,16 @@ export function register(on) {
     return result;
   });
 
-  on("command.run", { command: "clear" }, async ($, e, next) => {
-    const result = await next(e);
-    readings = [];
-    $.ui.invalidate("ui.render");
-    return result;
-  });
+  // session.compact also resets, but another plugin can run first and skip
+  // this mod's hook. The /compact command still reaches it.
+  for (const command of ["clear", "compact"]) {
+    on("command.run", { command }, async ($, e, next) => {
+      const result = await next(e);
+      readings = [];
+      $.ui.invalidate("ui.render");
+      return result;
+    });
+  }
 
   on("session.compact", async ($, e, next) => {
     const result = await next(e);
