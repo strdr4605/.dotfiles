@@ -37,7 +37,7 @@ gh pr diff <n>
 5. Write the **Unchanged** line: what a reviewer could fear this PR touches, but it does not. It must be true in the diff.
 6. Write the **Related paths** line: other places with the same logic (another client, endpoint, job, or report). Say "updated", "not updated: <why>", or "none". Remove the line when there are no such places.
 7. Write the block to a temporary file. Copy the shape in [references/block-format.md](references/block-format.md).
-8. Run the upsert script (see Commands).
+8. Run the upsert script (see Commands). It is the only way to write the block. Do not put the block in `gh pr create --body` or `gh pr edit --body`: create the PR without it first. The script puts the block in the right place and checks it.
 
 ## Update mode
 
@@ -79,6 +79,7 @@ Do not use class diagrams. They show code, not the system.
 Rules:
 
 - Use a maximum of 2 diagrams. Add the second only if it shows something the first cannot.
+- Every diagram must mark at least one change. Drop a diagram that marks no change. The upsert script rejects it.
 - Show the system after the PR. Mark what changed:
   - Sequence: wrap new messages in `rect rgba(46, 160, 67, 0.15)`, changed in `rect rgba(210, 153, 34, 0.18)`, removed in `rect rgba(248, 81, 73, 0.15)` with a `-x` arrow and the word "removed".
   - Flowchart and state: `classDef new fill:#2ea04326,stroke:#2ea043`, `classDef changed fill:#d2992226,stroke:#d29922`, `classDef removed fill:#f8514926,stroke:#f85149,stroke-dasharray:4`. Then `class A,B new`.
@@ -112,7 +113,7 @@ node ~/.pi/agent/skills/pr-visual-recap/scripts/upsert.mjs --self-test
 
 - `<pr>` is a number or a PR URL.
 - The script finds the repo from the current directory (`gh`, then `jj git remote list`). Use `-R <owner/repo>` to set it.
-- Before it writes, the script checks the markers, the `**Head:**` line, the code fences, and `;` in sequence messages.
+- Before it writes, the script checks the markers, the `**Head:**` line, the code fences, `;` in sequence messages, and that each diagram marks a change.
 
 ## Failure
 

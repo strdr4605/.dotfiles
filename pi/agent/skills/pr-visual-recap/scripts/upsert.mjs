@@ -82,11 +82,19 @@ function checkBlock(block) {
   if ((block.match(/^\s*```/gm) || []).length % 2) return 'unbalanced code fences'
 
   for (const [, diagram] of block.matchAll(/```mermaid\n([\s\S]*?)```/g)) {
+    if (!marksChange(diagram)) return `diagram marks no change, add a highlight or drop it: ${diagram.trim().split('\n')[0]}`
     if (!/^\s*sequenceDiagram/.test(diagram)) continue
     const bad = diagram.split('\n').find((l) => l.includes(';') && /(-{1,2}(>>|>|x|\))|^\s*Note\b)/.test(l))
     if (bad) return `";" in a sequence message breaks GitHub rendering: ${bad.trim()}`
   }
   return null
+}
+
+// A diagram must show the delta: rect in sequence, "NEW"-style comments in ER, classDef + class elsewhere.
+function marksChange(diagram) {
+  if (/^\s*sequenceDiagram/.test(diagram)) return /^\s*rect\s+rgba/m.test(diagram)
+  if (/^\s*erDiagram/.test(diagram)) return /"(NEW|CHANGED|REMOVED)"/.test(diagram)
+  return /^\s*classDef\s+(new|changed|removed)\b/m.test(diagram) && /(^\s*class\s+\S+\s+(new|changed|removed)\b|:::(new|changed|removed)\b)/m.test(diagram)
 }
 
 function die(message) {
@@ -105,6 +113,11 @@ function selfTest() {
   assert.equal(checkBlock(ok), null)
   assert.match(checkBlock('no markers'), /must start/)
   assert.match(checkBlock(`${START}\n${END}`), /Head/)
-  assert.match(checkBlock(`${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\nsequenceDiagram\n  A->>B: x; y\n\`\`\`\n${END}`), /";"/)
-  assert.equal(checkBlock(`${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\nsequenceDiagram\n  A->>B: x, y\n\`\`\`\n${END}`), null)
+  assert.match(checkBlock(`${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\nsequenceDiagram\n  rect rgba(46, 160, 67, 0.15)\n  A->>B: x; y\n  end\n\`\`\`\n${END}`), /";"/)
+  const wrap = (diagram) => `${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\n${diagram}\n\`\`\`\n${END}`
+  assert.equal(checkBlock(wrap('sequenceDiagram\n  rect rgba(46, 160, 67, 0.15)\n  A->>B: x, y\n  end')), null)
+  assert.match(checkBlock(wrap('sequenceDiagram\n  A->>B: x, y')), /marks no change/)
+  assert.match(checkBlock(wrap('flowchart TD\n  A --> B')), /marks no change/)
+  assert.equal(checkBlock(wrap('flowchart TD\n  A --> B\n  classDef new fill:#2ea04326,stroke:#2ea043\n  class B new')), null)
+  assert.equal(checkBlock(wrap('erDiagram\n  USER {\n    string iban "NEW"\n  }')), null)
 }
