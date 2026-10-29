@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-# Removes a jj workspace: forgets it from jj, then deletes its directory — the way
-# `git worktree remove` works. Run this from the repo container directory (the one
-# holding .jjmain), NOT from inside the workspace you're removing.
+# Removes a jj workspace and its directory, the way `git worktree remove` works.
+# Run this from the repo container directory (the one holding .jjmain), NOT from
+# inside the workspace you're removing.
 #
-# jj leaves the directory on disk after `workspace forget`, so this does both steps.
-# Committed work that a bookmark points to lives in .jjmain and is safe; a workspace's
-# uncommitted working-copy changes (no bookmark) are lost — push/bookmark them first.
+# jj snapshots the working copy into a commit before it deletes the workspace, so
+# uncommitted work is not lost silently: find it in `jj log` and bookmark it.
 #
 # Examples of call:
 # jj-workspace-remove jj-ws-2
@@ -25,16 +24,20 @@ if [ ! -d .jjmain ]; then
   exit 1
 fi
 
+store="$PWD/.jjmain"
+
 # Guard the store itself — .jjmain is the anchor, never a workspace.
 if [ "$name" = ".jjmain" ]; then
   echo "refusing to remove .jjmain — it is the shared store, not a workspace" >&2
   exit 1
 fi
 
-# 1. drop it from jj (by workspace name, which matches the dir name for our scripts)
-jj --repository "$PWD/.jjmain" workspace forget "$name"
+# Guard the workspace that lives in the store (named "meta" after the clone script ran).
+store_ws=$(jj --repository "$store" workspace list 2>/dev/null | awk -F': ' -v p="$store" '$2 == p {print $1}')
+if [ "$name" = "$store_ws" ]; then
+  echo "refusing to remove '$name' — it is the shared store workspace, not a working copy" >&2
+  exit 1
+fi
 
-# 2. delete the directory
-rm -rf "$PWD/$name"
-
-echo "Removed workspace '$name'."
+# jj drops the workspace from the repo, removes its git worktree, and deletes the directory.
+jj --repository "$store" workspace remove "$name"

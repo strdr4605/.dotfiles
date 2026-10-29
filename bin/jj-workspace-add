@@ -29,8 +29,15 @@ if [ ! -d .jjmain ]; then
   exit 1
 fi
 
+repo="$PWD/.jjmain"
+
+# The store workspace is named "default" until it is renamed. jj keeps that name
+# reserved (the store is a git worktree), so a sibling folder named "default" cannot
+# be added while the store holds the name. Rename the store workspace to "meta".
+jj -R "$repo" workspace rename meta 2>/dev/null || true
+
 # .jjmain's own working copy goes stale whenever another workspace runs an operation.
 # workspace add must snapshot it, so refresh first (no-op when already current).
-jj -R "$PWD/.jjmain" workspace update-stale --quiet 2>/dev/null || true
+jj -R "$repo" workspace update-stale --quiet 2>/dev/null || true
 
-jj -R "$PWD/.jjmain" workspace add --revision "$revision" "$PWD/$name"
+jj -R "$repo" workspace add --name "$name" --revision "$revision" "$PWD/$name"

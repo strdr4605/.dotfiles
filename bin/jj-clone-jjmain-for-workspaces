@@ -31,20 +31,22 @@ cd "$name"
 # ...
 jj git clone "$url" .jjmain
 
-# Makes .jjmain inert, the jj analog of a bare .bare directory: forgetting the default
-# workspace drops its working copy but keeps .jj/repo + .git intact. Sibling workspaces
-# reference this store; .jjmain itself is never used as a working directory.
-jj --repository .jjmain workspace forget default
+# Renames the store workspace "default" -> "meta". The name "default" stays reserved for
+# the store as long as it is a git worktree, so the sibling folder "default" cannot use
+# it. The store keeps .jj/repo + .git intact and is never used as a working directory.
+jj --repository .jjmain workspace rename meta
 
 # Auto-creates a ready-to-use "default" workspace on trunk() (the repo's main branch on
 # origin) so you never start out on an empty root commit. Add more with `jj-workspace-add`.
-jj --repository .jjmain workspace add --revision "trunk()" "$PWD/default"
+jj --repository .jjmain workspace add --name default --revision "trunk()" "$PWD/default"
 
 cat <<EOF
 
 Done.
   Store:     $(pwd)/.jjmain          (leave it alone — deleting it breaks every workspace)
   Workspace: $(pwd)/default          (ready to use, on trunk())
+
+Workspaces: meta = store, default = your working copy.
 
 Start working:
   cd "$(pwd)/default"
