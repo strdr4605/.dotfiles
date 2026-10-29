@@ -5,7 +5,10 @@ opencode/service.json
 opencode/opencode-notifier-state.json
 
 # pi skills resolve outside the repo via ~/.agents/skills/
-pi/agent/skills/
+# (`/*`, not `/`: git cannot re-include a path under an ignored directory)
+pi/agent/skills/*
+# pr-visual-recap: tracked here while it is tested with pi
+!pi/agent/skills/pr-visual-recap/
 # pi extension installs: keep the manifest, drop the installed tree
 pi/agent/npm/node_modules/
 pi/agent/npm/package-lock.json
