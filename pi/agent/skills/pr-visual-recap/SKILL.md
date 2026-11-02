@@ -31,9 +31,11 @@ gh pr diff <n>
 ## Create mode
 
 1. Read the PR data and the diff.
-2. List the touched surfaces. Kinds: page/screen, component, endpoint/route, handler/service, background job, external API, email/notification, table, cache key, config/env key, CLI command. Status: new, changed, or removed. Include only what a reviewer must know. Skip pure moves and formatting.
+2. List the touched surfaces. Kinds: page/screen, component, endpoint/route, handler/service, background job, external API, email/notification, table, cache key, config/env key, CLI command. Status: `+ new`, `~ changed`, or `− removed`. Include only what a reviewer must know. Skip formatting.
+   - Put one mechanical edit in many files (translations, generated code, snapshots) in one row. Use a glob and the file count: `locales/*.json` (27 files).
+   - Do not put pure moves and renames in the table. Show them in the **Moved** tree (see Moves).
 3. Set the risk (see Risk).
-4. Draw 1-2 diagrams (see Diagrams). A trivial PR gets 0 diagrams and the one-line form.
+4. Draw 1-2 diagrams (see Diagrams). A trivial PR gets 0 diagrams and the one-line form. Add the **Moved** tree when files moved (see Moves).
 5. Write the **Unchanged** line: what a reviewer could fear this PR touches, but it does not. It must be true in the diff.
 6. Write the **Related paths** line: other places with the same logic (another client, endpoint, job, or report). Say "updated", "not updated: <why>", or "none". Remove the line when there are no such places.
 7. Write the block to a temporary file. Copy the shape in [references/block-format.md](references/block-format.md).
@@ -81,12 +83,20 @@ Rules:
 - Use a maximum of 2 diagrams. Add the second only if it shows something the first cannot.
 - Every diagram must mark at least one change. Drop a diagram that marks no change. The upsert script rejects it.
 - Show the system after the PR. Mark what changed:
-  - Sequence: wrap new messages in `rect rgba(46, 160, 67, 0.15)`, changed in `rect rgba(210, 153, 34, 0.18)`, removed in `rect rgba(248, 81, 73, 0.15)` with a `-x` arrow and the word "removed".
+  - Sequence: wrap new messages in `rect rgba(46, 160, 67, 0.15)`, changed in `rect rgba(210, 153, 34, 0.18)`, removed in `rect rgba(248, 81, 73, 0.15)` with a `-x` arrow and `− removed:` before the text.
   - Flowchart and state: `classDef new fill:#2ea04326,stroke:#2ea043`, `classDef changed fill:#d2992226,stroke:#d29922`, `classDef removed fill:#f8514926,stroke:#f85149,stroke-dasharray:4`. Then `class A,B new`.
   - ER: add `"NEW"`, `"CHANGED"`, or `"REMOVED"` as the attribute comment.
-- Put a legend line under each diagram, with only the colors you used: `🟩 new · 🟨 changed · 🟥 removed`.
+  - Start each marked message, node label, or state label with a text marker: `+ ` new, `~ ` changed, `− ` removed. Color alone is not sufficient: the tints are faint in dark mode, and some reviewers cannot see color. Put a flowchart or state label with a marker in quotes: `A["+ check attempts"]`.
+- Put a legend line under each diagram, with only the colors you used: `🟩 + new · 🟨 ~ changed · 🟥 − removed`.
 - Label = system name + file: `participant API as Orders API<br/>src/routes/orders.ts`. Use the names users and reviewers know.
 - Keep it small: a maximum of 12 messages in a sequence and 15 nodes in a flowchart. Remove context that is not necessary to see the change.
+
+## Moves
+
+When the PR moves, renames, or splits files with no logic change, add a **Moved** line with a `diff` file tree. Copy the shape in [references/block-format.md](references/block-format.md).
+
+- Show only files with no logic change. A moved file with a logic change also goes in the table.
+- The tree is not a diagram. It does not count in the maximum of 2 diagrams.
 
 ## Mermaid safety
 
@@ -113,10 +123,12 @@ node ~/.pi/agent/skills/pr-visual-recap/scripts/upsert.mjs --self-test
 
 - `<pr>` is a number or a PR URL.
 - The script finds the repo from the current directory (`gh`, then `jj git remote list`). Use `-R <owner/repo>` to set it.
-- Before it writes, the script checks the markers, the `**Head:**` line, the code fences, `;` in sequence messages, and that each diagram marks a change.
+- Before it writes, the script checks the markers, the `**Head:**` line, the code fences, `;` in sequence messages, that each diagram marks a change, and the Mermaid syntax (with `maid`).
 
 ## Failure
 
 - The upsert script exits non-zero: read the message, fix the block, run it again.
+- "maid is not installed": tell the user to run `npm i -g @probelabs/maid`. Do not skip the check.
+- maid does not check `erDiagram`. For an ER diagram, obey the safety rules with special care.
 - "broken marker pair": the body has only one marker. Do not guess. Tell the user and ask them to fix the body by hand.
 - The user reports a red Mermaid error on GitHub: fix the diagram with the safety rules, then run the upsert script again.

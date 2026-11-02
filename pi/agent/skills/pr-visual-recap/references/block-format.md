@@ -1,6 +1,6 @@
 # Block format
 
-Copy this shape. Remove an optional line (Unchanged, Related paths) only when it has no real content. Keep a blank line around every code fence and table, or GitHub does not render them.
+Copy this shape. Remove an optional line (Moved, Unchanged, Related paths) only when it has no real content. Keep a blank line around every code fence and table, or GitHub does not render them.
 
 The values below are an illustration.
 
@@ -15,9 +15,10 @@ The values below are an illustration.
 
 | Surface | Kind | Change |
 |---|---|---|
-| Login page<br/>`src/pages/login.tsx` | page | changed |
-| Session API<br/>`src/routes/session.ts` | endpoint | changed |
-| Rate limiter<br/>`src/lib/rate-limit.ts` | service | new |
+| Login page<br/>`src/pages/login.tsx` | page | ~ changed |
+| Session API<br/>`src/routes/session.ts` | endpoint | ~ changed |
+| Rate limiter<br/>`src/lib/rate-limit.ts` | service | + new |
+| Error strings<br/>`src/locales/*.json` (27 files) | copy | ~ changed |
 
 ```mermaid
 sequenceDiagram
@@ -29,14 +30,23 @@ sequenceDiagram
     User->>LP: submit email and password
     LP->>API: POST /session
     rect rgba(46, 160, 67, 0.15)
-    API->>RL: check attempts for this IP
-    RL-->>API: allow or 429
+    API->>RL: + checks attempts for this IP
+    RL-->>API: + returns allow or 429
     end
     API->>DB: verify password
     API-->>LP: session cookie or error
 ```
 
-🟩 new
+🟩 + new
+
+**Moved:** no logic change.
+
+```diff
+ src/lib/
+-  session.ts
++  session/cookie.ts   # moved from session.ts
++  session/store.ts    # moved from session.ts
+```
 
 **Unchanged:** password hashing, the session cookie format.
 
