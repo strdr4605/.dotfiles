@@ -123,12 +123,12 @@ node ~/.pi/agent/skills/pr-visual-recap/scripts/upsert.mjs --self-test
 
 - `<pr>` is a number or a PR URL.
 - The script finds the repo from the current directory (`gh`, then `jj git remote list`). Use `-R <owner/repo>` to set it.
-- Before it writes, the script checks the markers, the `**Head:**` line, the code fences, `;` in sequence messages, that each diagram marks a change, and the Mermaid syntax (with `maid`).
+- Before it writes, the script checks the markers, the `**Head:**` line, the code fences, `;` in sequence messages, that each diagram marks a change, and the Mermaid syntax (with `maid` from PATH, else `npx -y @probelabs/maid@0.0.29`).
 
 ## Failure
 
 - The upsert script exits non-zero: read the message, fix the block, run it again.
-- "maid is not installed": tell the user to run `npm i -g @probelabs/maid`. Do not skip the check.
+- "maid is not available" warning: the script wrote the block without the syntax check. Tell the user. Suggest `npm i -g @probelabs/maid`. Ask the user to look at the diagram on GitHub.
 - maid does not check `erDiagram`. For an ER diagram, obey the safety rules with special care.
 - "broken marker pair": the body has only one marker. Do not guess. Tell the user and ask them to fix the body by hand.
 - The user reports a red Mermaid error on GitHub: fix the diagram with the safety rules, then run the upsert script again.
