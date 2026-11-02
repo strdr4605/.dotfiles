@@ -3,7 +3,9 @@
 // Usage: node upsert.mjs <pr-number|url> <block-file> [-R owner/repo] [--dry-run]
 //        node upsert.mjs --self-test
 import { execFileSync } from 'node:child_process'
-import { readFileSync, realpathSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync, realpathSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import assert from 'node:assert/strict'
 
@@ -28,7 +30,7 @@ function main(args) {
   if (!repo) die('cannot find the GitHub repo from this directory: pass -R owner/repo')
 
   const block = readFileSync(blockFile, 'utf8').trim()
-  const problem = checkBlock(block)
+  const problem = checkBlock(block) || lintMermaid(block)
   if (problem) die(problem)
 
   const body = JSON.parse(execFileSync('gh', ['pr', 'view', pr, '-R', repo, '--json', 'body'], { encoding: 'utf8' })).body
@@ -97,6 +99,23 @@ function marksChange(diagram) {
   return /^\s*classDef\s+(new|changed|removed)\b/m.test(diagram) && /(^\s*class\s+\S+\s+(new|changed|removed)\b|:::(new|changed|removed)\b)/m.test(diagram)
 }
 
+// GitHub shows a red error box for a bad diagram, so check the syntax before the write.
+// maid does not check erDiagram. It passes ER diagrams as valid.
+function lintMermaid(block) {
+  const dir = mkdtempSync(join(tmpdir(), 'pr-visual-recap-'))
+  const file = join(dir, 'block.md')
+  writeFileSync(file, block)
+  try {
+    execFileSync('maid', [file], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
+    return null
+  } catch (e) {
+    if (e.code === 'ENOENT') return 'maid is not installed: run `npm i -g @probelabs/maid`'
+    return `Mermaid syntax error (maid):\n${e.stdout}${e.stderr}`
+  } finally {
+    rmSync(dir, { recursive: true, force: true })
+  }
+}
+
 function die(message) {
   console.error(`upsert: ${message}`)
   process.exit(1)
@@ -120,4 +139,8 @@ function selfTest() {
   assert.match(checkBlock(wrap('flowchart TD\n  A --> B')), /marks no change/)
   assert.equal(checkBlock(wrap('flowchart TD\n  A --> B\n  classDef new fill:#2ea04326,stroke:#2ea043\n  class B new')), null)
   assert.equal(checkBlock(wrap('erDiagram\n  USER {\n    string iban "NEW"\n  }')), null)
+
+  const fence = (diagram) => '```mermaid\n' + diagram + '\n```\n'
+  assert.equal(lintMermaid(fence('flowchart TD\n  A["+ check (per IP)"] --> B')), null)
+  assert.match(lintMermaid(fence('flowchart TD\n  A[check (per IP)] --> B')), /syntax error/)
 }
