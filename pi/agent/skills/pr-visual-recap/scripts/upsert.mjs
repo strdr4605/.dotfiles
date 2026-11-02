@@ -106,13 +106,29 @@ function lintMermaid(block) {
   const file = join(dir, 'block.md')
   writeFileSync(file, block)
   try {
-    execFileSync('maid', [file], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
+    maid(file)
     return null
   } catch (e) {
-    if (e.code === 'ENOENT') return 'maid is not installed: run `npm i -g @probelabs/maid`'
-    return `Mermaid syntax error (maid):\n${e.stdout}${e.stderr}`
+    // No maid, no npx, or npx cannot download it: write the block anyway, with a warning.
+    // shortcut: an npm error in stderr means "npx failed", upgrade if maid ever prints "npm error" itself.
+    if (e.code === 'ENOENT' || e.code === 'ETIMEDOUT' || /npm (ERR!|error)/.test(e.stderr ?? '')) {
+      console.error('upsert: warning: maid is not available, the Mermaid syntax is not checked. Install it: npm i -g @probelabs/maid')
+      return null
+    }
+    return `maid check failed:\n${e.stdout}${e.stderr}`
   } finally {
     rmSync(dir, { recursive: true, force: true })
+  }
+}
+
+// maid from PATH. Without it, a pinned npx copy, so a new machine needs no install step.
+function maid(file) {
+  const opts = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 120000 }
+  try {
+    return execFileSync('maid', [file], opts)
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e
+    return execFileSync('npx', ['-y', '@probelabs/maid@0.0.29', file], opts)
   }
 }
 
@@ -142,5 +158,5 @@ function selfTest() {
 
   const fence = (diagram) => '```mermaid\n' + diagram + '\n```\n'
   assert.equal(lintMermaid(fence('flowchart TD\n  A["+ check (per IP)"] --> B')), null)
-  assert.match(lintMermaid(fence('flowchart TD\n  A[check (per IP)] --> B')), /syntax error/)
+  assert.match(lintMermaid(fence('flowchart TD\n  A[check (per IP)] --> B')), /maid check failed/)
 }
