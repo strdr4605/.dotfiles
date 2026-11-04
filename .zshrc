@@ -123,13 +123,13 @@ export PATH=/opt/homebrew/bin:$PATH
 
 export PATH="/opt/homebrew/opt/ruby/bin:/opt/homebrew/lib/ruby/gems/3.4.0/bin:$PATH"
 
-# NVM
-export NVM_DIR=~/.nvm 
-source $(brew --prefix nvm)/nvm.sh
+# Node via fnm: brew on personal, ~/.local/bin on work laptop
+export PATH="$HOME/.local/bin:$PATH"
+command -v fnm >/dev/null && eval "$(fnm env --use-on-cd)"
 
 export BAT_THEME="gruvbox-light"
 
-source $(brew --prefix zsh-syntax-highlighting)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /opt/homebrew/opt/zsh-syntax-highlighting/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 include () {
     [[ -f "$1" ]] && source "$1"

@@ -9,7 +9,7 @@ brew 'starship'
 tap 'dmmulroy/tap'
 brew 'dmmulroy/tap/jj-starship'
 
-brew 'nvm'
+brew 'fnm'
 
 cask 'brave-browser'
 cask 'raycast'
