@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""Draw today's office background with a cork board, then put it in Teams.
+
+Teams has no API to select a background. We overwrite the selected upload:
+the file name stays the same, the content changes.
+
+Usage:
+  teams-bg            draw the image, keep a copy in ARCHIVE, write it over the Teams upload
+  teams-bg out.png    draw the image to out.png only (preview)
+"""
+import datetime
+import glob
+import json
+import os
+import random
+import string
+import subprocess
+import sys
+import tempfile
+import textwrap
+import urllib.parse
+import urllib.request
+from html import escape
+
+CITY = os.environ.get("TEAMS_BG_CITY", "Chișinău")
+UPLOADS = os.environ.get("TEAMS_BG_UPLOADS", os.path.expanduser(
+    "~/Library/Containers/com.microsoft.teams2/Data/Library/Application Support/Microsoft/MSTeams/Backgrounds/Uploads"))
+ARCHIVE = os.path.expanduser("~/Pictures/teams-bg-archive")
+CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+
+def main():
+    if len(sys.argv) > 1:
+        render(sys.argv[1])
+        return
+
+    target = selected_upload()
+
+    os.makedirs(ARCHIVE, exist_ok=True)
+    png = os.path.join(ARCHIVE, f"{datetime.datetime.now():%Y-%m-%d_%H%M}.png")
+    render(png)
+    install(png, target)
+
+    print(f"teams-bg: {os.path.basename(png)} -> {os.path.basename(target)}")
+
+
+def selected_upload():
+    uploads = [f for f in glob.glob(os.path.join(UPLOADS, "*")) if "_thumb." not in f]
+    if len(uploads) != 1:
+        sys.exit(f"teams-bg: need exactly 1 upload in Teams, found {len(uploads)}")
+    return uploads[0]
+
+
+def install(png, target):
+    root, ext = os.path.splitext(target)
+    thumb = f"{root}_thumb{ext}"
+
+    sips("-s", "format", sips_value(target, "format"), png, "--out", target)
+
+    if os.path.exists(thumb):
+        sips("-Z", sips_value(thumb, "pixelWidth"), target, "--out", thumb)
+
+
+def render(out):
+    page = string.Template(PAGE).substitute({k: escape(v) for k, v in notes(datetime.date.today()).items()})
+
+    with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as f:
+        f.write(page)
+
+    try:
+        subprocess.run([CHROME, "--headless", "--disable-gpu", "--hide-scrollbars", "--window-size=1920,1080",
+                        f"--screenshot={os.path.abspath(out)}", f"file://{f.name}"],
+                       check=True, capture_output=True, timeout=60)
+    finally:
+        os.unlink(f.name)
+
+
+def notes(today):
+    weather = fetch(f"https://wttr.in/{urllib.parse.quote(CITY)}?m&format=%c+%t,+%C") or ""
+    if "°" not in weather:  # wttr sends errors as plain text
+        weather = "weather report lost in the mail"
+
+    fact = (json_or_empty(fetch("https://uselessfacts.jsph.pl/api/v2/facts/today"))
+            .get("text", "The fact machine is broken. Please submit a ticket."))
+
+    holidays = [h["text"] for h in json_or_empty(fetch(
+        f"https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/holidays/{today:%m}/{today:%d}")).get("holidays", [])
+        if "\n" not in h["text"]]  # entries with "\n" are long lists of feast days
+    holiday = random.Random(today.toordinal()).choice(holidays) if holidays else "Nothing. Just another workday."
+
+    return {
+        "weekday": f"{today:%A}",
+        "date": f"{today.day} {today:%B %Y}",
+        "city": CITY,
+        "weather": weather.strip(),
+        "fact": textwrap.shorten(fact, 100, placeholder="…"),
+        "holiday": textwrap.shorten(holiday, 70, placeholder="…"),
+    }
+
+
+def fetch(url):
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "teams-bg/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return r.read().decode()
+    except Exception:  # offline or API down: the note shows a fallback text
+        return None
+
+
+def json_or_empty(text):
+    try:
+        return json.loads(text) if text else {}
+    except ValueError:
+        return {}
+
+
+def sips(*args):
+    subprocess.run(["sips", *args], check=True, capture_output=True)
+
+
+def sips_value(path, key):
+    out = subprocess.run(["sips", "-g", key, path], check=True, capture_output=True, text=True).stdout
+    return out.split(f"{key}:")[1].split()[0]
+
+
+PAGE = """<!doctype html><meta charset="utf-8"><style>
+* { box-sizing: border-box; margin: 0; }
+body { width: 1920px; height: 1080px; overflow: hidden; position: relative; font-family: "Helvetica Neue", Helvetica, sans-serif; }
+
+.ceiling { position: absolute; inset: 0 0 auto 0; height: 90px; background: #e9e6dc; border-bottom: 6px solid #b9b39c; }
+.light { position: absolute; top: 18px; width: 300px; height: 44px; background: linear-gradient(#fffef6, #f1efe2); border: 3px solid #cfcab6; box-shadow: 0 0 60px 20px rgba(255,255,235,.55); }
+
+.wall { position: absolute; top: 96px; left: 0; right: 0; height: 804px;
+  background: repeating-linear-gradient(90deg, transparent 0 238px, rgba(0,0,0,.05) 238px 240px),
+              linear-gradient(#d8d0b0, #c7bd98); }
+.baseboard { position: absolute; top: 900px; left: 0; right: 0; height: 24px; background: #6b4a2e; }
+.carpet { position: absolute; top: 924px; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1.5px) 0 0 / 6px 6px, linear-gradient(#5d6676, #4c5463); }
+
+.door { position: absolute; left: 110px; top: 270px; width: 300px; height: 630px; background: linear-gradient(90deg, #9b6b3f, #8a5d35);
+  border: 10px solid #e9e4d2; border-bottom: none; }
+.door::after { content: ""; position: absolute; right: 26px; top: 320px; width: 22px; height: 22px; border-radius: 50%; background: #d8c27a; box-shadow: 1px 2px 3px rgba(0,0,0,.4); }
+
+
+.plate { position: absolute; left: 460px; top: 330px; width: 210px; height: 236px; background: #f4f4f2; border: 2px solid #c9c9c4;
+  box-shadow: 2px 4px 6px rgba(0,0,0,.25); font: 600 26px Helvetica, sans-serif; line-height: 1.2; }
+.plate .dept { height: 104px; padding: 16px; background: #3b5a9a; color: #fff; }
+.plate .name { padding: 20px 16px; color: #333; font-weight: 400; }
+
+.board { position: absolute; left: 1170px; top: 100px; width: 730px; height: 700px; border: 20px solid #6e4320; border-radius: 6px;
+  box-shadow: 6px 10px 18px rgba(0,0,0,.35), inset 0 0 24px rgba(0,0,0,.3);
+  background: radial-gradient(rgba(90,50,20,.18) 1px, transparent 2px) 0 0 / 8px 8px, #c4915c;
+  font-size: 36px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-content: start; gap: 26px; padding: 26px; }
+
+.note { position: relative; padding: 34px 22px 20px; color: #111; box-shadow: 3px 5px 8px rgba(0,0,0,.3); font-size: 1em; font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
+.note::before { content: ""; position: absolute; left: 50%; top: 9px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ff8a8a, #c41d1d); box-shadow: 2px 3px 3px rgba(0,0,0,.4); }
+.note h2 { font: 1.22em/1.1 "Marker Felt", sans-serif; margin-bottom: 6px; }
+.wide { grid-column: span 2; }
+.yellow { background: #fbe88a; transform: rotate(-1deg); }
+.white { background: #fdfcf7; transform: rotate(1deg); }
+.blue { background: #cfe3f5; transform: rotate(.5deg); }
+.pink { background: #f9c4d2; transform: rotate(-.5deg); }
+</style>
+
+<div class="ceiling"><div class="light" style="left:300px"></div><div class="light" style="left:1100px"></div></div>
+<div class="wall"></div><div class="baseboard"></div><div class="carpet"></div>
+
+<div class="door"></div>
+<div class="plate"><div class="dept">Human<br>Resources</div><div class="name">Karen<br>Complainsky</div></div>
+
+
+<div class="board">
+  <div class="note yellow"><h2>$weekday</h2>$date</div>
+  <div class="note white"><h2>$city</h2>$weather</div>
+  <div class="note blue wide"><h2>Also today</h2>$holiday</div>
+  <div class="note pink wide"><h2>Useless fact</h2>$fact</div>
+</div>
+
+<script>
+  // Make the text smaller until all notes fit inside the board.
+  const board = document.querySelector(".board");
+  for (let px = 35; px >= 16 && (board.scrollHeight > board.clientHeight || board.scrollWidth > board.clientWidth); px--) {
+    board.style.fontSize = px + "px";
+  }
+</script>
+"""
+
+if __name__ == "__main__":
+    main()

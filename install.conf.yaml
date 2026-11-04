@@ -25,6 +25,7 @@
     ~/.config/planck-agent/config.json: planck-agent/config.json
     ~/.config/skhd/skhdrc: planck-agent/skhdrc
     ~/Library/LaunchAgents/planck-agent.plist: planck-agent/planck-agent.plist
+    ~/.local/bin/teams-bg: teams-bg/teams-bg
 
 
 - shell:
