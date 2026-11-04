@@ -17,3 +17,12 @@ when.commands = ["diff", "show"]
 [--scope.ui]
 pager = "delta"
 
+
+# `jj start [message]`: fetch (prunes deleted remote bookmarks), then new change on trunk.
+# No bookmark here; create it at push time with `jj git push -c @`.
+[aliases]
+start = ["util", "exec", "--", "sh", "-c", '''
+set -e
+jj git fetch
+jj new 'trunk()' ${1:+-m "$1"}
+''', "jj-start"]
