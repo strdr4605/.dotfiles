@@ -63,3 +63,12 @@ key = "prefix+u"
 type = "shell"
 command = "$HOME/.local/bin/recap plan"
 description = "recap plan"
+
+# Pick a ticket key or PR number from the focused pane and open it (bin/herdr-open-ref, settings in ~/.config/open-ref).
+[[keys.command]]
+key = "prefix+o"
+type = "popup"
+command = "$HOME/.dotfiles/bin/herdr-open-ref"
+description = "open Jira/PR"
+width = "60%"
+height = "30%"

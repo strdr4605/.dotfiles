@@ -1,0 +1,100 @@
+#!/bin/sh
+# Pick a ticket key or a PR number from the focused Herdr pane and open it in the browser.
+#
+# USAGE (Herdr popup on prefix+o):
+#
+#   $ herdr-open-ref
+#
+# A ticket key (ABC-123) opens as $TICKET_URL/ABC-123. Jira, Linear and
+# YouTrack all use this URL form.
+# A PR number (#123) opens as a GitHub PR of the pane's repo. The repo comes
+# from the jj or git remote "origin" of the pane cwd, else from $DEFAULT_REPO.
+# Enter opens the URL, ctrl-y copies it.
+#
+# SETUP (once per machine), in ~/.config/open-ref:
+#
+#   TICKET_URL=https://example.atlassian.net/browse
+#   DEFAULT_REPO=owner/repo
+#
+# REQUIREMENTS:
+#
+#   herdr     reads the pane output (runs only inside Herdr)
+#   jq        parses the herdr JSON
+#   fzf       picker (falls back to the nvim plugin copy)
+#   jj, git   find the repo remote (one of the two is enough)
+#   macOS     open, pbcopy, tail -r
+#
+# gh is not needed: PR URLs are built from the remote.
+set -eu
+
+# The popup does not run your shell profile, so read a file, not env vars.
+[ -f "$HOME/.config/open-ref" ] && . "$HOME/.config/open-ref"
+TICKET_URL=${TICKET_URL:-}
+DEFAULT_REPO=${DEFAULT_REPO:-}
+
+main() {
+  pane=$(herdr pane list | jq -r '.result.panes[] | select(.focused) | "\(.pane_id)\t\(.foreground_cwd)"' | head -1)
+  pane_id=$(printf '%s' "$pane" | cut -f1)
+  cwd=$(printf '%s' "$pane" | cut -f2)
+
+  # Line 1 is the key that ended fzf (empty for enter), line 2 is the picked row.
+  picked=$(herdr pane read "$pane_id" --source recent-unwrapped --lines 2000 | refs | pick) || exit 0
+  key=$(printf '%s\n' "$picked" | sed -n 1p)
+  ref=$(printf '%s\n' "$picked" | sed -n 2p | cut -f1)
+
+  case $ref in
+    \#*) url="https://github.com/$(repo_of "$cwd")/pull/${ref#\#}" ;;
+    *) url="$TICKET_URL/$ref" ;;
+  esac
+
+  case $url in
+    /* | https://github.com//*) fail "Set TICKET_URL and DEFAULT_REPO in ~/.config/open-ref" ;;
+  esac
+
+  case $key in
+    ctrl-y) printf '%s' "$url" | pbcopy ;;
+    *) open "$url" ;;
+  esac
+}
+
+# Let the user pick one "ref<TAB>context" row. A single row is picked without a prompt.
+pick() {
+  "$(fzf_bin)" --layout=reverse --select-1 --exit-0 --delimiter='\t' --tabstop=12 \
+    --expect=ctrl-y --prompt 'open> ' --header 'enter: open · ctrl-y: copy URL'
+}
+
+# Print "ref<TAB>context" once per Jira key or PR number, newest first.
+# The context is the last output line that has the ref.
+refs() {
+  tail -r | awk '{
+    line = $0
+    gsub(/^[ \t]+|[ \t]+$/, "", line)
+    s = $0
+    while (match(s, /[A-Z][A-Z0-9]+-[0-9]+|#[0-9][0-9]+/)) {
+      ref = substr(s, RSTART, RLENGTH)
+      s = substr(s, RSTART + RLENGTH)
+      if (!seen[ref]++) print ref "\t" substr(line, 1, 120)
+    }
+  }'
+}
+
+# Print "owner/repo" from the "origin" remote of directory $1.
+repo_of() {
+  url=$(cd "$1" 2>/dev/null && { jj git remote list 2>/dev/null | awk '$1 == "origin" { print $2 }'; git remote get-url origin 2>/dev/null; } | head -1)
+  slug=$(printf '%s' "$url" | sed -E 's#^.*github\.com[:/]##; s#\.git$##')
+  printf '%s\n' "${slug:-$DEFAULT_REPO}"
+}
+
+# Show message $1 until a key press, because the popup closes on exit.
+fail() {
+  printf '%s\n' "$1"
+  read -r _
+  exit 1
+}
+
+# shortcut: brew install fzf failed (no write access to /opt/homebrew), so fall back to the nvim plugin copy; drop after fzf is on PATH.
+fzf_bin() {
+  command -v fzf || printf '%s\n' "$HOME/.local/share/nvim/lazy/fzf/bin/fzf"
+}
+
+main "$@"
