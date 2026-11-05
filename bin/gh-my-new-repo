@@ -1,27 +1,29 @@
 #!/usr/bin/env bash
+# Usage: gh-my-new-repo [repo-name] [--public]
+# Creates a private repo by default. The first pushed branch becomes the default branch.
 
 set -e
 
-REPO_NAME="${1:-$(basename "$PWD")}"
+VISIBILITY=--private
+REPO_NAME=
 
-if [[ -z "$REPO_NAME" ]]; then
-  echo "Usage: gh-my-new-repo <repo-name>"
-  exit 1
-fi
+for arg in "$@"; do
+  case "$arg" in
+    --public) VISIBILITY=--public ;;
+    *) REPO_NAME="$arg" ;;
+  esac
+done
+
+REPO_NAME="${REPO_NAME:-$(basename "$PWD")}"
 
 if [[ ! -d .jj ]] && [[ ! -d .git ]]; then
   echo "Error: not in a jj or git repo"
   exit 1
 fi
 
-gh repo create "$REPO_NAME" \
-  --enable-issues \
-  --enable-prs \
-  --disable-projects \
-  --disable-wiki \
-  --default-branch master
+REPO_FULL="$(gh api user -q .login)/$REPO_NAME"
 
-REPO_FULL=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "$REPO_NAME")
+gh repo create "$REPO_FULL" "$VISIBILITY" --disable-wiki
 
 REMOTE_URL="git@github.com:${REPO_FULL}.git"
 
@@ -32,6 +34,7 @@ else
 fi
 
 gh repo edit "$REPO_FULL" \
+  --enable-projects=false \
   --enable-squash-merge \
   --enable-rebase-merge \
   --enable-merge-commit=false \
