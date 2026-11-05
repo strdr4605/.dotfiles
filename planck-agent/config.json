@@ -85,6 +85,10 @@
     "c": {
       "macro": "Fix the last error.",
       "color": "#00cccc"
+    },
+    ".": {
+      "macro": "/handoff After you write the doc, use the herdr skill. Pick a short kebab-case name for the task. If my herdr agent has no name, name it with `herdr agent rename $HERDR_PANE_ID <my-name>`. Run `herdr agent list`. If an agent already works in the target dir, stop and ask me. Otherwise run `herdr tab create --cwd <dir> --label <name>`, then `herdr agent start <name> --kind claude --pane <root-pane> -- -n <name>`. Prompt it with the doc path. Tell it to report back to `<my-name>` with `herdr agent prompt`. Target dir (jj workspace): ",
+      "color": "#00cccc"
     }
   }
 }
