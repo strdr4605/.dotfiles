@@ -1,0 +1,104 @@
+#!/bin/sh
+# Reopen the Claude sessions that worked on a PR.
+#
+# USAGE (in a Herdr pane, from the repo directory):
+#
+#   $ pr-resume 1640
+#
+# Claude writes a hidden block at the end of each PR body that it creates:
+#
+#   <!-- author-sessions
+#   updated: 2026-11-06
+#   main:  <session-id>  dir: ~/code/my-repo     # implement + PR
+#   herdr: <session-id>  dir: ~/code/my-repo     # code-review pane
+#   -->
+#
+# A session that is live in a Herdr pane gets focus.
+# The other sessions open in one new tab "PR <number>", one pane each,
+# with "claude --resume <session-id>" in their dir.
+#
+# The repo comes from the jj or git remote "origin" of the current directory,
+# else from DEFAULT_REPO in ~/.config/open-ref.
+#
+# REQUIREMENTS: herdr, jq, gh, and jj or git.
+set -eu
+
+[ -f "$HOME/.config/open-ref" ] && . "$HOME/.config/open-ref"
+DEFAULT_REPO=${DEFAULT_REPO:-}
+
+main() {
+  [ "${HERDR_ENV:-}" = 1 ] || fail "Run pr-resume inside a Herdr pane."
+  pr=${1:?usage: pr-resume <pr-number>}
+
+  repo=$(repo_of .)
+  [ -n "$repo" ] || fail "No origin remote here. Set DEFAULT_REPO in ~/.config/open-ref."
+
+  sessions=$(gh pr view "$pr" -R "$repo" --json body -q .body | sessions_in)
+  [ -n "$sessions" ] || fail "PR #$pr has no author-sessions block."
+
+  live=$(herdr agent list | jq -r '.result.agents[] | select(.agent_session.value) | "\(.agent_session.value) \(.pane_id)"')
+  last_pane=
+
+  # Herdr calls read /dev/null, so they do not eat the session lines on stdin.
+  while read -r role id dir; do
+    pane=$(printf '%s\n' "$live" | awk -v id="$id" '$1 == id { print $2; exit }')
+
+    if [ -n "$pane" ]; then
+      herdr agent focus "$pane" >/dev/null </dev/null
+      echo "$role $id: live in $pane, focused"
+      continue
+    fi
+
+    if [ ! -d "$dir" ]; then
+      echo "$role $id: skipped, no directory $dir"
+      continue
+    fi
+
+    last_pane=$(open_pane "$dir" "$last_pane")
+    herdr pane run "$last_pane" "claude --resume $id" >/dev/null </dev/null
+    echo "$role $id: resumed in $last_pane"
+  done <<EOF
+$sessions
+EOF
+}
+
+# Print "role id dir" for each session line of the author-sessions block on stdin.
+# shortcut: a dir with spaces breaks the parse; quote dirs in the block if that ever happens.
+sessions_in() {
+  tr -d '\r' | awk -v home="$HOME" '
+    /<!-- author-sessions/ { on = 1; next }
+    on && /-->/ { exit }
+    on && $1 ~ /^(main|herdr):$/ && length($2) == 36 && $2 ~ /^[0-9a-f-]+$/ && $3 == "dir:" {
+      dir = $4
+      if (dir ~ /^~\//) dir = home substr(dir, 2)
+      sub(":", "", $1)
+      print $1, $2, dir
+    }
+  '
+}
+
+# Print the id of a new pane in directory $1.
+# The first pane opens a new tab "PR <number>". The next panes split pane $2 to the right.
+open_pane() {
+  if [ -z "$2" ]; then
+    herdr tab create --workspace "$HERDR_WORKSPACE_ID" --cwd "$1" --label "PR $pr" --focus </dev/null |
+      jq -r '.result.root_pane.pane_id'
+  else
+    herdr pane split "$2" --direction right --cwd "$1" --no-focus </dev/null |
+      jq -r '.result.pane.pane_id'
+  fi
+}
+
+# Print "owner/repo" from the "origin" remote of directory $1.
+repo_of() {
+  url=$(cd "$1" 2>/dev/null && { jj git remote list 2>/dev/null | awk '$1 == "origin" { print $2 }'; git remote get-url origin 2>/dev/null; } | head -1)
+  slug=$(printf '%s' "$url" | sed -E 's#^.*github\.com[:/]##; s#\.git$##')
+  printf '%s\n' "${slug:-$DEFAULT_REPO}"
+}
+
+fail() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+main "$@"
