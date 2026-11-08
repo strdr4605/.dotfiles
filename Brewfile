@@ -16,8 +16,8 @@ cask 'raycast'
 cask 'bitwarden'
 cask 'beeper'
 cask 'claude-code'
-tap 'anomalyco/tap'
-brew 'anomalyco/tap/opencode'
+# tap 'anomalyco/tap'
+# brew 'anomalyco/tap/opencode'
 brew 'pi-coding-agent'
 # Token-saving CLI proxy for coding agents
 brew 'rtk'
@@ -29,6 +29,7 @@ brew 'slackdump'
 brew 'tmux'
 brew 'neovim'
 brew 'herdr'
+cask 'herdr-app'
 
 # used by null-ls.nvim
 brew 'shfmt'
