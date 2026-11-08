@@ -54,6 +54,18 @@
       "run": "planck-agent flag",
       "color": "#0000ff"
     },
+    "j": {
+      "run": "planck-agent use legacy",
+      "color": "#0088ff"
+    },
+    "k": {
+      "run": "planck-agent use app",
+      "color": "#ff8800"
+    },
+    "l": {
+      "run": "planck-agent use toggle",
+      "color": "#888888"
+    },
     "f": {
       "run": "planck-agent log",
       "color": "#dddd00"

@@ -4,6 +4,7 @@
 #   key K     run the action config.json gives key K, named by keycap (rows 2-3)
 #   log       toggle jj log + jj status panes beside the focused agent, without stealing focus
 #   flag      toggle the focused agent back to blue (done) until it works or you refocus it
+#   use       switch the deck between the legacy herdr (Alacritty) and Herdr.app
 #   restart   reload the launchd LED loop after you edit this script or the plist
 #   leds      loop: paint row 1 with agent states and rows 2-3 with key colours while the agent layer is active
 set -eu
@@ -12,8 +13,10 @@ export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
 CONFIG="${PLANCK_AGENT_CONFIG:-$HOME/.config/planck-agent/config.json}"
 AGENT_LAYER="${PLANCK_AGENT_LAYER:-5}"
 TERMINAL_APP="${PLANCK_TERMINAL_APP:-Alacritty}"
+APP_APP="${PLANCK_APP_APP:-Herdr}"
 STALE_SECS="${PLANCK_STALE_SECS:-600}"
-FLAG_FILE=/tmp/planck-agent.flagged
+BACKEND_FILE="${PLANCK_AGENT_BACKEND_FILE:-$HOME/.config/planck-agent/backend}"
+TOGGLE_KEY="${PLANCK_AGENT_TOGGLE_KEY:-l}"
 ROW2="escape a s d f g h j k l ; '"
 ROW3="shift z x c v b n m , . / enter"
 SPACE_LED=41
@@ -25,30 +28,144 @@ main() {
     key) key "$2" ;;
     log) log ;;
     flag) flag ;;
+    use) use_backend "$2" ;;
     restart) launchctl kickstart -k "gui/$(id -u)/planck-agent" ;;
     leds) leds ;;
-    *) sed -n '2,7p' "$0"; exit 2 ;;
+    *) sed -n '2,9p' "$0"; exit 2 ;;
   esac
+}
+
+# Which herdr the deck drives: legacy (herdr CLI in Alacritty) or app (Herdr.app on the hc core).
+backend() {
+  local b=${PLANCK_BACKEND:-}
+  [ -n "$b" ] || b=$(cat "$BACKEND_FILE" 2>/dev/null || true)
+  case "$b" in app) echo app ;; *) echo legacy ;; esac
+}
+
+# Flagged agents live per backend: the ids of the two herdrs can collide.
+flagfile() { echo "/tmp/planck-agent.flagged.$(backend)"; }
+
+backend_color() {
+  if [ "$(backend)" = app ]; then echo "#ff8800"; else echo "#0088ff"; fi
+}
+
+raise() {
+  if [ "$1" = app ]; then open -a "$APP_APP"; else open -a "$TERMINAL_APP"; fi
+}
+
+# use [legacy|app|toggle]: pick the backend, raise its window, repaint the toggle key.
+use_backend() {
+  local want=${1:-toggle} b led
+  b=$(backend)
+  case "$want" in
+    toggle) if [ "$b" = app ]; then want=legacy; else want=app; fi ;;
+    app|legacy) ;;
+    *) echo "planck-agent: unknown backend '$want' (legacy|app)" >&2; exit 2 ;;
+  esac
+  mkdir -p "$(dirname "$BACKEND_FILE")"
+  printf '%s\n' "$want" > "$BACKEND_FILE"
+  raise "$want"
+  if led=$(key_led "$TOGGLE_KEY"); then
+    kontroll set-rgb --led "$led" --color "$(backend_color)" >/dev/null || true
+  fi
 }
 
 # shortcut: slots follow herdr sidebar order, so a new agent can shift slots; upgrade to sticky slots if it annoys
 agents() {
+  if [ "$(backend)" = app ]; then app_agents; else legacy_agents; fi
+}
+
+legacy_agents() {
   herdr agent list | jq -r '.result.agents[] | "\(.pane_id) \(.agent_status) \(.focused)"'
 }
 
+# The app lists agents as terminals: id, status, focused.
+app_agents() {
+  local focused
+  focused=$(herdr-app status 2>/dev/null | jq -r '.focused_pane // empty')
+  herdr-app ls 2>/dev/null | jq -r --arg f "$focused" '
+    .spaces[].tabs[].terminals[]
+    | select(.app != null)
+    | "\(.terminal) \(.status // "idle") \(if .pane == $f then "true" else "false" end)"'
+}
+
+app_pane_of() {
+  herdr-app ls 2>/dev/null | jq -r --arg t "$1" '.spaces[].tabs[].terminals[] | select(.terminal == $t) | .pane'
+}
+
+# The live folder of a pane. The app knows it; the shell only knows where a terminal started.
+app_pane_cwd() {
+  local t=$1 f=/tmp/planck-cwd.json i=0
+  rm -f "$f"
+  herdr-app do mod.open '{"name":"cwd"}' >/dev/null 2>&1 || true
+  while [ $i -lt 30 ]; do
+    [ -s "$f" ] && break
+    i=$((i + 1))
+    sleep 0.1
+  done
+  jq -r --arg t "$t" '.panes[] | select(.terminal == $t) | .cwd // empty' "$f" 2>/dev/null
+}
+
 focused_pane() {
-  local pane
-  pane=$(herdr agent list | jq -r '.result.agents[] | select(.focused) | .pane_id')
-  [ -n "$pane" ] || { echo "planck-agent: no herdr agent is focused" >&2; exit 1; }
-  echo "$pane"
+  local id
+  if [ "$(backend)" = app ]; then
+    id=$(app_agents | awk '$3 == "true" { print $1; exit }')
+  else
+    id=$(herdr agent list | jq -r '.result.agents[] | select(.focused) | .pane_id')
+  fi
+  [ -n "$id" ] || { echo "planck-agent: no $(backend) agent is focused" >&2; exit 1; }
+  echo "$id"
 }
 
 focus() {
-  local pane
-  pane=$(agents | sed -n "${1}p" | cut -d' ' -f1)
-  [ -n "$pane" ] || exit 0
-  herdr agent focus "$pane" >/dev/null
-  open -a "$TERMINAL_APP"
+  local id
+  id=$(agents | sed -n "${1}p" | cut -d' ' -f1)
+  [ -n "$id" ] || exit 0
+  if [ "$(backend)" = app ]; then
+    herdr-app do agent.focus "{\"terminal\":\"$id\"}" >/dev/null
+  else
+    herdr agent focus "$id" >/dev/null
+  fi
+  raise "$(backend)"
+}
+
+# The app has no paste-without-enter, so a macro arrives through the clipboard: copy, then ctrl+v.
+send_text() {
+  local id=$1 text=$2
+  if [ "$(backend)" = app ]; then
+    printf '%s' "$text" | pbcopy
+    hc keys "$id" ctrl+v >/dev/null
+  else
+    herdr pane send-text "$id" "$text" >/dev/null
+  fi
+}
+
+send_prompt() {
+  local id=$1 text=$2
+  if [ "$(backend)" = app ]; then
+    hc send --force "$id" "$text" >/dev/null
+  else
+    herdr agent prompt "$id" "$text" >/dev/null
+  fi
+}
+
+send_keys() {
+  local id=$1
+  shift
+  if [ "$(backend)" = app ]; then
+    hc keys "$id" "$@" >/dev/null
+  else
+    herdr agent send-keys "$id" "$@" >/dev/null
+  fi
+}
+
+# Screen text of an agent, from whichever herdr runs it.
+read_screen() {
+  if [ "$(backend)" = app ]; then
+    hc read "$1" 2>/dev/null
+  else
+    herdr agent read "$1" --source detection 2>/dev/null
+  fi
 }
 
 cfg() { jq -r "$1 // empty" "$CONFIG"; }
@@ -57,11 +174,11 @@ cfg() { jq -r "$1 // empty" "$CONFIG"; }
 key() {
   local k=$1 text
   if text=$(cfg ".keys[\"$k\"].macro") && [ -n "$text" ]; then
-    herdr pane send-text "$(focused_pane)" "$text" >/dev/null
+    send_text "$(focused_pane)" "$text"
   elif text=$(cfg ".keys[\"$k\"].prompt") && [ -n "$text" ]; then
-    herdr agent prompt "$(focused_pane)" "$text" >/dev/null
+    send_prompt "$(focused_pane)" "$text"
   elif text=$(cfg ".keys[\"$k\"].keys") && [ -n "$text" ]; then
-    herdr agent send-keys "$(focused_pane)" $text >/dev/null
+    send_keys "$(focused_pane)" $text
   elif text=$(cfg ".keys[\"$k\"].run") && [ -n "$text" ]; then
     sh -c "$text"
   else
@@ -90,32 +207,61 @@ flash() {
 }
 
 # shortcut: one set of jj panes at a time, tracked in a tmp file; upgrade to per-agent panes if needed
-LOG_PANE_FILE=/tmp/planck-agent.logpanes
+logfile() { echo "/tmp/planck-agent.logpanes.$(backend)"; }
+
 log() {
-  local pane cwd top bottom
-  if [ -s "$LOG_PANE_FILE" ]; then
-    for p in $(cat "$LOG_PANE_FILE"); do herdr pane close "$p" >/dev/null 2>&1 || true; done
-    rm -f "$LOG_PANE_FILE"
+  if [ "$(backend)" = app ]; then app_log; else legacy_log; fi
+}
+
+legacy_log() {
+  local pane cwd top bottom file
+  file=$(logfile)
+  if [ -s "$file" ]; then
+    for p in $(cat "$file"); do herdr pane close "$p" >/dev/null 2>&1 || true; done
+    rm -f "$file"
     return
   fi
   pane=$(focused_pane)
   cwd=$(herdr agent list | jq -r --arg p "$pane" '.result.agents[] | select(.pane_id == $p) | .cwd')
   top=$(herdr pane split --pane "$pane" --direction right --ratio 0.35 --cwd "$cwd" --no-focus | jq -r '.result.pane.pane_id')
   bottom=$(herdr pane split --pane "$top" --direction down --cwd "$cwd" --no-focus | jq -r '.result.pane.pane_id')
-  echo "$top $bottom" > "$LOG_PANE_FILE"
+  echo "$top $bottom" > "$file"
   herdr pane run "$top" "jj log" >/dev/null
   herdr pane run "$bottom" "jj status" >/dev/null
   herdr agent focus "$pane" >/dev/null
 }
 
+# The app has no ratio and no no-focus, so the agent pane is focused again after the split.
+# A pane that runs a command directly dies with it, so the shell stays and jj prints into it.
+app_log() {
+  local pane cwd top bottom t_top t_bottom file
+  file=$(logfile)
+  if [ -s "$file" ]; then
+    for p in $(cat "$file"); do herdr-app do pane.close "{\"pane\":\"$p\"}" >/dev/null 2>&1 || true; done
+    rm -f "$file"
+    return
+  fi
+  pane=$(focused_pane)
+  cwd=$(app_pane_cwd "$pane")
+  [ -n "$cwd" ] || cwd=$(hc ls | jq -r --arg t "$pane" '.terminals[] | select(.address == $t) | .cwd')
+  [ -n "$cwd" ] || cwd=$HOME
+  read -r top t_top <<<"$(herdr-app do pane.split "{\"direction\":\"right\",\"pane\":\"$(app_pane_of "$pane")\"}" | jq -r '.pane + " " + .terminal')"
+  read -r bottom t_bottom <<<"$(herdr-app do pane.split "{\"direction\":\"down\",\"pane\":\"$top\"}" | jq -r '.pane + " " + .terminal')"
+  hc send "$t_top" "cd '$cwd' && jj log --no-pager" >/dev/null
+  hc send "$t_bottom" "cd '$cwd' && jj status --no-pager" >/dev/null
+  echo "$top $bottom" > "$file"
+  herdr-app do pane.focus "{\"pane\":\"$(app_pane_of "$pane")\"}" >/dev/null
+}
+
 # Flagged agents paint blue (done) while idle, so a seen agent is not forgotten. The flag clears when the agent works or gets refocused.
 flag() {
-  local pane
+  local pane file
   pane=$(focused_pane)
-  if grep -qx "$pane" "$FLAG_FILE" 2>/dev/null; then
-    sed -i '' "/^$pane\$/d" "$FLAG_FILE"
+  file=$(flagfile)
+  if grep -qx "$pane" "$file" 2>/dev/null; then
+    sed -i '' "/^$pane\$/d" "$file"
   else
-    echo "$pane" >>"$FLAG_FILE"
+    echo "$pane" >>"$file"
   fi
 }
 
@@ -127,7 +273,7 @@ track() {
 # "pane status since" lines -> "pane status" lines: flagged idle becomes done, long idle becomes stale
 frame_of() {
   local flagged
-  flagged=" $(tr '\n' ' ' <"$FLAG_FILE") "
+  flagged=" $(cat "$(flagfile)" 2>/dev/null | tr '\n' ' ') "
   awk -v now=$SECONDS -v stale="$STALE_SECS" -v flagged="$flagged" '
     $2 == "idle" && index(flagged, " " $1 " ") { $2 = "done" }
     $2 == "idle" && now - $3 > stale { $2 = "stale" }
@@ -146,7 +292,7 @@ scan() {
   local phrases p
   phrases=$(go_phrases)
   for p in $(cut -d' ' -f1 <<<"$1"); do
-    echo "$p$(herdr agent read "$p" --source detection 2>/dev/null | detect "$phrases")"
+    echo "$p$(read_screen "$p" | detect "$phrases")"
   done
 }
 
@@ -215,6 +361,7 @@ state_color() {
 
 key_color() {
   local c
+  if [ "$1" = "$TOGGLE_KEY" ]; then backend_color; return; fi
   c=$(cfg ".keys[\"$1\"].color")
   echo "${c:-$(state_color empty)}"
 }
@@ -265,19 +412,27 @@ blink() {
 
 leds() {
   trap "kontroll restore-rgb-leds >/dev/null" EXIT
-  local prev="" down="" layer frame list hist="" focused prevfocus="" tick=0 det="" scanned=-$SCAN_SECS phase
-  touch "$FLAG_FILE"
+  local prev="" down="" layer frame list hist="" focused prevfocus="" tick=0 det="" scanned=-$SCAN_SECS phase file prevbackend=""
+  file=$(flagfile)
+  touch "$file"
   while :; do
+    # a backend switch changes the ids, so the timers and the flags start over
+    if [ "$(backend)" != "$prevbackend" ]; then
+      prevbackend=$(backend)
+      file=$(flagfile)
+      touch "$file"
+      hist=""; det=""; prev=""; scanned=-$SCAN_SECS
+    fi
     list=$(agents)
     hist=$(track "$hist" <<<"$list")
     # refocusing an agent counts as seeing it: drop its flag and restart its stale timer
     focused=$(awk '$3 == "true" { print $1 }' <<<"$list")
     if [ "$focused" != "$prevfocus" ] && [ -n "$focused" ]; then
-      sed -i '' "/^$focused\$/d" "$FLAG_FILE"
+      sed -i '' "/^$focused\$/d" "$file"
       hist=$(awk -v p="$focused" -v now=$SECONDS '$1 == p { $3 = now } { print }' <<<"$hist")
     fi
     prevfocus=$focused
-    for p in $(cat "$FLAG_FILE"); do grep -q "^$p working " <<<"$hist" && sed -i '' "/^$p\$/d" "$FLAG_FILE"; done
+    for p in $(cat "$file" 2>/dev/null); do grep -q "^$p working " <<<"$hist" && sed -i '' "/^$p\$/d" "$file"; done
     layer=$(kontroll status 2>/dev/null | awk -F'\t+' '/Current layer/{print $2}')
     [ -n "$layer" ] || {
       [ -n "$down" ] || osascript -e 'display notification "Start Keymapp" with title "planck-agent"' || true
