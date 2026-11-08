@@ -11,6 +11,7 @@ My current dev environment
 - [jj](https://github.com/jj-vcs/jj) (version control)
 - AI agents: [pi](https://pi.dev), [claude-code](https://claude.ai/code), [opencode](https://opencode.ai)
   - [agents/AGENTS.md](agents/AGENTS.md) holds the rules every agent reads
+  - [agents/skills](agents/skills) holds shared skills, linked to `~/.agents/skills`
 - [Comic Code font](https://tosche.net/fonts/comic-code)
 
 ![screenshot](screenshot.png)

@@ -4,7 +4,7 @@ nvim/neovim_tips/user_tips.md
 opencode/service.json
 opencode/opencode-notifier-state.json
 
-# pi skills resolve outside the repo via ~/.agents/skills/
+# pi skills resolve via ~/.agents/skills/, linked to ./agents/skills
 # (`/*`, not `/`: git cannot re-include a path under an ignored directory)
 pi/agent/skills/*
 # pr-visual-recap: tracked here while it is tested with pi
