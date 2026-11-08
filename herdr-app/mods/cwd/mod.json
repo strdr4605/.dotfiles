@@ -1,0 +1,1 @@
+{ "place": "none", "title": "Cwd", "overlay": { "kind": "popup", "at": "top", "offset": 40, "width": 600, "height": 40 } }

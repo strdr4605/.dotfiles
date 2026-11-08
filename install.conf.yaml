@@ -21,6 +21,7 @@
     ~/.claude/CLAUDE.md: claude/CLAUDE.md
     ~/.claude/RTK.md: claude/RTK.md
     ~/.config/herdr/config.toml: herdr.toml
+    ~/.config/herdr-app: ./herdr-app
     ~/.local/bin/planck-agent: planck-agent/bin/planck-agent
     ~/.config/planck-agent/config.json: planck-agent/config.json
     ~/.config/skhd/skhdrc: planck-agent/skhdrc

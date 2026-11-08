@@ -1,0 +1,31 @@
+# Written by Herdr at runtime.
+AGENTS.md
+gpui-kit.d.ts
+herdr.d.ts
+herdr-app.sock
+installed.json
+seen.json
+shared.json
+view.json
+window.json
+windows.json
+update-notes.json
+update-notes-cache.md
+update-notes-media/
+data/
+frame/
+icons/
+telemetry/
+
+# Mods and layouts Herdr ships: it replaces them on every start.
+mods/*
+!mods/prefix/
+!mods/cwd/
+!mods/links/
+mods/*/gpui-kit.d.ts
+mods/*/jsconfig.json
+mods/*/.error
+layouts/*
+!layouts/my-layout.json
+themes/*
+!themes/gruvbox.json
