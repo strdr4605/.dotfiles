@@ -251,10 +251,16 @@ flag() {
   pane=$(focused_pane)
   file=$(flagfile)
   if grep -qx "$pane" "$file" 2>/dev/null; then
-    sed -i '' "/^$pane\$/d" "$file"
+    unflag "$pane" "$file"
   else
     echo "$pane" >>"$file"
   fi
+}
+
+# Drops pane $1 from flag file $2. Exact match: remote ids like agents-vm/t1 hold a slash, which broke sed.
+unflag() {
+  grep -vxF "$1" "$2" >"$2.tmp" || true
+  mv "$2.tmp" "$2"
 }
 
 # stdin: "pane status" lines. $1: previous "pane status since" lines. Prints "pane status since".
@@ -347,11 +353,11 @@ leds() {
     # refocusing an agent counts as seeing it: drop its flag and restart its stale timer
     focused=$(awk '$3 == "true" { print $1 }' <<<"$list")
     if [ "$focused" != "$prevfocus" ] && [ -n "$focused" ]; then
-      sed -i '' "/^$focused\$/d" "$file"
+      unflag "$focused" "$file"
       hist=$(awk -v p="$focused" -v now=$SECONDS '$1 == p { $3 = now } { print }' <<<"$hist")
     fi
     prevfocus=$focused
-    for p in $(cat "$file" 2>/dev/null); do grep -q "^$p working " <<<"$hist" && sed -i '' "/^$p\$/d" "$file"; done
+    for p in $(cat "$file" 2>/dev/null); do grep -q "^$p working " <<<"$hist" && unflag "$p" "$file"; done
     layer=$(kontroll status 2>/dev/null | awk -F'\t+' '/Current layer/{print $2}')
     [ -n "$layer" ] || {
       rm -f "$FRAME_FILE"
