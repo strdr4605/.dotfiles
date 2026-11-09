@@ -1,12 +1,13 @@
 // Ctrl+A prefix, like tmux. Press ctrl+a, then a key:
 //   v split right   h split down   c new tab   x close pane
 //   d detach (quit the window; terminals keep running)
-//   i recap report  u recap plan   Esc cancel
+//   i recap report  u recap plan   o open Jira/PR   Esc cancel
 import { View, div } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
-import { run, props, closeOverlay, theme, home } from "herdr";
+import { run, props, closeOverlay, focused, theme, home } from "herdr";
 
 const RECAP = home() + "/.local/bin/recap";
+const OPEN_REF = home() + "/.dotfiles/bin/herdr-open-ref";
 
 const ACTIONS = {
   v: () => run("pane.split", { direction: "right" }),
@@ -16,12 +17,28 @@ const ACTIONS = {
   d: () => run("app.quit"),
   i: () => run("tab.new", { name: "recap", argv: [RECAP] }),
   u: () => run("tab.new", { name: "recap plan", argv: [RECAP, "plan"] }),
+  o: () => openRef(),
 };
 
 const HINTS = [
   ["v", "split right"], ["h", "split down"], ["c", "new tab"], ["x", "close pane"],
-  ["d", "detach"], ["i", "recap"], ["u", "recap plan"], ["esc", "cancel"],
+  ["d", "detach"], ["i", "recap"], ["u", "recap plan"], ["o", "open Jira/PR"], ["esc", "cancel"],
 ];
+
+// Like the TUI popup on prefix+o, but in a split below: the app cannot give the
+// keyboard to a terminal in a dialog. The split closes when the script ends.
+function openRef() {
+  const f = focused();
+  if (!f?.terminal) return;
+
+  // zsh -l: the terminal can start with a PATH that lacks jq and fzf.
+  run("terminal.open", {
+    argv: ["/bin/zsh", "-lc", 'exec "$0" "$@"', OPEN_REF, "--hc", f.terminal],
+    folder: f.cwd,
+    place: "down",
+    name: "open Jira/PR",
+  });
+}
 
 export default class Prefix extends View {
   init(_props, cx) {

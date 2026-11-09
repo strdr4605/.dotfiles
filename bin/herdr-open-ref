@@ -1,9 +1,10 @@
 #!/bin/sh
 # Pick a ticket key or a PR number from the focused Herdr pane and open it in the browser.
 #
-# USAGE (Herdr popup on prefix+o):
+# USAGE (popup on prefix+o):
 #
-#   $ herdr-open-ref
+#   $ herdr-open-ref              # herdr TUI: reads the focused pane
+#   $ herdr-open-ref --hc t7      # Herdr.app: reads terminal t7 through hc
 #
 # A ticket key (ABC-123) opens as $TICKET_URL/ABC-123. Jira, Linear and
 # YouTrack all use this URL form.
@@ -18,7 +19,8 @@
 #
 # REQUIREMENTS:
 #
-#   herdr     reads the pane output (runs only inside Herdr)
+#   herdr     reads the pane output (herdr TUI)
+#   hc        reads the terminal output (Herdr.app)
 #   jq        parses the herdr JSON
 #   fzf       picker (falls back to the nvim plugin copy)
 #   jj, git   find the repo remote (one of the two is enough)
@@ -33,12 +35,18 @@ TICKET_URL=${TICKET_URL:-}
 DEFAULT_REPO=${DEFAULT_REPO:-}
 
 main() {
-  pane=$(herdr pane list | jq -r '.result.panes[] | select(.focused) | "\(.pane_id)\t\(.foreground_cwd)"' | head -1)
-  pane_id=$(printf '%s' "$pane" | cut -f1)
-  cwd=$(printf '%s' "$pane" | cut -f2)
-
   # Line 1 is the key that ended fzf (empty for enter), line 2 is the picked row.
-  picked=$(herdr pane read "$pane_id" --source recent-unwrapped --lines 2000 | refs | pick) || exit 0
+  if [ "${1:-}" = --hc ]; then
+    # Herdr.app (prefix mod, key o) gives the terminal ID of the focused pane.
+    cwd=$(hc get "$2" --json | jq -r '.foreground.cwd // .cwd')
+    picked=$(hc read "$2" --lines 2000 2>/dev/null | refs | pick) || exit 0
+  else
+    pane=$(herdr pane list | jq -r '.result.panes[] | select(.focused) | "\(.pane_id)\t\(.foreground_cwd)"' | head -1)
+    pane_id=$(printf '%s' "$pane" | cut -f1)
+    cwd=$(printf '%s' "$pane" | cut -f2)
+    picked=$(herdr pane read "$pane_id" --source recent-unwrapped --lines 2000 | refs | pick) || exit 0
+  fi
+
   key=$(printf '%s\n' "$picked" | sed -n 1p)
   ref=$(printf '%s\n' "$picked" | sed -n 2p | cut -f1)
 
