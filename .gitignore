@@ -9,6 +9,9 @@ opencode/opencode-notifier-state.json
 pi/agent/skills/*
 # pr-visual-recap: tracked here while it is tested with pi
 !pi/agent/skills/pr-visual-recap/
+# herdr-app, herdr-core: thin wrappers that load the manual from the installed CLI
+!pi/agent/skills/herdr-app/
+!pi/agent/skills/herdr-core/
 # pi extension installs: keep the manifest, drop the installed tree
 pi/agent/npm/node_modules/
 pi/agent/npm/package-lock.json
