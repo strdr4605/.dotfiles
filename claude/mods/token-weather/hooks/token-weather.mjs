@@ -93,12 +93,15 @@ export function register(on) {
   });
 
   on("ui.render", { component: "AbovePrompt" }, ($, e, next) => {
-    if (!enabled || e.hasSurvey) return next(e);
+    if (!enabled || e.props.hasSurvey) return next(e);
     const { Box, Text } = $.ui.resolve(e);
-    const parts = label(Text);
-    if (readings.length > 0) parts.push(...band(Text, parts.length > 0, e.bodyColumns ?? 80));
-    if (parts.length === 0) return next(e);
-    return Box({ flexDirection: "row", paddingX: 1, children: parts });
+    const segments = [...label(), ...(readings.length > 0 ? band() : [])];
+    // paddingX takes one cell on each side.
+    const kept = fit(segments, (e.props.bodyColumns ?? e.viewport?.columns ?? 80) - 2);
+    if (kept.length === 0) return next(e);
+    // One outer Text, so a band that still overflows is cut at its end only.
+    const children = kept.map(({ text, style }) => Text({ ...style, children: text }));
+    return Box({ paddingX: 1, children: Text({ wrap: "truncate-end", children }) });
   });
 
   on("command.run", { command: "token-weather" }, ($, e) => {
@@ -180,28 +183,56 @@ async function peerNameOf($) {
   }
 }
 
+// Each segment has a drop rank. A narrow band drops the lowest rank first, so
+// the band stays on one row. Rank 0 never drops.
+//
+// Drop order: trend, chart, " of smart zone", token counts, peer name,
+// forecast word, herdr name.
+function fit(segments, columns) {
+  const width = (list) => list.reduce((sum, s) => sum + s.text.length, 0);
+  let kept = withSeparator(segments);
+  for (const rank of [1, 2, 3, 4, 5, 6, 7]) {
+    if (width(kept) <= columns) break;
+    kept = withSeparator(kept.filter((s) => s.drop !== rank));
+  }
+  return kept;
+}
+
+// The " │ " goes between the label and the band, only when both show.
+function withSeparator(segments) {
+  const rest = segments.filter((s) => !s.separator);
+  const split = rest.findIndex((s) => !s.label);
+  if (split <= 0) return rest;
+  const separator = { text: " │ ", style: { dimColor: true }, drop: 0, separator: true };
+  return [...rest.slice(0, split), separator, ...rest.slice(split)];
+}
+
 // "<herdr-name> @<peer>". Without a herdr name: "@<peer>". Without both: nothing.
-function label(Text) {
+function label() {
   const parts = [];
-  if (herdrName) parts.push(Text({ bold: true, children: herdrName }));
-  if (peerName) parts.push(Text({ dimColor: true, children: `${herdrName ? " " : ""}@${peerName}` }));
+  if (herdrName) parts.push({ text: herdrName, style: { bold: true }, drop: 7, label: true });
+  if (peerName) parts.push({ text: `${herdrName ? " " : ""}@${peerName}`, style: { dimColor: true }, drop: 5, label: true });
   return parts;
 }
 
-function band(Text, afterLabel, columns) {
+function band() {
   const now = readings[readings.length - 1];
   const percent = Math.round((now / zone) * 100);
   const f = forecastFor(percent);
-  const parts = [];
-  if (afterLabel) parts.push(Text({ dimColor: true, children: " │ " }));
-  parts.push(Text({ color: f.color, bold: true, children: `${f.icon}  ${f.word}` }));
-  if (percent >= 100) parts.push(Text({ color: "red", children: "  use /compact" }));
-  parts.push(Text({ children: `  ${percent}% of smart zone` }));
-  parts.push(Text({ dimColor: true, children: `  ${short(now)} / ${short(zone)}` }));
-  if (columns >= 60 && readings.length >= 2) {
-    parts.push(Text({ dimColor: true, children: "   last steps " }));
-    parts.push(Text({ color: f.color, children: chart() }));
-    parts.push(Text({ dimColor: true, children: `  ${trendWord()}` }));
+  // Over the budget, the hint replaces the forecast: "/compact  120%".
+  const parts = percent >= 100
+    ? [{ text: "/compact", style: { color: "red", bold: true }, drop: 0 }]
+    : [
+        { text: f.icon, style: { color: f.color, bold: true }, drop: 0 },
+        { text: `  ${f.word}`, style: { color: f.color, bold: true }, drop: 6 },
+      ];
+  parts.push({ text: `  ${percent}%`, style: {}, drop: 0 });
+  parts.push({ text: " of smart zone", style: {}, drop: 3 });
+  parts.push({ text: `  ${short(now)} / ${short(zone)}`, style: { dimColor: true }, drop: 4 });
+  if (readings.length >= 2) {
+    parts.push({ text: "   last steps ", style: { dimColor: true }, drop: 2 });
+    parts.push({ text: chart(), style: { color: f.color }, drop: 2 });
+    parts.push({ text: `  ${trendWord()}`, style: { dimColor: true }, drop: 1 });
   }
   return parts;
 }
