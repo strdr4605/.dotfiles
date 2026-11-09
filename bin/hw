@@ -1,8 +1,20 @@
 #!/bin/sh
 # Herdr twin of nt: open a workspace named parent/folder in the current
 # directory, focus it, and close the pane this was run from.
+# Works in the herdr TUI and in Herdr.app (herdr-app).
 dir=$(pwd)
 label="$(basename "$(dirname "$dir")")/$(basename "$dir")"
+
+# Check the TUI first: a TUI that runs inside a Herdr.app terminal has both variables.
+if [ -z "$HERDR_PANE_ID" ] && [ -n "$HC_TERMINAL_ID" ]; then
+  pane=$(herdr-app ls | jq -r --arg t "$HC_TERMINAL_ID" \
+    '.spaces[].tabs[].terminals[] | select(.terminal == $t) | .pane')
+
+  herdr-app do space.new --name "$label" --folder "$dir" >/dev/null || exit 1
+
+  [ -n "$pane" ] && herdr-app do pane.close --pane "$pane" >/dev/null
+  exit 0
+fi
 
 herdr workspace create --cwd "$dir" --label "$label" --focus >/dev/null || exit 1
 
