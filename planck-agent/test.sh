@@ -57,6 +57,12 @@ check "led count" "$(wc -l <<<"$out" | tr -d ' ')" 37
 
 # slots_json gives the work-agents mod row 1: slot and key colour per terminal, nothing for an empty frame
 check "slots_json" "$(slots_json "$(printf 'p1 working\np2 stale')")" '{"terminal":"p1","slot":1,"state":"working","color":"#ffa500"},{"terminal":"p2","slot":2,"state":"stale","color":"#aa00ff"}'
+# unflag drops a remote id exactly; a slash in the id once killed the LED loop
+printf 'p1\nagents-vm/t1\nagents-vm/t10\n' >"$FLAG_FILE"
+unflag agents-vm/t1 "$FLAG_FILE"
+check "unflag remote id" "$(cat "$FLAG_FILE")" "$(printf 'p1\nagents-vm/t10')"
+: >"$FLAG_FILE"
+
 check "slots_json empty" "$(slots_json "")" ""
 
 # the spacebar counts agents past slot 12
