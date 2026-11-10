@@ -19,6 +19,15 @@
             "command": "$HOME/.dotfiles/bin/claude-notify"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.dotfiles/bin/claude-herdr-activity",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -28,6 +37,39 @@
           {
             "type": "command",
             "command": "nohup caffeinate -s -w $PPID >/dev/null 2>&1 &"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.dotfiles/bin/claude-herdr-activity",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.dotfiles/bin/claude-herdr-activity",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.dotfiles/bin/claude-herdr-activity",
+            "timeout": 5
           }
         ]
       }

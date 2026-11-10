@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+// Claude Code PreToolUse/PostToolUse/Stop hook: tells Herdr which tool Claude runs now.
+//
+// Claude reports its own status (working, blocked, done) in the OSC 7501 root
+// record. This hook adds the child record "activity" beside it, the same
+// record as the pi extension pi/agent/extensions/herdr-activity.ts:
+//   title  the kind: read, edit, run, search or tool
+//   msg    one line for people, e.g. "Reading src/kit.js"
+// PreToolUse sets the record. PostToolUse, PostToolUseFailure and Stop clear it.
+// Read the record only while the root status is "working": an interrupt skips Stop.
+//
+// A hook has no controlling terminal, so it writes to the pty of its Claude process.
+// HERDR_ACTIVITY_TTY=<file> writes there instead (for tests).
+//
+// Setup: merge ~/.dotfiles/claude/hooks.json into ~/.claude/settings.json.
+
+import { execFileSync } from "node:child_process";
+import { readFileSync, appendFileSync } from "node:fs";
+import path from "node:path";
+
+const ID = "activity";
+const MAX = 80;
+
+main();
+
+function main() {
+  if (!process.env.HC_TERMINAL_ID) return;
+
+  let input = {};
+  try {
+    input = JSON.parse(readFileSync(0, "utf8") || "{}");
+  } catch {
+    return;
+  }
+
+  const set = input.hook_event_name === "PreToolUse";
+  const report = record(set ? describe(input.tool_name, input.tool_input, input.cwd ?? process.cwd()) : null);
+
+  const tty = process.env.HERDR_ACTIVITY_TTY || ttyOf(process.ppid);
+  if (!tty) return;
+  try {
+    appendFileSync(tty, report);
+  } catch {
+    // The pane is gone. Nothing to report to.
+  }
+}
+
+// ---- the report
+
+function describe(tool, args = {}, cwd) {
+  const where = (p) => short(p ? path.relative(cwd, path.resolve(cwd, p)) || "." : ".");
+
+  switch (tool) {
+    case "Read":
+      return { kind: "read", msg: `Reading ${where(args.file_path)}` };
+    case "WebFetch":
+      return { kind: "read", msg: `Fetching ${short(hostOf(args.url))}` };
+    case "Edit":
+    case "MultiEdit":
+    case "NotebookEdit":
+      return { kind: "edit", msg: `Editing ${where(args.file_path ?? args.notebook_path)}` };
+    case "Write":
+      return { kind: "edit", msg: `Writing ${where(args.file_path)}` };
+    case "Bash":
+      // Claude writes a description for people. Use it, else the command.
+      return { kind: "run", msg: args.description ? short(args.description) : `Running ${short(args.command)}` };
+    case "Grep":
+      return { kind: "search", msg: `Searching for ${short(args.pattern)}` };
+    case "Glob":
+      return { kind: "search", msg: `Finding ${short(args.pattern)}` };
+    case "WebSearch":
+      return { kind: "search", msg: `Searching the web for ${short(args.query)}` };
+    case "Task":
+    case "Agent":
+      return { kind: "tool", msg: `Delegating ${short(args.description)}` };
+    default:
+      return { kind: "tool", msg: `Using ${short(tool)}` };
+  }
+}
+
+/** The OSC 7501 report for the activity record. No activity clears it. */
+function record(activity) {
+  if (!activity) return `\x1b]7501;state=clear:id=${ID}\x1b\\`;
+  return `\x1b]7501;state=working:id=${ID}:title=${b64(activity.kind)}:msg=${b64(activity.msg)}\x1b\\`;
+}
+
+// One line, no control characters, at most MAX characters.
+function short(text) {
+  const line = String(text ?? "").split(/\r?\n/, 1)[0].replace(/\p{Cc}/gu, " ").trim();
+  return line.length > MAX ? `${line.slice(0, MAX - 1)}…` : line;
+}
+
+function hostOf(url) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url;
+  }
+}
+
+function b64(text) {
+  return Buffer.from(text, "utf8").toString("base64");
+}
+
+// ---- the pty: the first process up the parent chain that has one
+
+// shortcut: our write can land between two writes of Claude's own output; small risk of one garbled frame, upgrade if Herdr gets a record API.
+function ttyOf(pid) {
+  let table;
+  try {
+    table = execFileSync("ps", ["-A", "-o", "pid=,ppid=,tty="], { encoding: "utf8" });
+  } catch {
+    return null;
+  }
+
+  const procs = new Map();
+  for (const line of table.split("\n")) {
+    const [p, pp, tty] = line.trim().split(/\s+/);
+    if (p) procs.set(Number(p), { ppid: Number(pp), tty });
+  }
+
+  for (let p = pid, hops = 0; p > 1 && hops < 16; hops++) {
+    const proc = procs.get(p);
+    if (!proc) return null;
+    if (proc.tty && proc.tty !== "??" && proc.tty !== "?") return `/dev/${proc.tty}`;
+    p = proc.ppid;
+  }
+  return null;
+}
