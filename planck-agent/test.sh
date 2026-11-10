@@ -5,6 +5,7 @@ cd "$(dirname "$0")"
 export PLANCK_AGENT_CONFIG=config.example.json
 source bin/planck-agent
 FLAG_FILE=$(mktemp)
+flagfile() { echo "$FLAG_FILE"; }  # the real one names a /tmp file per backend
 STALE_SECS=10
 trap 'rm -f "$FLAG_FILE"' EXIT
 
