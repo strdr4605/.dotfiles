@@ -80,12 +80,13 @@ def notes(today):
     if "°" not in weather:  # wttr sends errors as plain text
         weather = "weather report lost in the mail"
 
-    fact = (json_or_empty(fetch("https://uselessfacts.jsph.pl/api/v2/facts/today"))
+    fact = (json_or_empty(fetch("https://uselessfacts.jsph.pl/api/v2/facts/random"))
             .get("text", "The fact machine is broken. Please submit a ticket."))
 
     holidays = [h["text"] for h in json_or_empty(fetch(
         f"https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/holidays/{today:%m}/{today:%d}")).get("holidays", [])
         if "\n" not in h["text"]]  # entries with "\n" are long lists of feast days
+    holidays = [h for h in holidays if h.startswith(("World ", "International "))] or holidays  # global days read lighter than national ones
     holiday = random.Random(today.toordinal()).choice(holidays) if holidays else "Nothing. Just another workday."
 
     return {
