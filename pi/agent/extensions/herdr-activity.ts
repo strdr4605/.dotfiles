@@ -5,8 +5,12 @@
  * record. This extension adds the child record "activity" beside it:
  *   title  the kind: read, edit, run, search or tool
  *   msg    one line for people, e.g. "Reading src/kit.js"
+ * While bash runs `hc wait <t>` or `hc send <t>`, the child record "peer"
+ * tells who this agent talks to:
+ *   title  the verb: wait or send
+ *   msg    the target: an address, a name, or "children" for `hc wait --children`
  * A child record does not change the root status, so it cannot hide "blocked".
- * The record is removed when no tool runs.
+ * The records are removed when no tool runs.
  *
  * Spec: https://www.superlogical.com/rex/docs/build/program-status
  */
@@ -17,7 +21,8 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 const ID = "activity";
 const MAX = 80;
 
-export type Activity = { kind: "read" | "edit" | "run" | "search" | "tool"; msg: string };
+export type Peer = { verb: "wait" | "send"; target: string };
+export type Activity = { kind: "read" | "edit" | "run" | "search" | "tool"; msg: string; peer?: Peer | null };
 
 export default function (pi: ExtensionAPI) {
   // shortcut: only in Herdr core terminals, add the OSC 7501 support query if another terminal needs it.
@@ -70,7 +75,7 @@ export function describe(tool: string, args: any, cwd: string): Activity {
       return { kind: "edit", msg: `Writing ${where(args?.path)}` };
     case "bash":
     case "powershell":
-      return { kind: "run", msg: `Running ${short(args?.command)}` };
+      return { kind: "run", msg: `Running ${short(args?.command)}`, peer: peerOf(args?.command) };
     case "grep":
       return { kind: "search", msg: `Searching for ${short(args?.pattern)}` };
     case "find":
@@ -80,10 +85,30 @@ export function describe(tool: string, args: any, cwd: string): Activity {
   }
 }
 
-/** The OSC 7501 report for the activity record. No activity clears it. */
+/** The OSC 7501 reports for the peer and activity records. No activity clears both. */
 export function record(activity?: Activity): string {
-  if (!activity) return `\x1b]7501;state=clear:id=${ID}\x1b\\`;
-  return `\x1b]7501;state=working:id=${ID}:title=${b64(activity.kind)}:msg=${b64(activity.msg)}\x1b\\`;
+  const peer = activity?.peer;
+  return osc("peer", peer && { title: peer.verb, msg: peer.target }) + osc(ID, activity && { title: activity.kind, msg: activity.msg });
+}
+
+function osc(id: string, rec?: { title: string; msg: string } | null): string {
+  if (!rec) return `\x1b]7501;state=clear:id=${id}\x1b\\`;
+  return `\x1b]7501;state=working:id=${id}:title=${b64(rec.title)}:msg=${b64(rec.msg)}\x1b\\`;
+}
+
+// The agent a command talks to: `hc wait t3`, `hc send review "..."`, `hc wait --children`.
+export function peerOf(command: unknown): Peer | null {
+  const m = /\bhc\s+(wait|send)\s+(.*)/.exec(String(command ?? ""));
+  if (!m) return null;
+  const verb = m[1] as Peer["verb"];
+  const words = m[2].split(/\s+/);
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
+    if (w === "--children") return { verb, target: "children" };
+    if (w === "--output" || w === "--timeout") i++;
+    else if (w && !w.startsWith("-")) return { verb, target: w.replace(/^["']|["';&|)]+$/g, "") };
+  }
+  return null;
 }
 
 // One line, no control characters, at most MAX characters.

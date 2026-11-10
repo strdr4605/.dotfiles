@@ -6,7 +6,11 @@
 // record as the pi extension pi/agent/extensions/herdr-activity.ts:
 //   title  the kind: read, edit, run, search or tool
 //   msg    one line for people, e.g. "Reading src/kit.js"
-// PreToolUse sets the record. PostToolUse, PostToolUseFailure and Stop clear it.
+// While a Bash command runs `hc wait <t>` or `hc send <t>`, the child record
+// "peer" tells who this agent talks to:
+//   title  the verb: wait or send
+//   msg    the target: an address, a name, or "children" for `hc wait --children`
+// PreToolUse sets the records. PostToolUse, PostToolUseFailure and Stop clear them.
 // Read the record only while the root status is "working": an interrupt skips Stop.
 //
 // A hook has no controlling terminal, so it writes to the pty of its Claude process.
@@ -63,7 +67,7 @@ function describe(tool, args = {}, cwd) {
       return { kind: "edit", msg: `Writing ${where(args.file_path)}` };
     case "Bash":
       // Claude writes a description for people. Use it, else the command.
-      return { kind: "run", msg: args.description ? short(args.description) : `Running ${short(args.command)}` };
+      return { kind: "run", msg: args.description ? short(args.description) : `Running ${short(args.command)}`, peer: peerOf(args.command) };
     case "Grep":
       return { kind: "search", msg: `Searching for ${short(args.pattern)}` };
     case "Glob":
@@ -78,10 +82,28 @@ function describe(tool, args = {}, cwd) {
   }
 }
 
-/** The OSC 7501 report for the activity record. No activity clears it. */
+/** The OSC 7501 reports for the peer and activity records. No activity clears both. */
 function record(activity) {
-  if (!activity) return `\x1b]7501;state=clear:id=${ID}\x1b\\`;
-  return `\x1b]7501;state=working:id=${ID}:title=${b64(activity.kind)}:msg=${b64(activity.msg)}\x1b\\`;
+  return osc("peer", activity?.peer && { title: activity.peer.verb, msg: activity.peer.target }) + osc(ID, activity && { title: activity.kind, msg: activity.msg });
+}
+
+function osc(id, rec) {
+  if (!rec) return `\x1b]7501;state=clear:id=${id}\x1b\\`;
+  return `\x1b]7501;state=working:id=${id}:title=${b64(rec.title)}:msg=${b64(rec.msg)}\x1b\\`;
+}
+
+// The agent a command talks to: `hc wait t3`, `hc send review "..."`, `hc wait --children`.
+function peerOf(command) {
+  const m = /\bhc\s+(wait|send)\s+(.*)/.exec(String(command ?? ""));
+  if (!m) return null;
+  const words = m[2].split(/\s+/);
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
+    if (w === "--children") return { verb: m[1], target: "children" };
+    if (w === "--output" || w === "--timeout") i++;
+    else if (w && !w.startsWith("-")) return { verb: m[1], target: w.replace(/^["']|["';&|)]+$/g, "") };
+  }
+  return null;
 }
 
 // One line, no control characters, at most MAX characters.
