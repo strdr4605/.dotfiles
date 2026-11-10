@@ -55,59 +55,8 @@ check "led 12 escape" "$(sed -n 13p <<<"$out")" "set-rgb --led 12 --color #ff000
 check "spacebar worst" "$(tail -1 <<<"$out")" "set-rgb --led 41 --color #ffa500"
 check "led count" "$(wc -l <<<"$out" | tr -d ' ')" 37
 
-# detect reads flags from a detection buffer: draft in the input box, go phrase in the last reply, heavy band
-RULE="────────────────────"
-NBSP=$(printf '\302\240')
-buffer() {  # $1: last reply, $2: band percent, $3: input box text
-  printf '%s\n' "⏺ old reply: say \"go\"" "❯${NBSP}do it" "⏺ $1" " name @peer │ ↯  Compact soon  $2% of smart zone" "$RULE" "❯${NBSP}$3" "$RULE" "  [PONYTAIL]"
-}
-phrases=$(go_phrases)
-check "detect nothing" "$(buffer "Done." 40 "" | detect "$phrases")" ""
-check "detect draft" "$(buffer "Done." 40 "push it" | detect "$phrases")" " draft"
-check "detect go" "$(buffer "Two commits. Say \"go\" and I commit." 40 "" | detect "$phrases")" " go"
-check "detect go is case-insensitive" "$(buffer "SHOULD I push?" 40 "" | detect "$phrases")" " go"
-check "detect go only in last reply" "$(buffer "Pushed." 40 "" | detect "$phrases")" ""
-check "detect heavy at 100" "$(buffer "Done." 100 "" | detect "$phrases")" " heavy"
-check "detect not heavy at 99" "$(buffer "Done." 99 "" | detect "$phrases")" ""
-check "detect all" "$(buffer "Wait for my go." 137 "x" | detect "$phrases")" " draft go heavy"
-check "detect no input box" "$(printf 'say go\n' | detect "$phrases")" ""
-
-# pi: no ❯ marker, the prompt and reply share one block, the band sits below the input box
-pi_buffer() {  # $1: last reply line, $2: band percent, $3: input box text
-  printf '%s\n' " Say go if you agree." "$RULE" " old prompt" " r1" " r2" " r3" " $1" "" "$RULE" "$3" "$RULE" "~/.dotfiles" "○ ponytail │ pi-probe │ ↯ Compact soon $2% of smart zone"
-}
-check "pi detect nothing" "$(pi_buffer "Done." 40 "" | detect "$phrases")" ""
-check "pi detect draft" "$(pi_buffer "Done." 40 "push it" | detect "$phrases")" " draft"
-check "pi detect go" "$(pi_buffer "Say \"go\"." 40 "" | detect "$phrases")" " go"
-check "pi detect go only in last lines" "$(pi_buffer "Pushed." 40 "" | detect "$phrases")" ""
-check "pi detect heavy below box" "$(pi_buffer "Done." 120 "" | detect "$phrases")" " heavy"
-check "claude draft on 2 lines counts once" "$(printf '%s\n' "$RULE" "❯${NBSP}line one" "  line two" "$RULE" | detect "$phrases")" " draft"
-echo '{"awaits_go":["ship it"]}' >"$FLAG_FILE"
-check "config phrases replace defaults" "$(CONFIG=$FLAG_FILE go_phrases)" "ship it"
-: >"$FLAG_FILE"
-
-# mark turns flags into states: go beats done and stale, heavy beats idle only, blocked never blinks
-frame=$(printf 'p1 done\np2 idle\np3 working\np4 blocked\np5 stale\np6 idle')
-det=$(printf 'p1 go\np2 heavy draft\np3 heavy draft\np4 draft go\np5 go heavy\np6')
-check "mark" "$(mark "$frame" "$det")" "$(printf 'p1 awaits-go\np2 heavy draft\np3 working draft\np4 blocked\np5 awaits-go\np6 idle')"
-
-# priority: blocked > awaits-go > working > done > heavy > stale > idle
-check "worst awaits-go over working" "$(worst "$(printf 'p1 working draft\np2 awaits-go')")" awaits-go
-check "worst blocked over awaits-go" "$(worst "$(printf 'p1 awaits-go\np2 blocked')")" blocked
-check "worst done over heavy" "$(worst "$(printf 'p1 heavy\np2 done')")" done
-check "worst heavy over stale" "$(worst "$(printf 'p1 stale\np2 heavy draft')")" heavy
-
-# a draft key blinks: its colour in phase 1, dark in phase 0. The spacebar blinks too, unless the worst state is blocked.
-frame=$(printf 'p1 heavy draft\np2 idle')
-check "paint draft on" "$(paint "$frame" 1 2>&1 | sed -n 1p)" "set-rgb --led 0 --color #880000"
-check "paint draft off" "$(paint "$frame" 0 2>&1 | sed -n 1p)" "set-rgb --led 0 --color #000000"
-check "blink repaints only drafts" "$(blink "$frame" 0 2>&1)" "$(printf 'set-rgb --led 0 --color #000000\nset-rgb --led 41 --color #000000')"
-check "blink nothing without drafts" "$(blink "p1 idle" 0 2>&1)" ""
-check "spacebar blocked does not blink" "$(space_color "$(printf 'p1 blocked\np2 idle draft')" 0)" "#ff0000"
-check "awaits-go colour" "$(state_color awaits-go)" "#00ffff"
-
-# slots_json gives the work-agents mod row 1: slot, key colour and draft per terminal, nothing for an empty frame
-check "slots_json" "$(slots_json "$(printf 'p1 working\np2 stale draft')")" '{"terminal":"p1","slot":1,"state":"working","color":"#ffa500","draft":false},{"terminal":"p2","slot":2,"state":"stale","color":"#aa00ff","draft":true}'
+# slots_json gives the work-agents mod row 1: slot and key colour per terminal, nothing for an empty frame
+check "slots_json" "$(slots_json "$(printf 'p1 working\np2 stale')")" '{"terminal":"p1","slot":1,"state":"working","color":"#ffa500"},{"terminal":"p2","slot":2,"state":"stale","color":"#aa00ff"}'
 check "slots_json empty" "$(slots_json "")" ""
 
 # the spacebar counts agents past slot 12

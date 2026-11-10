@@ -13,11 +13,7 @@ Inspired by [micro-manager](https://github.com/schacon/micro-manager), which doe
 | 3 | ⇧, Z…/, ⏎ | macros and prompts, your text |
 | Space | | the worst state across all agents |
 
-LED colours: red blocked, cyan awaits-go, orange working, blue done (unseen), dim red heavy, purple stale (idle for 10 minutes since you last focused it), green idle, dark empty. The spacebar shows the first state in this order over all agents, also agents after slot 12. Row 2 and 3 keys show the colour you give them in config.
-
-- awaits-go: the agent is idle or done, and its last reply has a phrase from config `"awaits_go"` (case-insensitive), for example `say "go"` or `should i`.
-- heavy: the token-weather band shows 100% or more of the smart zone.
-- A key blinks when the agent has text in its input box that you did not send (a draft). A blocked key does not blink. The spacebar blinks when an agent has a draft.
+LED colours: red blocked, orange working, blue done (unseen), purple stale (idle for 10 minutes since you last focused it), green idle, dark empty. The spacebar shows the first state in this order over all agents, also agents after slot 12. Row 2 and 3 keys show the colour you give them in config.
 
 If you looked at a done agent but did not act, press the flag key (`h` by default) to turn it blue again. The flag clears when the agent works or when you focus it again.
 
@@ -74,8 +70,7 @@ skhd --start-service
 
 ```json
 {
-  "colors": { "blocked": "#ff0000", "awaits-go": "#00ffff", "working": "#ffa500", "done": "#0000ff", "heavy": "#880000", "idle": "#00ff00", "stale": "#aa00ff", "empty": "#202020" },
-  "awaits_go": ["say \"go\"", "say go", "your \"go\"", "your go", "on your word", "wait for my go", "should i"],
+  "colors": { "blocked": "#ff0000", "working": "#ffa500", "done": "#0000ff", "idle": "#00ff00", "stale": "#aa00ff", "empty": "#202020" },
   "keys": {
     "a": { "keys": "enter", "color": "#00ff00" },
     "s": { "prompt": "Continue.", "color": "#00aa00" },
@@ -124,17 +119,7 @@ Config edits apply live. Script edits need `planck-agent restart`.
 
 ## How it works
 
-The LED loop polls `kontroll status` once a second. On the agent layer it reads `herdr agent list` and paints row 1 with each agent's state, rows 2–3 with the configured colours, and the spacebar with the worst state. Every 10 seconds it also reads the screen of each agent to find drafts, go phrases and the token-weather band. Off the layer it restores the Oryx colours. Key presses reach the script through the hotkey tool, which calls the herdr CLI.
-
-Screen detection works for Claude Code and pi panes:
-
-| | Claude Code | pi |
-|---|---|---|
-| Draft | text after `❯` in the input box | any text in the input box |
-| Last reply | lines after the last `❯` prompt | last 4 non-blank lines above the input box (`PI_REPLY_LINES`) |
-| Token-weather band | above the input box | below the input box |
-
-Pi has no prompt marker, so a go phrase more than 4 lines from the end of a pi reply is missed. To read more lines, add `PI_REPLY_LINES` to `EnvironmentVariables` in `planck-agent.plist`.
+The LED loop polls `kontroll status` once a second. On the agent layer it reads `herdr agent list` and paints row 1 with each agent's state, rows 2–3 with the configured colours, and the spacebar with the worst state. Off the layer it restores the Oryx colours. Key presses reach the script through the hotkey tool, which calls the herdr CLI.
 
 Agent slots follow herdr's sidebar order, so a new agent can shift the others by one.
 
