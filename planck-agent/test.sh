@@ -106,6 +106,10 @@ check "blink nothing without drafts" "$(blink "p1 idle" 0 2>&1)" ""
 check "spacebar blocked does not blink" "$(space_color "$(printf 'p1 blocked\np2 idle draft')" 0)" "#ff0000"
 check "awaits-go colour" "$(state_color awaits-go)" "#00ffff"
 
+# slots_json gives the work-agents mod row 1: slot, key colour and draft per terminal, nothing for an empty frame
+check "slots_json" "$(slots_json "$(printf 'p1 working\np2 stale draft')")" '{"terminal":"p1","slot":1,"state":"working","color":"#ffa500","draft":false},{"terminal":"p2","slot":2,"state":"stale","color":"#aa00ff","draft":true}'
+check "slots_json empty" "$(slots_json "")" ""
+
 # the spacebar counts agents past slot 12
 frame=$(for i in $(seq 1 12); do echo "p$i idle"; done; echo "p13 blocked")
 check "spacebar sees slot 13" "$(paint "$frame" 2>&1 | tail -1)" "set-rgb --led 41 --color #ff0000"

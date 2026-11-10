@@ -6,7 +6,8 @@
 #   flag      toggle the focused agent back to blue (done) until it works or you refocus it
 #   use       switch the deck between the legacy herdr (Alacritty) and Herdr.app
 #   restart   reload the launchd LED loop after you edit this script or the plist
-#   leds      loop: paint row 1 with agent states and rows 2-3 with key colours while the agent layer is active
+#   leds      loop: paint row 1 with agent states and rows 2-3 with key colours while the agent layer is active,
+#             and write row 1 to $FRAME_FILE for the Herdr.app work-agents mod
 set -eu
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
 
@@ -17,6 +18,7 @@ APP_APP="${PLANCK_APP_APP:-Herdr}"
 STALE_SECS="${PLANCK_STALE_SECS:-600}"
 BACKEND_FILE="${PLANCK_AGENT_BACKEND_FILE:-$HOME/.config/planck-agent/backend}"
 TOGGLE_KEY="${PLANCK_AGENT_TOGGLE_KEY:-l}"
+FRAME_FILE="${PLANCK_AGENT_FRAME_FILE:-/tmp/planck-agent.frame.json}"
 ROW2="escape a s d f g h j k l ; '"
 ROW3="shift z x c v b n m , . / enter"
 SPACE_LED=41
@@ -31,7 +33,7 @@ main() {
     use) use_backend "$2" ;;
     restart) launchctl kickstart -k "gui/$(id -u)/planck-agent" ;;
     leds) leds ;;
-    *) sed -n '2,9p' "$0"; exit 2 ;;
+    *) sed -n '2,10p' "$0"; exit 2 ;;
   esac
 }
 
@@ -410,9 +412,27 @@ blink() {
   kontroll set-rgb --led $SPACE_LED --color "$(space_color "$frame" "$2")" >/dev/null
 }
 
+# $1: "pane state [draft]" lines. Prints row 1 as comma-separated JSON objects: terminal, slot, state, key colour, draft.
+slots_json() {
+  local i=0 id state draft sep=""
+  while read -r id state draft; do
+    [ -n "$id" ] || continue
+    i=$((i+1))
+    printf '%s{"terminal":"%s","slot":%d,"state":"%s","color":"%s","draft":%s}' \
+      "$sep" "$id" $i "$state" "$(state_color "$state")" "$([ "$draft" = draft ] && echo true || echo false)"
+    sep=,
+  done < <(head -12 <<<"$1")
+}
+
+# $1: slots_json output. Only Herdr.app ids match the mod's agents. Stamped every tick: a mod sees a dead loop as stale.
+publish() {
+  [ "$(backend)" = app ] || { rm -f "$FRAME_FILE"; return 0; }
+  printf '{"at":%s,"slots":[%s]}\n' "$(date +%s)" "$1" >"$FRAME_FILE.tmp" && mv "$FRAME_FILE.tmp" "$FRAME_FILE"
+}
+
 leds() {
-  trap "kontroll restore-rgb-leds >/dev/null" EXIT
-  local prev="" down="" layer frame list hist="" focused prevfocus="" tick=0 det="" scanned=-$SCAN_SECS phase file prevbackend=""
+  trap 'kontroll restore-rgb-leds >/dev/null; rm -f "$FRAME_FILE"' EXIT
+  local prev="" down="" layer frame list hist="" focused prevfocus="" tick=0 det="" scanned=-$SCAN_SECS phase file prevbackend="" slots="" sloted=""
   file=$(flagfile)
   touch "$file"
   while :; do
@@ -421,7 +441,7 @@ leds() {
       prevbackend=$(backend)
       file=$(flagfile)
       touch "$file"
-      hist=""; det=""; prev=""; scanned=-$SCAN_SECS
+      hist=""; det=""; prev=""; sloted=""; scanned=-$SCAN_SECS
     fi
     list=$(agents)
     hist=$(track "$hist" <<<"$list")
@@ -435,11 +455,13 @@ leds() {
     for p in $(cat "$file" 2>/dev/null); do grep -q "^$p working " <<<"$hist" && sed -i '' "/^$p\$/d" "$file"; done
     layer=$(kontroll status 2>/dev/null | awk -F'\t+' '/Current layer/{print $2}')
     [ -n "$layer" ] || {
+      rm -f "$FRAME_FILE"
       [ -n "$down" ] || osascript -e 'display notification "Start Keymapp" with title "planck-agent"' || true
       down=1; kontroll connect-any >/dev/null 2>&1 || true; sleep 5; continue
     }
     down=""
     if [ "$layer" != "$AGENT_LAYER" ]; then
+      rm -f "$FRAME_FILE"
       [ -z "$prev" ] || { kontroll restore-rgb-leds >/dev/null || true; prev=""; }
       sleep 1; continue
     fi
@@ -450,6 +472,8 @@ leds() {
     frame=$(mark "$(frame_of "$hist")" "$det")
     tick=$((tick+1))
     phase=$((tick % 2))
+    [ "$frame" = "$sloted" ] || { slots=$(slots_json "$frame"); sloted=$frame; }
+    publish "$slots"
 
     # repaint on change or every 5s: Oryx firmware redraws layer colours on keypress
     if [ "$frame" != "$prev" ] || [ $((tick % 5)) -eq 0 ]; then
