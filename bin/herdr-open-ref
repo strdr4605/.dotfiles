@@ -20,7 +20,7 @@
 # REQUIREMENTS:
 #
 #   herdr     reads the pane output (herdr TUI)
-#   hc        reads the terminal output (Herdr.app)
+#   hc        reads the terminal output (Herdr.app); for Claude, the session transcript
 #   jq        parses the herdr JSON
 #   fzf       picker (falls back to the nvim plugin copy)
 #   jj, git   find the repo remote (one of the two is enough)
@@ -38,8 +38,10 @@ main() {
   # Line 1 is the key that ended fzf (empty for enter), line 2 is the picked row.
   if [ "${1:-}" = --hc ]; then
     # Herdr.app (prefix mod, key o) gives the terminal ID of the focused pane.
-    cwd=$(hc get "$2" --json | jq -r '.foreground.cwd // .cwd')
-    picked=$(hc read "$2" --lines 2000 2>/dev/null | refs | pick) || exit 0
+    info=$(hc get "$2" --json)
+    cwd=$(printf '%s' "$info" | jq -r '.foreground.cwd // .cwd')
+    pid=$(printf '%s' "$info" | jq -r '.foreground.pid // empty')
+    picked=$(output_of "$2" "$pid" | refs | pick) || exit 0
   else
     pane=$(herdr pane list | jq -r '.result.panes[] | select(.focused) | "\(.pane_id)\t\(.foreground_cwd)"' | head -1)
     pane_id=$(printf '%s' "$pane" | cut -f1)
@@ -63,6 +65,27 @@ main() {
     ctrl-y) printf '%s' "$url" | pbcopy ;;
     *) open "$url" ;;
   esac
+}
+
+# Print the output of terminal $1 (foreground pid $2), oldest first.
+# Claude draws a full screen: hc cannot scroll back while Claude works, and then
+# gives only the visible screen. So read the Claude session transcript.
+output_of() {
+  log=$(transcript_of "$2")
+  if [ -n "$log" ]; then
+    jq -r 'select(.message) | .message.content | .. | strings' "$log" 2>/dev/null
+  else
+    hc read "$1" --lines 2000 2>/dev/null
+  fi
+}
+
+# Print the transcript file of Claude process $1. Print nothing for other programs.
+transcript_of() {
+  f=$HOME/.claude/sessions/$1.json
+  [ -n "$1" ] && [ -f "$f" ] || return 0
+  id=$(jq -r '.sessionId // empty' "$f")
+  [ -n "$id" ] || return 0
+  ls "$HOME"/.claude/projects/*/"$id".jsonl 2>/dev/null | head -1
 }
 
 # Let the user pick one "ref<TAB>context" row. A single row is picked without a prompt.
