@@ -80,13 +80,16 @@ def notes(today):
     if "°" not in weather:  # wttr sends errors as plain text
         weather = "weather report lost in the mail"
 
-    fact = (json_or_empty(fetch("https://uselessfacts.jsph.pl/api/v2/facts/today"))
+    fact = (json_or_empty(fetch("https://uselessfacts.jsph.pl/api/v2/facts/random"))
             .get("text", "The fact machine is broken. Please submit a ticket."))
 
     holidays = [h["text"] for h in json_or_empty(fetch(
         f"https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/holidays/{today:%m}/{today:%d}")).get("holidays", [])
         if "\n" not in h["text"]]  # entries with "\n" are long lists of feast days
+    holidays = [h for h in holidays if h.startswith(("World ", "International "))] or holidays  # global days read lighter than national ones
     holiday = random.Random(today.toordinal()).choice(holidays) if holidays else "Nothing. Just another workday."
+
+    surprises = [name for name in ("blood", "web") if random.random() < 0.2]  # each shows on about 1 day in 5
 
     return {
         "weekday": f"{today:%A}",
@@ -95,6 +98,7 @@ def notes(today):
         "weather": weather.strip(),
         "fact": textwrap.shorten(fact, 100, placeholder="…"),
         "holiday": textwrap.shorten(holiday, 70, placeholder="…"),
+        "surprises": " ".join(surprises),
     }
 
 
@@ -161,12 +165,30 @@ body { width: 1920px; height: 1080px; overflow: hidden; position: relative; font
 .white { background: #fdfcf7; transform: rotate(1deg); }
 .blue { background: #cfe3f5; transform: rotate(.5deg); }
 .pink { background: #f9c4d2; transform: rotate(-.5deg); }
+
+.surprise { position: absolute; display: none; }
+body.blood .blood, body.web .web { display: block; }
+.surprise.blood { left: 118px; top: 897px; width: 304px; height: 112px; }
+.surprise.web { left: 0; top: 96px; width: 240px; height: 240px; }
 </style>
+<body class="$surprises">
 
 <div class="ceiling"><div class="light" style="left:300px"></div><div class="light" style="left:1100px"></div></div>
 <div class="wall"></div><div class="baseboard"></div><div class="carpet"></div>
 
 <div class="door"></div>
+
+<svg class="surprise blood" viewBox="0 0 304 112">
+  <path fill="#5e0909" d="M8 3H296C300 14 290 22 274 26C266 44 284 62 262 72C240 84 218 70 200 82C182 98 144 104 122 90C104 78 86 92 66 80C44 68 56 46 38 38C22 30 4 18 8 3Z"/>
+  <path fill="#8a1212" d="M30 6H276C268 16 250 20 244 34C236 52 214 50 196 60C170 74 140 80 120 68C100 56 80 66 70 54C60 42 46 30 30 6Z"/>
+  <ellipse cx="150" cy="40" rx="40" ry="6" fill="#fff" opacity=".12"/>
+  <circle cx="232" cy="94" r="6" fill="#5e0909"/>
+  <circle cx="92" cy="102" r="4" fill="#5e0909"/>
+</svg>
+
+<svg class="surprise web" viewBox="0 0 240 240">
+  <path fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1.3" d="M0 0L230 0M0 0L223 56M0 0L201 112M0 0L163 163M0 0L112 201M0 0L56 223M0 0L0 230M45 0Q36 4 44 11Q34 13 39 22Q29 22 32 32Q22 29 22 39Q13 34 11 44Q4 36 0 45M85 0Q69 8 82 21Q64 25 74 41Q55 42 60 60Q42 55 41 74Q25 64 21 82Q8 69 0 85M125 0Q101 12 121 30Q95 37 109 61Q81 61 88 88Q61 81 61 109Q37 95 30 121Q12 101 0 125M165 0Q133 16 160 40Q125 49 144 80Q107 81 117 117Q81 107 80 144Q49 125 40 160Q16 133 0 165M205 0Q166 20 199 50Q155 61 179 99Q133 100 145 145Q100 133 99 179Q61 155 50 199Q20 166 0 205"/>
+</svg>
 <div class="plate"><div class="dept">Human<br>Resources</div><div class="name">Karen<br>Complainsky</div></div>
 
 

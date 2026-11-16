@@ -28,8 +28,6 @@ which rtk             # Verify correct binary
 All other commands are automatically rewritten by the Claude Code hook.
 Example: `git status` → `rtk git status` (transparent, 0 tokens overhead)
 
-Since 1.0 the hook also has a gate: a pipeline rule can block or route a command. If a command is refused, run `rtk pipeline explain` to see the rule.
+The hook also has a gate: a pipeline rule can block or route a command. If a command is refused, run `rtk pipeline explain` to see the rule.
 
-`--ultra-compact` was removed in 1.0; do not use it.
-
-Refer to CLAUDE.md for full command reference.
+Run `rtk --help` for the full command reference.
