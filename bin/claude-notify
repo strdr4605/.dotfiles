@@ -32,6 +32,24 @@ msg=$(printf '%s\n' "$raw" \
   | awk '{ if (length($0) > 120) { s=substr($0,1,120); sub(/ [^ ]*$/,"",s); print s "…" } else print }')
 title="$proj: $tag"
 
+# Not macOS (for example the agents VM): this machine cannot see your screen.
+# Herdr sets the label herdr.seen to the turn you last looked at. Wait 60 s,
+# then push only if you have not looked at this turn.
+if [ "$(uname)" != Darwin ]; then
+  topic=$(head -1 "$HOME/.claude/ntfy-topic" 2>/dev/null) || exit 0
+  title="$(hostname -s) $title"
+  hc=$(command -v hc || echo "$HOME/.local/bin/hc")
+  ( trap '' HUP; sleep 60
+    if [ -n "$HC_TERMINAL_ID" ]; then
+      seen=$("$hc" get "$HC_TERMINAL_ID" --json 2>/dev/null \
+        | jq -r '(.labels["herdr.seen"] // "0" | tonumber) >= .turn')
+      [ "$seen" = true ] && exit 0
+    fi
+    curl -s -m 10 -H "Title: $title" -H "Tags: robot" -d "${msg:-$tag}" "https://ntfy.sh/$topic"
+  ) >/dev/null 2>&1 &
+  exit 0
+fi
+
 if "$bin/islocked"; then
   topic=$(head -1 "$HOME/.claude/ntfy-topic" 2>/dev/null) || exit 0
   push() { curl -s -m 10 -H "Title: $title" -H "Tags: robot" -d "${msg:-$tag}" "https://ntfy.sh/$topic"; }
