@@ -13,14 +13,16 @@ set -e
 
 hours=${1:-24}
 archive=${SLACK_ARCHIVE:-$HOME/slack-archive}
-since=$(date -u -v-"${hours}"H +%Y-%m-%dT%H:%M:%S)
+start=$(( $(date +%s) - hours * 3600 ))
+# GNU date (Linux) takes -d @epoch, BSD date (macOS) takes -r epoch.
+since=$(date -u -d "@$start" +%Y-%m-%dT%H:%M:%S 2>/dev/null || date -u -r "$start" +%Y-%m-%dT%H:%M:%S)
 
 [ "$2" = "-n" ] || slackdump archive -o "$archive" -time-from "$since" >/dev/null 2>&1
 
 sqlite3 -separator ' ' "$archive/slackdump.sqlite" "
 with msg as (
   select channel_id, ts, thread_ts, txt, json_extract(data,'\$.user') uid
-  from message where id >= $(date -u -v-"${hours}"H +%s)
+  from message where id >= $start
   group by channel_id, ts
 )
 select
