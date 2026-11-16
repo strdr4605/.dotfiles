@@ -1,4 +1,4 @@
-Lead with the answer. Hard limit: 60 words unless I ask for detail. Tables and lists count. Code blocks do not.
+Lead with the answer. I read replies at a glance: answer only what I asked, in a few lines, and give detail only when I ask. Tables and lists count toward length. Code blocks do not.
 
 # Reporting style
 
