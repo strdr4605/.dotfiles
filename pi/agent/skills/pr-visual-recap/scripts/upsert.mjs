@@ -12,6 +12,29 @@ import assert from 'node:assert/strict'
 export const START = '<!-- pr-visual-recap:start -->'
 export const END = '<!-- pr-visual-recap:end -->'
 
+// Hand-drawn look and Gruvbox light colors for every diagram. Comic Sans MS when the reader has it, else the Mermaid default font.
+// Mermaid ignores the look for diagram types that do not support it.
+const STYLE = [
+  '---',
+  'config:',
+  '  look: handDrawn',
+  '  theme: base',
+  '  themeVariables:',
+  // Gruvbox light palette.
+  "    background: '#fbf1c7'",
+  "    primaryColor: '#ebdbb2'",
+  "    primaryTextColor: '#3c3836'",
+  "    primaryBorderColor: '#7c6f64'",
+  "    secondaryColor: '#d5c4a1'",
+  "    tertiaryColor: '#f2e5bc'",
+  "    lineColor: '#665c54'",
+  "    textColor: '#3c3836'",
+  "    noteBkgColor: '#f2e5bc'",
+  "    noteBorderColor: '#b57614'",
+  '    fontFamily: \'"Comic Sans MS", "trebuchet ms", verdana, arial, sans-serif\'',
+  '---',
+].join('\n')
+
 // Run main only when executed directly, not when check.mjs imports it. realpath: ~/.pi is a symlink.
 if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) main(process.argv.slice(2))
 
@@ -29,7 +52,7 @@ function main(args) {
   if (!pr || !blockFile) die('usage: node upsert.mjs <pr-number|url> <block-file> [-R owner/repo] [--dry-run]')
   if (!repo) die('cannot find the GitHub repo from this directory: pass -R owner/repo')
 
-  const block = readFileSync(blockFile, 'utf8').trim()
+  const block = styleDiagrams(readFileSync(blockFile, 'utf8').trim())
   const problem = checkBlock(block) || lintMermaid(block)
   if (problem) die(problem)
 
@@ -83,13 +106,19 @@ function checkBlock(block) {
   if (!/\*\*Head:\*\*\s*`[0-9a-f]{7,40}`/.test(block)) return 'block needs a **Head:** `<sha>` line'
   if ((block.match(/^\s*```/gm) || []).length % 2) return 'unbalanced code fences'
 
-  for (const [, diagram] of block.matchAll(/```mermaid\n([\s\S]*?)```/g)) {
+  for (const [, fenced] of block.matchAll(/```mermaid\n([\s\S]*?)```/g)) {
+    const diagram = fenced.replace(/^---\n[\s\S]*?\n---\n/, '')
     if (!marksChange(diagram)) return `diagram marks no change, add a highlight or drop it: ${diagram.trim().split('\n')[0]}`
     if (!/^\s*sequenceDiagram/.test(diagram)) continue
     const bad = diagram.split('\n').find((l) => l.includes(';') && /(-{1,2}(>>|>|x|\))|^\s*Note\b)/.test(l))
     if (bad) return `";" in a sequence message breaks GitHub rendering: ${bad.trim()}`
   }
   return null
+}
+
+// Add STYLE to each diagram that has no frontmatter yet.
+function styleDiagrams(block) {
+  return block.replace(/```mermaid\n(?!---\n)/g, '```mermaid\n' + STYLE + '\n')
 }
 
 // A diagram must show the delta: rect in sequence, "NEW"-style comments in ER, classDef + class elsewhere.
@@ -148,13 +177,19 @@ function selfTest() {
   assert.equal(checkBlock(ok), null)
   assert.match(checkBlock('no markers'), /must start/)
   assert.match(checkBlock(`${START}\n${END}`), /Head/)
-  assert.match(checkBlock(`${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\nsequenceDiagram\n  rect rgba(46, 160, 67, 0.15)\n  A->>B: x; y\n  end\n\`\`\`\n${END}`), /";"/)
+  assert.match(checkBlock(`${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\nsequenceDiagram\n  rect rgba(152, 151, 26, 0.15)\n  A->>B: x; y\n  end\n\`\`\`\n${END}`), /";"/)
   const wrap = (diagram) => `${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\n${diagram}\n\`\`\`\n${END}`
-  assert.equal(checkBlock(wrap('sequenceDiagram\n  rect rgba(46, 160, 67, 0.15)\n  A->>B: x, y\n  end')), null)
+  assert.equal(checkBlock(wrap('sequenceDiagram\n  rect rgba(152, 151, 26, 0.15)\n  A->>B: x, y\n  end')), null)
   assert.match(checkBlock(wrap('sequenceDiagram\n  A->>B: x, y')), /marks no change/)
   assert.match(checkBlock(wrap('flowchart TD\n  A --> B')), /marks no change/)
-  assert.equal(checkBlock(wrap('flowchart TD\n  A --> B\n  classDef new fill:#2ea04326,stroke:#2ea043\n  class B new')), null)
+  assert.equal(checkBlock(wrap('flowchart TD\n  A --> B\n  classDef new fill:#98971a26,stroke:#98971a\n  class B new')), null)
   assert.equal(checkBlock(wrap('erDiagram\n  USER {\n    string iban "NEW"\n  }')), null)
+
+  const styled = styleDiagrams(wrap('sequenceDiagram\n  rect rgba(152, 151, 26, 0.15)\n  A->>B: x\n  end'))
+  assert.match(styled, /look: handDrawn/)
+  assert.equal(styleDiagrams(styled), styled)
+  assert.equal(checkBlock(styled), null)
+  assert.equal(lintMermaid(styled), null)
 
   const fence = (diagram) => '```mermaid\n' + diagram + '\n```\n'
   assert.equal(lintMermaid(fence('flowchart TD\n  A["+ check (per IP)"] --> B')), null)

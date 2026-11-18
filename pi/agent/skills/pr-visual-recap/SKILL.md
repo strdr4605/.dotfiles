@@ -83,8 +83,8 @@ Rules:
 - Use a maximum of 2 diagrams. Add the second only if it shows something the first cannot.
 - Every diagram must mark at least one change. Drop a diagram that marks no change. The upsert script rejects it.
 - Show the system after the PR. Mark what changed:
-  - Sequence: wrap new messages in `rect rgba(46, 160, 67, 0.15)`, changed in `rect rgba(210, 153, 34, 0.18)`, removed in `rect rgba(248, 81, 73, 0.15)` with a `-x` arrow and `− removed:` before the text.
-  - Flowchart and state: `classDef new fill:#2ea04326,stroke:#2ea043`, `classDef changed fill:#d2992226,stroke:#d29922`, `classDef removed fill:#f8514926,stroke:#f85149,stroke-dasharray:4`. Then `class A,B new`.
+  - Sequence: wrap new messages in `rect rgba(152, 151, 26, 0.15)`, changed in `rect rgba(215, 153, 33, 0.18)`, removed in `rect rgba(204, 36, 29, 0.15)` with a `-x` arrow and `− removed:` before the text.
+  - Flowchart and state: `classDef new fill:#98971a26,stroke:#98971a`, `classDef changed fill:#d7992126,stroke:#d79921`, `classDef removed fill:#cc241d26,stroke:#cc241d,stroke-dasharray:4`. Then `class A,B new`.
   - ER: add `"NEW"`, `"CHANGED"`, or `"REMOVED"` as the attribute comment.
   - Start each marked message, node label, or state label with a text marker: `+ ` new, `~ ` changed, `− ` removed. Color alone is not sufficient: the tints are faint in dark mode, and some reviewers cannot see color. Put a flowchart or state label with a marker in quotes: `A["+ check attempts"]`.
 - Put a legend line under each diagram, with only the colors you used: `🟩 + new · 🟨 ~ changed · 🟥 − removed`.
@@ -106,6 +106,7 @@ GitHub shows a red error box for a bad diagram. Obey these rules:
 - Put flowchart and state labels in quotes when they contain `( ) [ ] { } : < >`: `A["save()"]`.
 - Use short alphanumeric IDs. Put the text in the label or after `as`.
 - Do not use `end` as a node ID.
+- Do not write Mermaid frontmatter (`---` lines before the diagram type). The upsert script adds the hand-drawn look, the Gruvbox light colors and the Comic Sans MS font to each diagram. Readers without Comic Sans MS see the Mermaid default font.
 - Put a blank line before and after each code fence.
 - Do not put secrets, personal data, or real customer values in diagrams. Use field names.
 

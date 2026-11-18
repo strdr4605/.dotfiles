@@ -29,7 +29,7 @@ sequenceDiagram
     participant DB as users table
     User->>LP: submit email and password
     LP->>API: POST /session
-    rect rgba(46, 160, 67, 0.15)
+    rect rgba(152, 151, 26, 0.15)
     API->>RL: + checks attempts for this IP
     RL-->>API: + returns allow or 429
     end
