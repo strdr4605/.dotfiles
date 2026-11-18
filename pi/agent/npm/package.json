@@ -2,7 +2,7 @@
   "name": "pi-extensions",
   "private": true,
   "dependencies": {
-    "pi-web-access": "^0.45.0",
-    "surf-cli": "^2.25.0"
+    "pi-web-access": "^0.47.0",
+    "surf-cli": "^2.26.0"
   }
 }
