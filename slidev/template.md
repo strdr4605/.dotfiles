@@ -4,6 +4,8 @@ theme: default
 addons:
   - gruvbox
 colorSchema: light
+# Show @strdr4605 at the bottom right of each slide. Set to false to hide it.
+footer: true
 title: Lecture title
 transition: slide-left
 mdc: true
