@@ -31,7 +31,7 @@ gh pr diff <n>
 ## Create mode
 
 1. Read the PR data and the diff.
-2. List the touched surfaces. Kinds: page/screen, component, endpoint/route, handler/service, background job, external API, email/notification, table, cache key, config/env key, CLI command. Status: `+ new`, `~ changed`, or `− removed`. Include only what a reviewer must know. Skip formatting.
+2. List the touched surfaces. Kinds: page/screen, component, endpoint/route, handler/service, background job, external API, email/notification, table, cache key, config/env key, CLI command. Status: `[+] new`, `[~] changed`, or `[−] removed`. Include only what a reviewer must know. Skip formatting.
    - Put one mechanical edit in many files (translations, generated code, snapshots) in one row. Use a glob and the file count: `locales/*.json` (27 files).
    - Do not put pure moves and renames in the table. Show them in the **Moved** tree (see Moves).
 3. Set the risk (see Risk).
@@ -83,11 +83,11 @@ Rules:
 - Use a maximum of 2 diagrams. Add the second only if it shows something the first cannot.
 - Every diagram must mark at least one change. Drop a diagram that marks no change. The upsert script rejects it.
 - Show the system after the PR. Mark what changed:
-  - Sequence: wrap new messages in `rect rgba(152, 151, 26, 0.15)`, changed in `rect rgba(215, 153, 33, 0.18)`, removed in `rect rgba(204, 36, 29, 0.15)` with a `-x` arrow and `− removed:` before the text.
-  - Flowchart and state: `classDef new fill:#98971a26,stroke:#98971a`, `classDef changed fill:#d7992126,stroke:#d79921`, `classDef removed fill:#cc241d26,stroke:#cc241d,stroke-dasharray:4`. Then `class A,B new`.
+  - Sequence: wrap new messages in `rect rgba(152, 151, 26, 0.35)`, changed in `rect rgba(69, 133, 136, 0.3)`, removed in `rect rgba(204, 36, 29, 0.3)` with a `-x` arrow.
+  - Flowchart and state: `classDef new fill:#98971a59,stroke:#79740e,stroke-width:3px`, `classDef changed fill:#4585884d,stroke:#076678,stroke-dasharray:8 4`, `classDef removed fill:#cc241d4d,stroke:#9d0006,stroke-dasharray:2 3`. Then `class A,B new`. The border styles (solid, dashes, dots) differ, so the kinds stay apart without color.
   - ER: add `"NEW"`, `"CHANGED"`, or `"REMOVED"` as the attribute comment.
-  - Start each marked message, node label, or state label with a text marker: `+ ` new, `~ ` changed, `− ` removed. Color alone is not sufficient: the tints are faint in dark mode, and some reviewers cannot see color. Put a flowchart or state label with a marker in quotes: `A["+ check attempts"]`.
-- Put a legend line under each diagram, with only the colors you used: `🟩 + new · 🟨 ~ changed · 🟥 − removed`.
+  - Start each marked message, node label, or state label with a badge: `[+] ` new, `[~] ` changed, `[−] ` removed. Color alone is not sufficient: for red-green color blindness, new and removed fills look the same, and in greyscale all fills look the same. Put a flowchart or state label with a badge in quotes: `A["[+] check attempts"]`. Do not use HTML tags such as `<sup>` in labels: GitHub shows them as text.
+- Put a legend line under each diagram, with only the colors you used: `🟩 [+] new · 🟦 [~] changed · 🟥 [−] removed`.
 - Label = system name + file: `participant API as Orders API<br/>src/routes/orders.ts`. Use the names users and reviewers know.
 - Keep it small: a maximum of 12 messages in a sequence and 15 nodes in a flowchart. Remove context that is not necessary to see the change.
 

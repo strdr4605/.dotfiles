@@ -18,11 +18,12 @@ const STYLE = [
   '---',
   'config:',
   '  look: handDrawn',
+  '  fontFamily: \'"Comic Sans MS", "trebuchet ms", verdana, arial, sans-serif\'',
   '  theme: base',
   '  themeVariables:',
   // Gruvbox light palette.
   "    background: '#fbf1c7'",
-  "    primaryColor: '#ebdbb2'",
+  "    primaryColor: '#f9f5d7'",
   "    primaryTextColor: '#3c3836'",
   "    primaryBorderColor: '#7c6f64'",
   "    secondaryColor: '#d5c4a1'",
@@ -177,21 +178,21 @@ function selfTest() {
   assert.equal(checkBlock(ok), null)
   assert.match(checkBlock('no markers'), /must start/)
   assert.match(checkBlock(`${START}\n${END}`), /Head/)
-  assert.match(checkBlock(`${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\nsequenceDiagram\n  rect rgba(152, 151, 26, 0.15)\n  A->>B: x; y\n  end\n\`\`\`\n${END}`), /";"/)
+  assert.match(checkBlock(`${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\nsequenceDiagram\n  rect rgba(152, 151, 26, 0.35)\n  A->>B: x; y\n  end\n\`\`\`\n${END}`), /";"/)
   const wrap = (diagram) => `${START}\n**Head:** \`abc1234\`\n\`\`\`mermaid\n${diagram}\n\`\`\`\n${END}`
-  assert.equal(checkBlock(wrap('sequenceDiagram\n  rect rgba(152, 151, 26, 0.15)\n  A->>B: x, y\n  end')), null)
+  assert.equal(checkBlock(wrap('sequenceDiagram\n  rect rgba(152, 151, 26, 0.35)\n  A->>B: x, y\n  end')), null)
   assert.match(checkBlock(wrap('sequenceDiagram\n  A->>B: x, y')), /marks no change/)
   assert.match(checkBlock(wrap('flowchart TD\n  A --> B')), /marks no change/)
-  assert.equal(checkBlock(wrap('flowchart TD\n  A --> B\n  classDef new fill:#98971a26,stroke:#98971a\n  class B new')), null)
+  assert.equal(checkBlock(wrap('flowchart TD\n  A --> B\n  classDef new fill:#98971a59,stroke:#79740e,stroke-width:3px\n  class B new')), null)
   assert.equal(checkBlock(wrap('erDiagram\n  USER {\n    string iban "NEW"\n  }')), null)
 
-  const styled = styleDiagrams(wrap('sequenceDiagram\n  rect rgba(152, 151, 26, 0.15)\n  A->>B: x\n  end'))
+  const styled = styleDiagrams(wrap('sequenceDiagram\n  rect rgba(152, 151, 26, 0.35)\n  A->>B: x\n  end'))
   assert.match(styled, /look: handDrawn/)
   assert.equal(styleDiagrams(styled), styled)
   assert.equal(checkBlock(styled), null)
   assert.equal(lintMermaid(styled), null)
 
   const fence = (diagram) => '```mermaid\n' + diagram + '\n```\n'
-  assert.equal(lintMermaid(fence('flowchart TD\n  A["+ check (per IP)"] --> B')), null)
+  assert.equal(lintMermaid(fence('flowchart TD\n  A["[+] check (per IP)"] --> B')), null)
   assert.match(lintMermaid(fence('flowchart TD\n  A[check (per IP)] --> B')), /maid check failed/)
 }
