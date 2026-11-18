@@ -21,3 +21,6 @@ bin/islocked
 # claude mods: engine regenerates types and tsconfig on every load
 claude/mods/*/.claude-plugin/types/
 claude/mods/*/tsconfig.json
+
+# ponytail plugin: per-project session logs and dashboard, may hold work prompts
+ponytail/band/
