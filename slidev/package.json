@@ -1,0 +1,6 @@
+{
+  "name": "slidev-addon-gruvbox",
+  "private": true,
+  "description": "Gruvbox light colors and Comic Code font for Slidev decks. Same palette as the pr-visual-recap diagrams.",
+  "keywords": ["slidev-addon"]
+}

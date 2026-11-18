@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Make a new Slidev deck that uses the Gruvbox addon in <dotfiles>/slidev.
+# Usage: slides-new <dir>
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "usage: slides-new <dir>" >&2
+  exit 1
+fi
+
+dir=$1
+# Use the addon next to this script, so it works from any dotfiles workspace.
+addon="$(cd "$(dirname "$0")/../slidev" && pwd)"
+
+if [[ -e "$dir/slides.md" ]]; then
+  echo "slides-new: $dir/slides.md exists, stop" >&2
+  exit 1
+fi
+
+mkdir -p "$dir"
+cd "$dir"
+
+[[ -f package.json ]] || cat > package.json <<'EOF'
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --open",
+    "build": "slidev build",
+    "export": "slidev export"
+  }
+}
+EOF
+
+[[ -f .gitignore ]] || printf 'node_modules/\ndist/\n.slidev/\n' > .gitignore
+
+# link: keeps a symlink, so addon changes in dotfiles show in every deck.
+pnpm add @slidev/cli @slidev/theme-default "slidev-addon-gruvbox@link:$addon"
+cp "$addon/template.md" slides.md
+
+echo "Deck ready: cd $dir && pnpm dev"

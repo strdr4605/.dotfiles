@@ -1,0 +1,58 @@
+/* Gruvbox light palette: https://github.com/morhetz/gruvbox */
+:root {
+  --gb-bg: #fbf1c7;
+  --gb-bg1: #ebdbb2;
+  --gb-fg: #3c3836;
+  --gb-gray: #928374;
+  --gb-red: #9d0006;
+  --gb-green: #79740e;
+  --gb-yellow: #b57614;
+  --gb-blue: #076678;
+  --gb-purple: #8f3f71;
+  --gb-aqua: #427b58;
+  --gb-orange: #af3a03;
+
+  --slidev-theme-primary: var(--gb-blue);
+  --slidev-code-background: var(--gb-bg1);
+
+  /* Comic Code is a paid font. Machines without it fall back to Comic Sans MS. */
+  --gb-font: 'ComicCodeLigatures Nerd Font', 'ComicCode Nerd Font', 'Comic Sans MS', sans-serif;
+}
+
+.slidev-layout,
+.slidev-layout pre,
+.slidev-layout code {
+  font-family: var(--gb-font);
+}
+
+.slidev-layout {
+  background: var(--gb-bg);
+  color: var(--gb-fg);
+}
+
+.slidev-layout h1 {
+  color: var(--gb-orange);
+}
+
+.slidev-layout h2,
+.slidev-layout h3 {
+  color: var(--gb-aqua);
+}
+
+.slidev-layout a {
+  color: var(--gb-blue);
+  border-color: var(--gb-blue);
+}
+
+.slidev-layout strong {
+  color: var(--gb-red);
+}
+
+.slidev-layout :not(pre) > code {
+  background: var(--gb-bg1);
+  color: var(--gb-purple);
+}
+
+.slidev-layout li::marker {
+  color: var(--gb-yellow);
+}
